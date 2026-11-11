@@ -55,6 +55,28 @@ For a "partly" claim, also give "fix": the claim rewritten to say only what its 
 
 Return only JSON: {"claims":[{"n":1,"verdict":"supported|partly|unsupported","why":"one short sentence","fix":"only for partly"}]}`;
 
+type Verdict = { n: number; verdict: "supported" | "partly" | "unsupported"; why?: string; fix?: string };
+
+const isVerdict = (x: unknown): x is Verdict => {
+  if (!x || typeof x !== "object") return false;
+  const v = x as Record<string, unknown>;
+  return (
+    Number.isInteger(v["n"]) &&
+    (v["verdict"] === "supported" || v["verdict"] === "partly" || v["verdict"] === "unsupported") &&
+    (v["why"] === undefined || typeof v["why"] === "string") &&
+    (v["fix"] === undefined || typeof v["fix"] === "string")
+  );
+};
+
+/** The verdict list from the verifier's answer; throws if any part of it is not a usable verdict. */
+function parseVerdicts(text: string): Verdict[] {
+  const parsed = extractJSON(text) as { claims?: unknown } | null;
+  const claims = parsed?.claims;
+  if (!Array.isArray(claims)) throw new Error("verifier returned no verdict list");
+  if (!claims.every(isVerdict)) throw new Error("verifier returned a malformed verdict");
+  return claims;
+}
+
 function render(claims: Claim[], byId: Map<string, SourceRecord>): string {
   return claims
     .map((c, i) => {
@@ -83,7 +105,7 @@ export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], b
   }
   if (!verifierEnabled()) return skipped();
 
-  let verdicts: Array<{ n?: number; verdict?: string; why?: string; fix?: unknown }>;
+  let verdicts: Verdict[];
   const started = Date.now();
   const note = (ok: boolean) =>
     recordModelCall({ briefId, purpose: "verifier", model: VERIFIER_MODEL, inputTokens: usage.inputTokens, outputTokens: usage.outputTokens, ms: Date.now() - started, ok });
@@ -100,9 +122,7 @@ export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], b
     usage.inputTokens = message.usage?.input_tokens ?? 0;
     usage.outputTokens = message.usage?.output_tokens ?? 0;
     const block = message.content.find((b) => b.type === "text");
-    const parsed = extractJSON(block && block.type === "text" ? block.text : "") as { claims?: typeof verdicts };
-    if (!Array.isArray(parsed.claims)) throw new Error("verifier returned no verdict list");
-    verdicts = parsed.claims;
+    verdicts = parseVerdicts(block && block.type === "text" ? block.text : "");
     note(true);
   } catch (err) {
     note(false);
