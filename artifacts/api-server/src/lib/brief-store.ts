@@ -32,6 +32,8 @@ export class MemoryBriefStore implements BriefStore {
   constructor(private readonly maxEntries = 500) {}
 
   async save(key: string, brief: StoredBrief) {
+    // A saved brief is immutable, as in Postgres (ON CONFLICT DO NOTHING).
+    if (this.byId.has(brief.id)) return;
     this.byId.set(brief.id, { key, brief });
     this.newest.set(key, brief.id);
     while (this.byId.size > this.maxEntries) {
