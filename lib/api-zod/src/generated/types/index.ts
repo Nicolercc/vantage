@@ -17,6 +17,7 @@ export * from './exploreConflictBody';
 export * from './healthStatus';
 export * from './intelligenceBrief';
 export * from './intelligenceBriefEscalationRisk';
+export * from './intelligenceBriefLink';
 export * from './location';
 export * from './perspective';
 export * from './perspectiveAlignment';

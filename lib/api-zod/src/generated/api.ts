@@ -128,7 +128,10 @@ export const AnalyzeArticleResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 
@@ -240,7 +243,10 @@ export const GetBriefResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 
@@ -386,7 +392,10 @@ export const ExploreConflictResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 

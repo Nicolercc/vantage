@@ -139,6 +139,11 @@ export class PostgresBriefStore implements BriefStore {
 export class LayeredBriefStore implements BriefStore {
   constructor(private readonly memory: MemoryBriefStore, private readonly durable: BriefStore | null) {}
 
+  /** Whether saved briefs outlive this process, so their links survive a restart. */
+  get isDurable() {
+    return this.durable !== null;
+  }
+
   async save(key: string, brief: StoredBrief) {
     await this.memory.save(key, brief);
     if (!this.durable) return;

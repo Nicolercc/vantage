@@ -9,6 +9,7 @@ import { CasualtyPanel } from "./CasualtyPanel";
 import { InteractiveConflictMap } from "./InteractiveConflictMap";
 import { ConflictBackground } from "./ConflictBackground";
 import { KindTag, type Kind } from "./SourceKind";
+import { temporaryLinkNotice } from "@/lib/share-link";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
@@ -214,6 +215,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								<span className="sr-only"> (opens GitHub in a new tab)</span>
 							</a>
 						</div>
+						{temporaryLinkNotice(briefData) && (
+							<p className="ci-section__note" role="note">
+								{temporaryLinkNotice(briefData)}
+							</p>
+						)}
 					</header>
 
 					<nav className="ci-nav" aria-label="Sections of this brief">

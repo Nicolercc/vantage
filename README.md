@@ -57,7 +57,7 @@ The code lives in `artifacts/api-server/src/brief` (retrieval, prompt, generatio
 *Tradeoff:* during a database outage each instance enforces limits separately, so several instances together can exceed the global budget.
 
 **5. Postgres is optional.** With `DATABASE_URL`, saved briefs, limits and the cost ledger survive restarts and are shared by instances. Without it everything lives in the process, and `/api/readyz` reports `durable: false`.
-*Tradeoff:* a deployment without a database loses brief links on every restart.
+*Tradeoff:* a deployment without a database loses brief links on every restart; each brief page then tells the reader its link is temporary.
 
 ## Testing and quality
 

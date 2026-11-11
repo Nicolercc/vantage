@@ -462,6 +462,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RetrievalStatus"
+        link:
+          type: object
+          description: Added when the brief is served, never stored. Whether its link outlives the server process.
+          properties:
+            durable:
+              type: boolean
+              description: False when briefs are kept only in memory, so the link stops working when the server restarts.
+          required: [durable]
       required:
         - id
         - generatedAt
