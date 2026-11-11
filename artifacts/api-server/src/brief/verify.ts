@@ -9,9 +9,10 @@ import { checkClaim, type Claim } from "./support";
  * A second model reads each claim next to the words it quotes and says whether
  * those words support it. The quote checks have already established that the
  * words are really in the source; this asks what they mean. A claim that
- * says more than its quotes is cut back to what they do say, and the cut-back
- * wording goes through the quote checks again; a claim that cannot be saved
- * that way is removed. What reaches the reader has passed both checks.
+ * says more than its quotes is cut back to what they do say; the cut-back
+ * wording goes through the quote checks again and is then sent back to the
+ * verifier, and is kept only if judged fully supported. A claim that cannot be
+ * saved that way is removed. What reaches the reader has passed both checks.
  *
  * If the verifier cannot be reached or answers unusably, the brief is not
  * failed: its claims are kept, marked "unverified", and the brief says the
@@ -105,48 +106,64 @@ export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], b
   }
   if (!verifierEnabled()) return skipped();
 
+  const byId = new Map(sources.map((s) => [s.id, s]));
+  /** One verifier call over `claims`; adds to `usage` and the ledger, throws if the answer is unusable. */
+  const ask = async (claims: Claim[]): Promise<Verdict[]> => {
+    const started = Date.now();
+    const spent = { inputTokens: 0, outputTokens: 0 };
+    const note = (ok: boolean) =>
+      recordModelCall({ briefId, purpose: "verifier", model: VERIFIER_MODEL, ...spent, ms: Date.now() - started, ok });
+    try {
+      const message = await anthropic.messages.create(
+        {
+          model: VERIFIER_MODEL,
+          max_tokens: 1500,
+          system: SYSTEM,
+          messages: [{ role: "user", content: render(claims, byId) }],
+        },
+        { timeout: VERIFIER_TIMEOUT_MS, maxRetries: 0, signal: AbortSignal.timeout(VERIFIER_TIMEOUT_MS + 2_000) },
+      );
+      spent.inputTokens = message.usage?.input_tokens ?? 0;
+      spent.outputTokens = message.usage?.output_tokens ?? 0;
+      usage.inputTokens += spent.inputTokens;
+      usage.outputTokens += spent.outputTokens;
+      const block = message.content.find((b) => b.type === "text");
+      const verdicts = parseVerdicts(block && block.type === "text" ? block.text : "");
+      note(true);
+      return verdicts;
+    } catch (err) {
+      note(false);
+      throw err;
+    }
+  };
+
   let verdicts: Verdict[];
-  const started = Date.now();
-  const note = (ok: boolean) =>
-    recordModelCall({ briefId, purpose: "verifier", model: VERIFIER_MODEL, inputTokens: usage.inputTokens, outputTokens: usage.outputTokens, ms: Date.now() - started, ok });
   try {
-    const message = await anthropic.messages.create(
-      {
-        model: VERIFIER_MODEL,
-        max_tokens: 1500,
-        system: SYSTEM,
-        messages: [{ role: "user", content: render(flat, new Map(sources.map((s) => [s.id, s]))) }],
-      },
-      { timeout: VERIFIER_TIMEOUT_MS, maxRetries: 0, signal: AbortSignal.timeout(VERIFIER_TIMEOUT_MS + 2_000) },
-    );
-    usage.inputTokens = message.usage?.input_tokens ?? 0;
-    usage.outputTokens = message.usage?.output_tokens ?? 0;
-    const block = message.content.find((b) => b.type === "text");
-    verdicts = parseVerdicts(block && block.type === "text" ? block.text : "");
-    note(true);
+    verdicts = await ask(flat);
   } catch (err) {
-    note(false);
     logger.warn({ err }, "claim verifier did not run; claims kept as unverified");
     return skipped();
   }
 
-  const byId = new Map(sources.map((s) => [s.id, s]));
   const removed: VerifyResult["removed"] = [];
-  let corrected = 0;
+  /** Claims cut back to their quotes, waiting for a verdict on the new wording. */
+  const rewrites: Array<{ original: Claim; rewrite: Claim; verdict: Verdict }> = [];
   let index = 0;
-  const kept = groups.map((group, groupIndex) =>
+  const firstPass = groups.map((group, groupIndex) =>
     group.flatMap((claim) => {
       index += 1;
       const v = verdicts.find((x) => x.n === index);
       if (v?.verdict === "supported") return [{ ...claim, support: "verified" as const }];
       // A claim that overreached may be cut back to its quotes. The new wording
-      // is the verifier's, so it has to pass the same quote checks as any other:
-      // same quotes, figures inside them, and (for a comparison) two sources.
-      if (v?.verdict === "partly" && typeof v.fix === "string" && v.fix.trim() && v.fix.trim() !== claim.text) {
+      // is the verifier's, so it has to pass the same quote checks as any other
+      // (same quotes, figures inside them, and two sources for a comparison) and
+      // then be judged fully supported itself before it may be called verified.
+      if (v?.verdict === "partly" && v.fix?.trim() && v.fix.trim() !== claim.text) {
         const recheck = checkClaim({ text: v.fix, evidence: claim.evidence }, byId, groupIndex === 0 ? 1 : 2);
         if (recheck.ok) {
-          corrected += 1;
-          return [{ ...recheck.claim, support: "verified" as const }];
+          const pending = { original: claim, rewrite: recheck.claim, verdict: v };
+          rewrites.push(pending);
+          return [pending.rewrite];
         }
       }
       // Unsupported, uncorrectable, or never given a verdict: it does not pass.
@@ -154,6 +171,31 @@ export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], b
       return [];
     }),
   );
+
+  // Second look, at the rewritten wording only. A rewrite is kept only if it is
+  // judged fully supported; if that cannot be established it is removed, since
+  // its original was already judged to say more than its quotes.
+  const accepted = new Set<Claim>();
+  if (rewrites.length > 0) {
+    try {
+      const second = await ask(rewrites.map((r) => r.rewrite));
+      rewrites.forEach((r, i) => {
+        if (second.find((x) => x.n === i + 1)?.verdict === "supported") accepted.add(r.rewrite);
+      });
+    } catch (err) {
+      logger.warn({ err }, "rewritten claims could not be re-verified; removing them");
+    }
+    for (const r of rewrites) {
+      if (!accepted.has(r.rewrite)) removed.push({ text: r.original.text, verdict: "partly", why: r.verdict.why ?? "" });
+    }
+  }
+  const pendingRewrites = new Set(rewrites.map((r) => r.rewrite));
+  const kept = firstPass.map((group) =>
+    group.flatMap((claim) =>
+      !pendingRewrites.has(claim) ? [claim] : accepted.has(claim) ? [{ ...claim, support: "verified" as const }] : [],
+    ),
+  );
+  const corrected = accepted.size;
   return {
     groups: kept,
     verification: { status: "verified", checked: flat.length, removed: removed.length, corrected },
