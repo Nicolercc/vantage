@@ -100,7 +100,7 @@ pnpm dev                # client on http://localhost:5173 (proxies /api to the l
 * **Retrieval has no service agreement.** The news search is Bing's public RSS feed, and publisher feeds hold only recent items. The brief reports how many providers were checked and how many returned something.
 * **"Verified" is a model's opinion** about words that provably occur in a source. In the latest recorded evaluation a stronger model judged 9 of 70 kept claims as only partly supported. The expected-fact lists used for grading are not yet approved by a person.
 * **Prompt injection is mitigated, not proven against.** Retrieved text never enters the system prompt and cannot close its own source block, but no adversarial evaluation against a live model has been run.
-* **No whole-request deadline.** Each model call, fetch and database statement has its own deadline, but a brief can take two writer attempts plus verification and geocoding.
+* **Long worst case.** Each model call, fetch and database statement has its own deadline, and the whole brief is capped at the sum of its steps' limits (about 4.3 minutes with the defaults; then everything in flight is aborted and the reader gets `TIMED_OUT`). Fetching a linked article happens before that cap.
 * **Per-process pieces.** The concurrency cap and in-flight deduplication are per process.
 * **Observability gaps.** Errors carry a request id in the JSON body and the `X-Request-Id` header, but the UI does not show it yet. `/api/ops/costs` counts successful writer calls, so a retried brief counts twice.
 * **Saved briefs are kept indefinitely.** There is no retention period or deletion route. Saved briefs never contain the reader's pasted text, though the model's summary may paraphrase it.
