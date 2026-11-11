@@ -49,6 +49,8 @@ Each brief contains two clearly separated kinds of content.
 * escalation assessment and affected-population context
 * an interactive map of the places involved
 
+The headline is written by the model as well; it carries no per-section label, and the page header marks every brief as AI-generated.
+
 ---
 
 # System Architecture
