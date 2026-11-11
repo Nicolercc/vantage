@@ -18,33 +18,57 @@ export interface UsageStore {
 
 const windowStart = (now: number, windowMs: number) => Math.floor(now / windowMs) * windowMs;
 
+/** Above this many counters, ended windows are cleared out. Active ones are never dropped. */
+const PRUNE_ABOVE = 20_000;
+
 export class MemoryUsageStore implements UsageStore {
-  private counts = new Map<string, number>();
+  private counts = new Map<string, { count: number; endsAt: number }>();
+  private pruneAbove = PRUNE_ABOVE;
 
   constructor(private readonly now: () => number = Date.now) {}
 
   private slot(scope: string, key: string, windowMs: number) {
-    if (this.counts.size > 20_000) this.counts.clear();
-    return `${scope}|${key}|${windowStart(this.now(), windowMs)}`;
+    const start = windowStart(this.now(), windowMs);
+    if (this.counts.size > this.pruneAbove) this.prune();
+    return { id: `${scope}|${key}|${start}`, endsAt: start + windowMs };
+  }
+
+  private prune() {
+    const now = this.now();
+    for (const [id, entry] of this.counts) if (entry.endsAt <= now) this.counts.delete(id);
+    // If most counters are still live, wait for the map to grow before scanning again.
+    this.pruneAbove = Math.max(PRUNE_ABOVE, this.counts.size * 2);
   }
 
   async hit(scope: string, key: string, windowMs: number) {
-    const slot = this.slot(scope, key, windowMs);
-    const next = (this.counts.get(slot) ?? 0) + 1;
-    this.counts.set(slot, next);
+    const { id, endsAt } = this.slot(scope, key, windowMs);
+    const next = (this.counts.get(id)?.count ?? 0) + 1;
+    this.counts.set(id, { count: next, endsAt });
     return next;
   }
 
   async reserve(scope: string, key: string, windowMs: number, max: number) {
-    const slot = this.slot(scope, key, windowMs);
-    const current = this.counts.get(slot) ?? 0;
+    const { id, endsAt } = this.slot(scope, key, windowMs);
+    const current = this.counts.get(id)?.count ?? 0;
     if (current >= max) return false;
-    this.counts.set(slot, current + 1);
+    this.counts.set(id, { count: current + 1, endsAt });
     return true;
+  }
+
+  /** Raise a counter to at least `count`, so a fallback starts from what the shared store said. */
+  raise(scope: string, key: string, windowMs: number, count: number) {
+    const { id, endsAt } = this.slot(scope, key, windowMs);
+    if ((this.counts.get(id)?.count ?? 0) < count) this.counts.set(id, { count, endsAt });
+  }
+
+  /** Number of counters held. */
+  size() {
+    return this.counts.size;
   }
 
   reset() {
     this.counts.clear();
+    this.pruneAbove = PRUNE_ABOVE;
   }
 }
 
@@ -109,7 +133,9 @@ export class PostgresUsageStore implements UsageStore {
 /**
  * Shared counters with a local stand-in. If the database cannot be reached the
  * limits still hold for this process, which is safer than either refusing
- * every request or enforcing nothing.
+ * every request or enforcing nothing. The stand-in follows every answer the
+ * shared store gives, so an outage continues from the counts seen so far
+ * instead of handing out a fresh allowance.
  */
 export class ResilientUsageStore implements UsageStore {
   private readonly local = new MemoryUsageStore();
@@ -119,7 +145,9 @@ export class ResilientUsageStore implements UsageStore {
   async hit(scope: string, key: string, windowMs: number) {
     if (!this.shared) return this.local.hit(scope, key, windowMs);
     try {
-      return await this.shared.hit(scope, key, windowMs);
+      const total = await this.shared.hit(scope, key, windowMs);
+      this.local.raise(scope, key, windowMs, total);
+      return total;
     } catch (err) {
       logger.warn({ err }, "shared usage counters unavailable; counting in this process");
       return this.local.hit(scope, key, windowMs);
@@ -129,7 +157,11 @@ export class ResilientUsageStore implements UsageStore {
   async reserve(scope: string, key: string, windowMs: number, max: number) {
     if (!this.shared) return this.local.reserve(scope, key, windowMs, max);
     try {
-      return await this.shared.reserve(scope, key, windowMs, max);
+      const granted = await this.shared.reserve(scope, key, windowMs, max);
+      // Granted: this process has used one more. Refused: the allowance is spent.
+      if (granted) await this.local.hit(scope, key, windowMs);
+      else this.local.raise(scope, key, windowMs, max);
+      return granted;
     } catch (err) {
       logger.warn({ err }, "shared usage counters unavailable; counting in this process");
       return this.local.reserve(scope, key, windowMs, max);
