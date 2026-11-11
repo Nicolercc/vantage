@@ -6,7 +6,8 @@ import { logger } from "./logger";
 /**
  * Where finished briefs are kept so a link to one keeps working. A brief is
  * saved once and never changed: the stored copy is exactly what its first
- * reader saw, including its generation time.
+ * reader saw, including its generation time. It is kept for
+ * BRIEF_RETENTION_MS after it was generated; after that its link answers 404.
  */
 export type StoredBrief = { id: string; generatedAt: string };
 
@@ -18,6 +19,10 @@ export interface BriefStore {
   reset?(): void;
   close?(): Promise<void>;
 }
+
+/** Briefs are kept for 30 days from generation, then forgotten. */
+export const BRIEF_RETENTION_MS = 30 * 86_400_000;
+const expired = (brief: StoredBrief, now = Date.now()) => now - Date.parse(brief.generatedAt) > BRIEF_RETENTION_MS;
 
 const ID_PATTERN = /^[A-Za-z0-9_-]{10,32}$/;
 export const isBriefId = (value: string) => ID_PATTERN.test(value);
@@ -46,7 +51,8 @@ export class MemoryBriefStore implements BriefStore {
   }
 
   async get(id: string) {
-    return this.byId.get(id)?.brief ?? null;
+    const brief = this.byId.get(id)?.brief;
+    return brief && !expired(brief) ? brief : null;
   }
 
   async latest(key: string, maxAgeMs: number) {
@@ -82,8 +88,23 @@ export class PostgresBriefStore implements BriefStore {
     );
   }
 
+  get tableName() {
+    return this.table;
+  }
+
+  /** Delete briefs past the retention period; returns how many. */
+  async purgeExpired(): Promise<number> {
+    await this.ensure();
+    const { rowCount } = await this.pool.query(`DELETE FROM ${this.table} WHERE created_at < $1`, [
+      new Date(Date.now() - BRIEF_RETENTION_MS).toISOString(),
+    ]);
+    return rowCount ?? 0;
+  }
+
   async save(key: string, brief: StoredBrief) {
     await this.ensure();
+    // Expired briefs are cleared now and then instead of on a schedule; reads ignore them meanwhile.
+    if (Math.random() < 0.01) this.purgeExpired().catch((err) => logger.warn({ err }, "could not delete expired briefs"));
     await this.pool.query(
       `INSERT INTO ${this.table} (id, cache_key, created_at, body) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING`,
       [brief.id, key, brief.generatedAt, JSON.stringify(brief)],
@@ -92,7 +113,10 @@ export class PostgresBriefStore implements BriefStore {
 
   async get(id: string) {
     await this.ensure();
-    const { rows } = await this.pool.query<{ body: StoredBrief }>(`SELECT body FROM ${this.table} WHERE id = $1`, [id]);
+    const { rows } = await this.pool.query<{ body: StoredBrief }>(`SELECT body FROM ${this.table} WHERE id = $1 AND created_at >= $2`, [
+      id,
+      new Date(Date.now() - BRIEF_RETENTION_MS).toISOString(),
+    ]);
     return rows[0]?.body ?? null;
   }
 
