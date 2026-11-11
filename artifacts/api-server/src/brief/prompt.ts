@@ -1,3 +1,4 @@
+import { ARTICLE_MAX_CHARS } from "./article";
 import type { SourceRecord } from "./sources";
 
 /**
@@ -83,7 +84,8 @@ const attr = (v: string | null) => (v ?? "unknown").replace(/["<>\n]/g, " ").tri
 
 /** Longest text handed to the model per source. */
 const PER_SOURCE_CHARS: Record<SourceRecord["kind"], number> = {
-  article: 8000,
+  // The whole accepted article, plus room for the title its record starts with.
+  article: ARTICLE_MAX_CHARS + 100,
   reference: 2000,
   news: 600,
 };

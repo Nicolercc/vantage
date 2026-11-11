@@ -1,4 +1,5 @@
 import type { Party } from "./conflict/types";
+import { KindTag } from "./SourceKind";
 
 export function PartiesPanel({ parties, active }: { parties: Party[]; active: boolean }) {
 	if (!parties.length) return null;
@@ -11,6 +12,9 @@ export function PartiesPanel({ parties, active }: { parties: Party[]; active: bo
 			}}
 		>
 			<span className="section-label">Parties involved</span>
+			<div style={{ margin: "-8px 0 12px" }}>
+				<KindTag kind="background" />
+			</div>
 			<div style={{ display: "flex", flexDirection: "column" as const, gap: "2px" }}>
 				{parties.map((p, i) => (
 					<div

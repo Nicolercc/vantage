@@ -1,6 +1,13 @@
 import { AppError } from "../lib/errors";
 import { fetchPublicPage } from "../lib/safe-fetch";
 
+/**
+ * The most article text the writer reads. Pasted text longer than this is
+ * refused (see the API spec), and a fetched page is cut to it, so nothing the
+ * reader supplies is accepted and then quietly left unread.
+ */
+export const ARTICLE_MAX_CHARS = 8_000;
+
 /** Fetch a public article page and reduce it to readable text. */
 export async function scrapeArticle(url: string): Promise<string> {
   const html = await fetchPublicPage(url);
@@ -23,12 +30,13 @@ export async function scrapeArticle(url: string): Promise<string> {
   if (stripped.length < 100) {
     throw new AppError(422, "FETCH_FAILED", "We couldn't find article text on that page. Try pasting the article text instead.");
   }
-  return stripped.slice(0, 8000);
+  return stripped.slice(0, ARTICLE_MAX_CHARS);
 }
 
 /**
  * Search terms for an article: the capitalised names that recur in it. Used
- * only to find related coverage; the article itself is analysed in full.
+ * only to find related coverage; the writer reads the article itself, up to
+ * ARTICLE_MAX_CHARS.
  */
 export function articleSearchTopic(text: string): string {
   const counts = new Map<string, number>();

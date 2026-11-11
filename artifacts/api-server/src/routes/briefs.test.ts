@@ -9,6 +9,7 @@ vi.mock("@workspace/integrations-anthropic-ai", () => ({
 }));
 
 import app from "../app";
+import { LayeredBriefStore, MemoryBriefStore } from "../lib/brief-store";
 
 const ARTICLE =
   "Fighting continued around El Fasher on Monday. Aid agencies in Sudan said twelve trucks were turned back and residents described shortages of food and medicine across the city.";
@@ -34,6 +35,33 @@ beforeEach(() => {
   resetBriefState(app);
   stubRetrieval();
   create.mockImplementation(async () => modelText(JSON.stringify(modelBrief())));
+});
+
+describe("share links", () => {
+  // Without a database a brief lives only in this process: its link dies on
+  // the next restart, and the reader must be told so rather than find out later.
+  it("says the link is temporary when briefs are kept only in memory", async () => {
+    const made = await request(app).post("/api/intelligence/explore").send({ topic: "Sudan humanitarian access" });
+    expect(made.body.link).toEqual({ durable: false });
+    const read = await request(app).get(`/api/briefs/${made.body.id}`);
+    expect(read.body.link).toEqual({ durable: false });
+    const events = parseEvents((await stream({ topic: "Sudan humanitarian access" })).text);
+    expect(events.find((e) => e.event === "brief")?.data["link"]).toEqual({ durable: false });
+  });
+
+  it("says the link lasts when briefs are saved to durable storage, and never stores the flag", async () => {
+    const durable = new MemoryBriefStore();
+    const state = app.locals["briefs"];
+    const original = state.store;
+    state.store = new LayeredBriefStore(new MemoryBriefStore(), durable);
+    try {
+      const made = await request(app).post("/api/intelligence/explore").send({ topic: "Sudan humanitarian access" });
+      expect(made.body.link).toEqual({ durable: true });
+      expect(await durable.get(made.body.id)).not.toHaveProperty("link");
+    } finally {
+      state.store = original;
+    }
+  });
 });
 
 describe("stored briefs", () => {

@@ -5,13 +5,14 @@ import { AppError } from "../lib/errors";
 import { recordModelCall } from "../lib/ledger";
 import { classifyModelError, noteModelFailure, noteModelSuccess } from "../lib/model-health";
 import { logger } from "../lib/logger";
-import { locateBrief } from "./geocode";
+import { NEVER, until } from "./abort";
+import { GEOCODER_BUDGET_MS, locateBrief } from "./geocode";
 import { extractJSON, normalizeLatLng, tryExtractJsonFallback } from "./json";
 import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
-import { searchCoverage, type Coverage } from "./retrieval";
+import { RETRIEVAL_MAX_MS, searchCoverage, type Coverage } from "./retrieval";
 import { toPublicSource, type Candidate } from "./sources";
 import { checkClaims } from "./support";
-import { verifyClaims } from "./verify";
+import { VERIFIER_TIMEOUT_MS, verifyClaims } from "./verify";
 
 const BRIEF_MODEL = process.env["BRIEF_MODEL"] ?? "claude-haiku-4-5-20251001";
 const MODEL_TIMEOUT_MS = Number(process.env["BRIEF_MODEL_TIMEOUT_MS"] ?? 60_000);
@@ -19,6 +20,24 @@ const MODEL_TIMEOUT_MS = Number(process.env["BRIEF_MODEL_TIMEOUT_MS"] ?? 60_000)
 const QUICK_FAILURE_MS = 10_000;
 /** One retry when the model's answer is unusable, or when the provider fails quickly. */
 const MAX_GENERATION_ATTEMPTS = 2;
+/** The SDK's own timeout plus this is when a model call is aborted outright. */
+const ABORT_GRACE_MS = 2_000;
+/** Each attempt calls the verifier at most twice: the claims, then any rewrites. */
+const VERIFIER_CALLS_PER_ATTEMPT = 2;
+
+/**
+ * Longest one brief may take: every step's own limit, one after the other,
+ * plus a margin. Each step already stops itself; this bounds the chain, so a
+ * brief that hits several slow steps in a row still ends.
+ */
+export const BRIEF_DEADLINE_MS =
+  RETRIEVAL_MAX_MS +
+  MAX_GENERATION_ATTEMPTS *
+    (MODEL_TIMEOUT_MS + ABORT_GRACE_MS + VERIFIER_CALLS_PER_ATTEMPT * (VERIFIER_TIMEOUT_MS + ABORT_GRACE_MS)) +
+  GEOCODER_BUDGET_MS +
+  5_000;
+
+const timedOut = () => new AppError(504, "TIMED_OUT", "This brief took too long to prepare. Please try again.");
 
 const providerUnavailable = (cause: unknown) =>
   new AppError(502, "PROVIDER_UNAVAILABLE", "The analysis service is unavailable right now. Please try again later.", { cause });
@@ -37,7 +56,7 @@ export type GenerationStats = {
 };
 
 /** One model call, parsed and checked against the evidence and the response contract. */
-async function generateOnce(coverage: Coverage, userMessage: string, onProgress: OnProgress) {
+async function generateOnce(coverage: Coverage, userMessage: string, onProgress: OnProgress, signal: AbortSignal) {
   // The id exists before any model is called, so every call can be costed against its brief.
   const briefId = newBriefId();
   const started = Date.now();
@@ -52,10 +71,12 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
       },
       // One attempt with a hard deadline: a reader should get an answer or a
       // "try again" within about a minute, never wait out silent retries.
-      { timeout: MODEL_TIMEOUT_MS, maxRetries: 0, signal: AbortSignal.timeout(MODEL_TIMEOUT_MS + 2_000) },
+      { timeout: MODEL_TIMEOUT_MS, maxRetries: 0, signal: until(signal, MODEL_TIMEOUT_MS + ABORT_GRACE_MS) },
     );
   } catch (err) {
     recordModelCall({ briefId, purpose: "writer", model: BRIEF_MODEL, inputTokens: 0, outputTokens: 0, ms: Date.now() - started, ok: false });
+    // Our own deadline cut the call short: that says nothing about the provider.
+    if (signal.aborted) throw timedOut();
     noteModelFailure(err);
     throw providerUnavailable(err);
   }
@@ -100,7 +121,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
 
   // Second check: another model reads each claim against its quotes.
   onProgress({ type: "stage", stage: "checking" });
-  const verified = await verifyClaims([quoted.keyFacts.kept, quoted.agreements.kept, quoted.differences.kept], coverage.sources, briefId);
+  const verified = await verifyClaims([quoted.keyFacts.kept, quoted.agreements.kept, quoted.differences.kept], coverage.sources, briefId, signal);
   if (verified.removed.length > 0) logger.info({ removed: verified.removed }, "claims removed by the verifier");
   // Pasted text is checked against but never sent back or stored, so a quote
   // from it is withheld. (An article supplied by link is public and is quoted.)
@@ -212,11 +233,26 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
     text: input.article.text,
   };
 
-  onProgress({ type: "stage", stage: "retrieving" });
-  const coverage = await searchCoverage(input.topic, supplied);
-  onProgress({ type: "sources", sources: coverage.sources.map(toPublicSource), retrieval: coverage.retrieval });
-  const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress);
-  return brief;
+  // One deadline for the whole brief. When it passes, everything still running
+  // is aborted and the reader gets an error, never a partly built brief.
+  const stop = new AbortController();
+  const expired = new Promise<never>((_resolve, reject) => {
+    stop.signal.addEventListener("abort", () => reject(timedOut()), { once: true });
+  });
+  const timer = setTimeout(() => stop.abort(), BRIEF_DEADLINE_MS);
+  timer.unref?.();
+  const work = (async () => {
+    onProgress({ type: "stage", stage: "retrieving" });
+    const coverage = await searchCoverage(input.topic, supplied, stop.signal);
+    onProgress({ type: "sources", sources: coverage.sources.map(toPublicSource), retrieval: coverage.retrieval });
+    const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress, stop.signal);
+    return brief;
+  })();
+  try {
+    return await Promise.race([work, expired]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -227,20 +263,23 @@ export async function generateFromCoverage(
   coverage: Coverage,
   request: { topic: string; hasArticle: boolean },
   onProgress: OnProgress = () => {},
+  signal: AbortSignal = NEVER,
 ) {
   const userMessage = buildUserMessage(coverage.sources, request);
 
   let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt++) {
+    if (signal.aborted) throw timedOut();
     const attemptStarted = Date.now();
     try {
       onProgress({ type: "stage", stage: "writing" });
-      const { brief, stats } = await generateOnce(coverage, userMessage, onProgress);
+      const { brief, stats } = await generateOnce(coverage, userMessage, onProgress, signal);
       onProgress({ type: "stage", stage: "locating" });
       logger.info({ sources: coverage.sources.length, attempt, ...stats.usage, claimsKept: stats.claimsKept }, "brief generated");
       // The model's coordinates are a guess; the map shows only looked-up places.
-      return { brief: await locateBrief(brief), stats: { ...stats, attempts: attempt } satisfies GenerationStats };
+      return { brief: await locateBrief(brief, signal), stats: { ...stats, attempts: attempt } satisfies GenerationStats };
     } catch (err) {
+      if (signal.aborted) throw timedOut();
       if (err instanceof AppError) {
         // A refusal (bad key, no credit) will be refused again; only a blip is worth a second try.
         const refused = classifyModelError(err.cause).kind === "refused";

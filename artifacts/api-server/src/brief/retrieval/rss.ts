@@ -1,3 +1,4 @@
+import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
 import { cleanText, topicMatcher, truncate, type Candidate, type ProviderResult } from "../sources";
 
@@ -37,7 +38,7 @@ export const FEEDS: Feed[] = [
   feed("UN News", "United Nations", "https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml", "Peace and security"),
 ];
 
-const TIMEOUT_MS = 6_000;
+export const FEED_TIMEOUT_MS = 6_000;
 const parser = new XMLParser({ ignoreAttributes: true, processEntities: true });
 
 const text = (v: unknown): string =>
@@ -82,12 +83,12 @@ export function resetFeedCache() {
   feedCache.clear();
 }
 
-async function loadFeed(url: string): Promise<string | null> {
+async function loadFeed(url: string, signal: AbortSignal): Promise<string | null> {
   const hit = feedCache.get(url);
   if (hit && Date.now() - hit.at < FEED_TTL_MS) return hit.xml;
   const res = await fetch(url, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; VantageBot/1.0)" },
-    signal: AbortSignal.timeout(TIMEOUT_MS),
+    signal: until(signal, FEED_TIMEOUT_MS),
   });
   if (!res.ok) return null;
   const xml = await res.text();
@@ -95,9 +96,9 @@ async function loadFeed(url: string): Promise<string | null> {
   return xml;
 }
 
-export async function searchFeed(feed: Feed, topic: string): Promise<ProviderResult> {
+export async function searchFeed(feed: Feed, topic: string, signal: AbortSignal = NEVER): Promise<ProviderResult> {
   try {
-    const xml = await loadFeed(feed.url);
+    const xml = await loadFeed(feed.url, signal);
     if (xml === null) return { provider: feed.provider, status: "failed", candidates: [] };
     const candidates = parseFeed(xml, feed, topic);
     return { provider: feed.provider, status: candidates.length ? "ok" : "empty", candidates };

@@ -1,8 +1,9 @@
+import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
 import { cleanText, topicMatcher, topicTerms, truncate, type Candidate, type ProviderResult } from "../sources";
 
 const PROVIDER = "Bing News search";
-const TIMEOUT_MS = 6_000;
+export const NEWS_SEARCH_TIMEOUT_MS = 6_000;
 const parser = new XMLParser({ ignoreAttributes: true, processEntities: true });
 
 const text = (v: unknown): string =>
@@ -57,7 +58,7 @@ export function parseNewsSearch(xml: string, topic: string): Candidate[] {
  * Recent coverage from across the web, so a topic that the fixed publisher
  * feeds are not carrying this week still has reporting behind it.
  */
-export async function searchNews(topic: string): Promise<ProviderResult> {
+export async function searchNews(topic: string, signal: AbortSignal = NEVER): Promise<ProviderResult> {
   const failed: ProviderResult = { provider: PROVIDER, status: "failed", candidates: [] };
   const terms = topicTerms(topic);
   if (terms.length === 0) return { provider: PROVIDER, status: "empty", candidates: [] };
@@ -66,7 +67,7 @@ export async function searchNews(topic: string): Promise<ProviderResult> {
     const url = `https://www.bing.com/news/search?q=${encodeURIComponent(terms.join(" "))}&format=rss&qft=${encodeURIComponent('interval="8"')}&setlang=en`;
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; VantageBot/1.0)" },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: until(signal, NEWS_SEARCH_TIMEOUT_MS),
     });
     if (!res.ok) return failed;
     const xml = await res.text();

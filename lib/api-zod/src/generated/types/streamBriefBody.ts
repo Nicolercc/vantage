@@ -19,7 +19,7 @@ export interface StreamBriefBody {
   url?: string;
   /**
      * @minLength 50
-     * @maxLength 20000
+     * @maxLength 8000
      */
   article?: string;
 }

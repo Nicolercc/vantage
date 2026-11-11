@@ -31,6 +31,11 @@ describe("input modes", () => {
 		expect(validateBriefInput("article", "x".repeat(50))).toBeNull();
 		expect(validateBriefInput("article", "x".repeat(20_001))).not.toBeNull();
 	});
+
+	it("accepts no more pasted text than the model is given to read", () => {
+		expect(validateBriefInput("article", "x".repeat(8_000))).toBeNull();
+		expect(validateBriefInput("article", "x".repeat(8_001))).not.toBeNull();
+	});
 });
 
 describe("routing", () => {

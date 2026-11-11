@@ -64,3 +64,5 @@ overrides:
   js-yaml@^4: ^4.3.0
   # rollup 4.64.2 hangs while transforming the web client; hold the last version that builds.
   rollup: 4.59.0
+  # body-parser 2.3.0 lets one gzip request crash the process (GHSA-27r3-jxmh-p828).
+  body-parser: ^2.4.0

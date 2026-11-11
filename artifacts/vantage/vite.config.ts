@@ -48,8 +48,10 @@ export default defineConfig({
       deny: ["**/.*"],
     },
     proxy: {
+      // The API started by `pnpm dev:api`. Set VITE_API_PROXY_TARGET to develop
+      // the client against another API, such as the deployed one.
       "/api": {
-        target: "https://conflict-analysis.onrender.com",
+        target: process.env.VITE_API_PROXY_TARGET || "http://localhost:3001",
         changeOrigin: true,
         secure: true,
       },

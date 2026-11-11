@@ -80,6 +80,43 @@ describe("second-model check of claims", () => {
     expect(res.body.verification).toEqual({ status: "verified", checked: 2, removed: 0, corrected: 1 });
   });
 
+  it("re-verifies a rewrite and removes it unless it is judged fully supported", async () => {
+    // First pass: claim 2 is partly supported and rewritten with a different,
+    // equally unsupported actor. The rewrite passes the lexical quote checks.
+    const fix = "Aid convoys were blocked outside El Fasher by rebels.";
+    for (const recheck of [[{ n: 1, verdict: "unsupported" }], [{ n: 1, verdict: "partly", fix: "Aid convoys were blocked." }], []]) {
+      resetBriefState(app);
+      create.mockReset();
+      let calls = 0;
+      models(() => {
+        calls += 1;
+        const verdicts = calls === 1 ? [{ n: 1, verdict: "supported" }, { n: 2, verdict: "partly", fix }] : recheck;
+        return modelText(JSON.stringify({ claims: verdicts }));
+      });
+      const res = await explore();
+      expect(res.status).toBe(200);
+      expect(res.body.keyFacts.map((k: { text: string }) => k.text)).toEqual(["Agencies say 12 aid trucks were refused access to El Fasher."]);
+      expect(res.body.verification).toEqual({ status: "verified", checked: 2, removed: 1, corrected: 0 });
+      // the second verifier call saw only the rewritten wording
+      const second = create.mock.calls.filter(([p]) => p.system !== SYSTEM_PROMPT)[1]?.[0];
+      expect(second.messages[0].content).toContain(`1. CLAIM: ${fix}`);
+      expect(second.messages[0].content).not.toContain("2. CLAIM");
+    }
+  });
+
+  it("removes a rewrite when its re-verification cannot run", async () => {
+    let calls = 0;
+    models(() => {
+      calls += 1;
+      if (calls > 1) throw new Error("529 overloaded");
+      return modelText(JSON.stringify({ claims: [{ n: 1, verdict: "supported" }, { n: 2, verdict: "partly", fix: "Aid convoys were blocked outside El Fasher as fighting continued." }] }));
+    });
+    const res = await explore();
+    expect(res.status).toBe(200);
+    expect(res.body.keyFacts).toHaveLength(1);
+    expect(res.body.verification).toEqual({ status: "verified", checked: 2, removed: 1, corrected: 0 });
+  });
+
   it("removes the claim when the verifier's rewrite would not pass the quote checks itself", async () => {
     for (const fix of [
       "Aid convoys were blocked outside El Fasher for 40 days.", // a figure the quote does not contain
@@ -132,6 +169,25 @@ describe("second-model check of claims", () => {
       expect(res.status).toBe(200);
       expect(res.body.keyFacts.map((k: { support: string }) => k.support)).toEqual(["unverified", "unverified"]);
       expect(res.body.verification).toEqual({ status: "skipped", checked: 0, removed: 0, corrected: 0 });
+    }
+  });
+
+  it("treats malformed verdict items as an unusable answer: brief kept, writer not rerun", async () => {
+    for (const claims of [
+      [null],
+      [{ n: 1, verdict: "supported" }, "supported"],
+      [{ n: "1", verdict: "supported" }, { n: 2, verdict: "supported" }],
+      [{ n: 1, verdict: "probably" }, { n: 2, verdict: "supported" }],
+      [{ n: 1, verdict: "partly", fix: 42 }, { n: 2, verdict: "supported" }],
+    ]) {
+      resetBriefState(app);
+      create.mockReset();
+      models(() => modelText(JSON.stringify({ claims })));
+      const res = await explore();
+      expect(res.status).toBe(200);
+      expect(res.body.keyFacts.map((k: { support: string }) => k.support)).toEqual(["unverified", "unverified"]);
+      expect(res.body.verification).toEqual({ status: "skipped", checked: 0, removed: 0, corrected: 0 });
+      expect(create).toHaveBeenCalledTimes(2);
     }
   });
 
