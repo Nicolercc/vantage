@@ -8,6 +8,7 @@ import { EventTimeline } from "./EventTimeline";
 import { CasualtyPanel } from "./CasualtyPanel";
 import { InteractiveConflictMap } from "./InteractiveConflictMap";
 import { ConflictBackground } from "./ConflictBackground";
+import { KindTag, type Kind } from "./SourceKind";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
@@ -41,20 +42,6 @@ function reportUrl(brief: IntelligenceBrief) {
 	return `https://github.com/Nicolercc/conflict-analysis/issues/new?labels=brief-report&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
 
-type Kind = "sourced" | "background" | "retrieved";
-
-const KIND_LABEL: Record<Kind, string> = {
-	sourced: "From retrieved reporting",
-	background: "Model background",
-	retrieved: "Retrieved, not written by the model",
-};
-
-const KIND_HELP: Record<Kind, string> = {
-	sourced: "Each statement quotes the numbered sources that say it; the quotes are checked against the sources.",
-	background: "Written by the model from general knowledge; not individually sourced.",
-	retrieved: "Fetched from news feeds, a news search and Wikipedia.",
-};
-
 /**
  * One part of the brief. Every section says where its content comes from, so
  * the difference between cited reporting and model background travels with
@@ -79,9 +66,7 @@ function Section({
 	const heading = (
 		<>
 			<h2 className="ci-section__title">{title}</h2>
-			<span className={`ci-kind ci-kind--${kind}`} title={KIND_HELP[kind]}>
-				{KIND_LABEL[kind]}
-			</span>
+			<KindTag kind={kind} />
 		</>
 	);
 	if (!collapsible) {
