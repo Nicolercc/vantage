@@ -49,6 +49,34 @@ describe("configuration", () => {
     expect(warnings.join(" ")).toMatch(/ignoring it/);
   });
 
+  it("stops on malformed generation, verifier and geocoder settings", () => {
+    const { problems } = loadConfig({
+      ...base,
+      BRIEF_MODEL_TIMEOUT_MS: "banana",
+      BRIEF_VERIFIER_TIMEOUT_MS: "-5",
+      BRIEF_VERIFY: "false",
+      GEOCODER_MIN_GAP_MS: "soon",
+      GEOCODER_BUDGET_MS: "0",
+      GEOCODER_URL: "not a url",
+    });
+    for (const name of ["BRIEF_MODEL_TIMEOUT_MS", "BRIEF_VERIFIER_TIMEOUT_MS", "BRIEF_VERIFY", "GEOCODER_MIN_GAP_MS", "GEOCODER_BUDGET_MS", "GEOCODER_URL"]) {
+      expect(problems.join("\n")).toContain(name);
+    }
+  });
+
+  it("accepts well-formed generation settings, including a zero geocoder gap", () => {
+    const { problems } = loadConfig({
+      ...base,
+      BRIEF_MODEL_TIMEOUT_MS: "45000",
+      BRIEF_VERIFIER_TIMEOUT_MS: "20000",
+      BRIEF_VERIFY: "off",
+      GEOCODER_MIN_GAP_MS: "0",
+      GEOCODER_BUDGET_MS: "9000",
+      GEOCODER_URL: "https://nominatim.example.org/search",
+    });
+    expect(problems).toEqual([]);
+  });
+
   it("merges configured model prices over the defaults", () => {
     const { config } = loadConfig({ ...base, MODEL_PRICES: '{"claude-sonnet-5-5":{"input":3,"output":15}}' });
     expect(Object.keys(config.modelPrices).sort()).toEqual(["claude-haiku-4-5-20251001", "claude-sonnet-5-5"]);
