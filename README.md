@@ -65,10 +65,10 @@ Measured on this branch (Node 22, pnpm 9.9.0):
 
 | Suite | Tests |
 |---|---:|
-| API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 210 |
-| API: Postgres-backed store, limit, ledger and deadline tests (run when `TEST_DATABASE_URL` is set; CI sets it) | 12 |
-| Client: input validation, streaming, brief adapter, map, labelling, dev proxy and stylesheet tests | 34 |
-| **Total** | **256** |
+| API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 215 |
+| API: Postgres-backed store, limit, ledger and deadline and retention tests (run when `TEST_DATABASE_URL` is set; CI sets it) | 14 |
+| Client: input validation, streaming, brief adapter, map, labelling, share-link notice, dev proxy and stylesheet tests | 36 |
+| **Total** | **265** |
 
 * Route tests run the real Express app with a fake model and fake retrieval: no network, no API key, no spend.
 * Fixture tests cover the guarantees directly: quotes that are not in their source, invented figures, unsupported verifier rewrites, malformed verifier output, prompt-injection text kept out of the system prompt, SSRF targets, geocoder disagreement and deadlines.
