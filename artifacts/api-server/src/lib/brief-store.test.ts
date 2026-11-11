@@ -35,7 +35,7 @@ function contract(name: string, make: () => BriefStore) {
       const b = brief();
       await store.save("k", b);
       await store.save("k", { ...b, headline: "changed" } as StoredBrief);
-      expect(await store.get(b.id)).toMatchObject({ id: b.id });
+      expect(await store.get(b.id)).toEqual(b);
     });
   });
 }
