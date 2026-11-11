@@ -34,7 +34,8 @@
 		"overrides": {
 			"vite": "^7.3.5",
 			"js-yaml@^4": "^4.3.0",
-			"rollup": "4.59.0"
+			"rollup": "4.59.0",
+			"body-parser": "^2.4.0"
 		}
 	}
 }
