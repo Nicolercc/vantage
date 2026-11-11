@@ -17,7 +17,7 @@ Locally, the API loads `.env` from its working directory and then from the repos
 
 ## Storage and limits
 
-With `DATABASE_URL` set, saved briefs, the rate limit, the daily budget and the cost ledger live in Postgres. Every instance shares them and they survive restarts; tables are created on first use. Each statement has a 5-second server-side deadline (2 seconds waiting on a lock), so a stalled database fails fast and the fallbacks run. Without a database everything lives in the process, `/api/readyz` reports `durable: false`, and the server logs a warning. `REQUIRE_DATABASE=true` makes a missing database a start-up error.
+With `DATABASE_URL` set, saved briefs, the rate limit, the daily budget and the cost ledger live in Postgres. Every instance shares them and they survive restarts; tables are created on first use. Briefs are kept for 30 days from generation (`BRIEF_RETENTION_MS`): older ones are never served, and roughly one save in a hundred deletes them from the table. Each statement has a 5-second server-side deadline (2 seconds waiting on a lock), so a stalled database fails fast and the fallbacks run. Without a database everything lives in the process, `/api/readyz` reports `durable: false`, and the server logs a warning. `REQUIRE_DATABASE=true` makes a missing database a start-up error.
 
 ## Cost tracking
 

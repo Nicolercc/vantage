@@ -1,13 +1,27 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Pool } from "pg";
 import { createPool } from "./db";
-import { isBriefId, LayeredBriefStore, MemoryBriefStore, newBriefId, PostgresBriefStore, type BriefStore, type StoredBrief } from "./brief-store";
+import { BRIEF_RETENTION_MS, isBriefId, LayeredBriefStore, MemoryBriefStore, newBriefId, PostgresBriefStore, type BriefStore, type StoredBrief } from "./brief-store";
 
 const brief = (over: Record<string, unknown> = {}) =>
   ({ id: newBriefId(), generatedAt: new Date().toISOString(), headline: "Aid access blocked", ...over }) as StoredBrief;
 
+const DAY = 86_400_000;
+const daysAgo = (days: number) => new Date(Date.now() - days * DAY).toISOString();
+
 function contract(name: string, make: () => BriefStore) {
   describe(name, () => {
+    it("keeps briefs for 30 days, then no longer serves them", async () => {
+      expect(BRIEF_RETENTION_MS).toBe(30 * DAY);
+      const store = make();
+      const kept = brief({ generatedAt: daysAgo(29) });
+      const expired = brief({ generatedAt: daysAgo(31) });
+      await store.save(`topic:${newBriefId()}`, kept);
+      await store.save(`topic:${newBriefId()}`, expired);
+      expect(await store.get(kept.id)).toEqual(kept);
+      expect(await store.get(expired.id)).toBeNull();
+    });
+
     it("returns exactly what was saved, by id", async () => {
       const store = make();
       const b = brief({ sources: [{ id: "S1", title: "“Quoted” headline — with dashes" }] });
@@ -104,4 +118,14 @@ describe.skipIf(!url)("postgres store", () => {
     await pool?.end();
   });
   contract("postgres", () => store);
+
+  it("deletes briefs past the retention period", async () => {
+    const kept = brief({ generatedAt: daysAgo(29) });
+    const expired = brief({ generatedAt: daysAgo(31) });
+    await store.save("k", kept);
+    await store.save("k", expired);
+    expect(await store.purgeExpired()).toBeGreaterThanOrEqual(1);
+    const { rows } = await pool.query(`SELECT id FROM ${store.tableName} WHERE id = ANY($1)`, [[kept.id, expired.id]]);
+    expect(rows.map((r: { id: string }) => r.id)).toEqual([kept.id]);
+  });
 });
