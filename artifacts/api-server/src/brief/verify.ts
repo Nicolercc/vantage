@@ -1,5 +1,6 @@
 import { anthropic } from "@workspace/integrations-anthropic-ai";
 import { recordModelCall } from "../lib/ledger";
+import { NEVER, until } from "./abort";
 import { logger } from "../lib/logger";
 import { extractJSON } from "./json";
 import type { SourceRecord } from "./sources";
@@ -19,7 +20,7 @@ import { checkClaim, type Claim } from "./support";
  * check did not run.
  */
 export const VERIFIER_MODEL = process.env["BRIEF_VERIFIER_MODEL"] ?? "claude-haiku-4-5-20251001";
-const VERIFIER_TIMEOUT_MS = Number(process.env["BRIEF_VERIFIER_TIMEOUT_MS"] ?? 25_000);
+export const VERIFIER_TIMEOUT_MS = Number(process.env["BRIEF_VERIFIER_TIMEOUT_MS"] ?? 25_000);
 export const verifierEnabled = () => (process.env["BRIEF_VERIFY"] ?? "on") !== "off";
 
 export type Verification = {
@@ -92,7 +93,12 @@ function render(claims: Claim[], byId: Map<string, SourceRecord>): string {
     .join("\n\n");
 }
 
-export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], briefId: string | null = null): Promise<VerifyResult> {
+export async function verifyClaims(
+  groups: Claim[][],
+  sources: SourceRecord[],
+  briefId: string | null = null,
+  signal: AbortSignal = NEVER,
+): Promise<VerifyResult> {
   const flat = groups.flat();
   const usage = { inputTokens: 0, outputTokens: 0 };
   const skipped = (): VerifyResult => ({
@@ -121,7 +127,7 @@ export async function verifyClaims(groups: Claim[][], sources: SourceRecord[], b
           system: SYSTEM,
           messages: [{ role: "user", content: render(claims, byId) }],
         },
-        { timeout: VERIFIER_TIMEOUT_MS, maxRetries: 0, signal: AbortSignal.timeout(VERIFIER_TIMEOUT_MS + 2_000) },
+        { timeout: VERIFIER_TIMEOUT_MS, maxRetries: 0, signal: until(signal, VERIFIER_TIMEOUT_MS + 2_000) },
       );
       spent.inputTokens = message.usage?.input_tokens ?? 0;
       spent.outputTokens = message.usage?.output_tokens ?? 0;

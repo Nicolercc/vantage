@@ -1,4 +1,5 @@
 import { logger } from "../lib/logger";
+import { NEVER } from "./abort";
 
 /**
  * Map coordinates come from a geocoder, not from the model. The model names a
@@ -16,7 +17,7 @@ const USER_AGENT =
 const MIN_GAP_MS = Number(process.env["GEOCODER_MIN_GAP_MS"] ?? 1_100);
 const TIMEOUT_MS = 5_000;
 /** Longest a brief waits for all of its places; anything still pending is left off the map. */
-const BUDGET_MS = Number(process.env["GEOCODER_BUDGET_MS"] ?? 9_000);
+export const GEOCODER_BUDGET_MS = Number(process.env["GEOCODER_BUDGET_MS"] ?? 9_000);
 /** Further apart than this, the lookup and the model are talking about different places. */
 const MAX_DISAGREEMENT_KM = 300;
 const CACHE_MAX = 2_000;
@@ -124,11 +125,11 @@ const joinPlace = (...parts: Array<string | null | undefined>) =>
   parts.map((p) => (p ?? "").trim()).filter(Boolean).join(", ");
 
 /** Replace every coordinate in a brief with a geocoded one, or with unknown. */
-export async function locateBrief<T extends BriefPlaces>(brief: T): Promise<T> {
+export async function locateBrief<T extends BriefPlaces>(brief: T, signal: AbortSignal = NEVER): Promise<T> {
   // At the deadline, queued lookups give up their turn and running ones are aborted.
   const stop = new AbortController();
-  const budget: Budget = { deadline: Date.now() + BUDGET_MS, signal: stop.signal };
-  const timer = setTimeout(() => stop.abort(new TooLate()), BUDGET_MS);
+  const budget: Budget = { deadline: Date.now() + GEOCODER_BUDGET_MS, signal: AbortSignal.any([stop.signal, signal]) };
+  const timer = setTimeout(() => stop.abort(new TooLate()), GEOCODER_BUDGET_MS);
   timer.unref();
   const guess = (l: Located): LatLng | Unknown =>
     l.lat !== null && l.lng !== null ? { lat: l.lat, lng: l.lng } : UNKNOWN;

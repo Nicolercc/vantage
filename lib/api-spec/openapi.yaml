@@ -503,7 +503,7 @@ components:
       properties:
         error:
           type: string
-          description: Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, INTERNAL.
+          description: Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, TIMED_OUT, INTERNAL.
         message:
           type: string
           description: Safe to show to the person using the site.
