@@ -243,6 +243,14 @@ export const IntelligenceBriefEscalationRisk = {
   High: 'High',
 } as const;
 
+/**
+ * Added when the brief is served, never stored. Whether its link outlives the server process.
+ */
+export type IntelligenceBriefLink = {
+  /** False when briefs are kept only in memory, so the link stops working when the server restarts. */
+  durable: boolean;
+};
+
 export interface IntelligenceBrief {
   /** Unguessable identifier assigned by the server. GET /briefs/{id} returns this same brief for as long as it is stored. */
   id: string;
@@ -268,6 +276,8 @@ export interface IntelligenceBrief {
   coverage: CoverageComparison;
   verification: Verification;
   retrieval: RetrievalStatus[];
+  /** Added when the brief is served, never stored. Whether its link outlives the server process. */
+  link?: IntelligenceBriefLink;
 }
 
 /**
