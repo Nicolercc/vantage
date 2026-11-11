@@ -44,6 +44,7 @@ describe("input validation", () => {
     ["a non-string article", { article: 123 }],
     ["both an article and a url", { article: ARTICLE, url: "https://example.org/a" }],
     ["an article over 20,000 characters", { article: "x".repeat(20_001) }],
+    ["an article over 8,000 characters", { article: "x".repeat(8_001) }],
     ["a url that is not http(s)", { url: "file:///etc/passwd" }],
     ["neither field", {}],
   ])("analyze rejects %s before any retrieval or inference", async (_n, body) => {
@@ -52,6 +53,18 @@ describe("input validation", () => {
     expect(res.body.error).toBe("INVALID_INPUT");
     expect(fetchMock).not.toHaveBeenCalled();
     expect(create).not.toHaveBeenCalled();
+  });
+});
+
+describe("pasted articles", () => {
+  it("hands the writer every character of an accepted article", async () => {
+    const ending = "FINAL FACT: a ceasefire was signed in Jeddah on Friday.";
+    const article = ARTICLE.padEnd(8_000 - ending.length, " Fighting continued in Khartoum.") + ending;
+    expect(article).toHaveLength(8_000);
+    const res = await analyze({ article });
+    expect(res.status).toBe(200);
+    const writer = create.mock.calls[0]?.[0] as { messages: Array<{ content: string }> };
+    expect(writer.messages[0]!.content).toContain(ending);
   });
 });
 

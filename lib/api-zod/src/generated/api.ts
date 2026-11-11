@@ -20,7 +20,7 @@ export const HealthCheckResponse = zod.object({
  * @summary Analyze a conflict article (URL or text)
  */
 export const analyzeArticleBodyArticleMin = 50;
-export const analyzeArticleBodyArticleMax = 20000;
+export const analyzeArticleBodyArticleMax = 8000;
 
 export const analyzeArticleBodyUrlMax = 2048;
 
@@ -264,7 +264,7 @@ export const streamBriefBodyTopicMax = 240;
 export const streamBriefBodyUrlMax = 2048;
 
 export const streamBriefBodyArticleMin = 50;
-export const streamBriefBodyArticleMax = 20000;
+export const streamBriefBodyArticleMax = 8000;
 
 
 
