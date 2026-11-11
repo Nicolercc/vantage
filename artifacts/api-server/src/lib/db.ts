@@ -1,13 +1,27 @@
 import pg from "pg";
 import { logger } from "./logger";
 
-/** One connection pool for everything the server keeps in Postgres. */
-export function createPool(connectionString: string): pg.Pool {
+/**
+ * One connection pool for everything the server keeps in Postgres.
+ *
+ * Every statement has a deadline enforced by the server, which cancels it:
+ * a database that accepts connections but stalls (a held lock, an overloaded
+ * host) fails the query quickly, so the callers' fallbacks run instead of
+ * requests piling up on the five shared connections. The client-side timeout
+ * is a backstop for a server that stops answering altogether.
+ */
+export function createPool(
+  connectionString: string,
+  { statementTimeoutMs = 5_000, lockTimeoutMs = 2_000 }: { statementTimeoutMs?: number; lockTimeoutMs?: number } = {},
+): pg.Pool {
   const pool = new pg.Pool({
     connectionString,
     max: 5,
     connectionTimeoutMillis: 5_000,
     idleTimeoutMillis: 30_000,
+    statement_timeout: statementTimeoutMs,
+    lock_timeout: lockTimeoutMs,
+    query_timeout: statementTimeoutMs + 1_000,
     // Hosted Postgres requires TLS; a local server does not offer it.
     ssl: /localhost|127\.0\.0\.1|sslmode=disable/.test(connectionString) ? undefined : { rejectUnauthorized: true },
   });

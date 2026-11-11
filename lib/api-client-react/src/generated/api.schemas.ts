@@ -16,7 +16,7 @@ export interface AnalyzeArticleBody {
   /**
      * Full text of the conflict news article
      * @minLength 50
-     * @maxLength 20000
+     * @maxLength 8000
      */
   article?: string;
   /**
@@ -243,6 +243,14 @@ export const IntelligenceBriefEscalationRisk = {
   High: 'High',
 } as const;
 
+/**
+ * Added when the brief is served, never stored. Whether its link outlives the server process.
+ */
+export type IntelligenceBriefLink = {
+  /** False when briefs are kept only in memory, so the link stops working when the server restarts. */
+  durable: boolean;
+};
+
 export interface IntelligenceBrief {
   /** Unguessable identifier assigned by the server. GET /briefs/{id} returns this same brief for as long as it is stored. */
   id: string;
@@ -268,6 +276,8 @@ export interface IntelligenceBrief {
   coverage: CoverageComparison;
   verification: Verification;
   retrieval: RetrievalStatus[];
+  /** Added when the brief is served, never stored. Whether its link outlives the server process. */
+  link?: IntelligenceBriefLink;
 }
 
 /**
@@ -283,13 +293,13 @@ export interface StreamBriefBody {
   url?: string;
   /**
      * @minLength 50
-     * @maxLength 20000
+     * @maxLength 8000
      */
   article?: string;
 }
 
 export interface ErrorResponse {
-  /** Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, INTERNAL. */
+  /** Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, TIMED_OUT, INTERNAL. */
   error: string;
   /** Safe to show to the person using the site. */
   message?: string;

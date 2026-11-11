@@ -215,7 +215,7 @@ components:
           type: string
           description: Full text of the conflict news article
           minLength: 50
-          maxLength: 20000
+          maxLength: 8000
         url:
           type: string
           description: Public http(s) URL of a conflict news article to fetch
@@ -462,6 +462,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RetrievalStatus"
+        link:
+          type: object
+          description: Added when the brief is served, never stored. Whether its link outlives the server process.
+          properties:
+            durable:
+              type: boolean
+              description: False when briefs are kept only in memory, so the link stops working when the server restarts.
+          required: [durable]
       required:
         - id
         - generatedAt
@@ -497,13 +505,13 @@ components:
         article:
           type: string
           minLength: 50
-          maxLength: 20000
+          maxLength: 8000
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-          description: Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, INTERNAL.
+          description: Stable machine-readable code, e.g. INVALID_INPUT, NOT_FOUND, RATE_LIMITED, FETCH_BLOCKED, FETCH_FAILED, PROVIDER_UNAVAILABLE, MODEL_OUTPUT_INVALID, OVERLOADED, TIMED_OUT, INTERNAL.
         message:
           type: string
           description: Safe to show to the person using the site.

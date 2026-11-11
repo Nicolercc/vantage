@@ -20,7 +20,7 @@ export const HealthCheckResponse = zod.object({
  * @summary Analyze a conflict article (URL or text)
  */
 export const analyzeArticleBodyArticleMin = 50;
-export const analyzeArticleBodyArticleMax = 20000;
+export const analyzeArticleBodyArticleMax = 8000;
 
 export const analyzeArticleBodyUrlMax = 2048;
 
@@ -128,7 +128,10 @@ export const AnalyzeArticleResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 
@@ -240,7 +243,10 @@ export const GetBriefResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 
@@ -264,7 +270,7 @@ export const streamBriefBodyTopicMax = 240;
 export const streamBriefBodyUrlMax = 2048;
 
 export const streamBriefBodyArticleMin = 50;
-export const streamBriefBodyArticleMax = 20000;
+export const streamBriefBodyArticleMax = 8000;
 
 
 
@@ -386,7 +392,10 @@ export const ExploreConflictResponse = zod.object({
   "provider": zod.string(),
   "status": zod.enum(['ok', 'empty', 'failed']).describe('empty means the provider answered with nothing relevant; failed means it could not be reached or timed out.'),
   "count": zod.number()
-}))
+})),
+  "link": zod.object({
+  "durable": zod.boolean().describe('False when briefs are kept only in memory, so the link stops working when the server restarts.')
+}).optional().describe('Added when the brief is served, never stored. Whether its link outlives the server process.')
 })
 
 

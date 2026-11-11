@@ -9,6 +9,7 @@ import type { CasualtyData } from './casualtyData';
 import type { Claim } from './claim';
 import type { CoverageComparison } from './coverageComparison';
 import type { IntelligenceBriefEscalationRisk } from './intelligenceBriefEscalationRisk';
+import type { IntelligenceBriefLink } from './intelligenceBriefLink';
 import type { Location } from './location';
 import type { Perspective } from './perspective';
 import type { RelatedEvent } from './relatedEvent';
@@ -41,4 +42,6 @@ export interface IntelligenceBrief {
   coverage: CoverageComparison;
   verification: Verification;
   retrieval: RetrievalStatus[];
+  /** Added when the brief is served, never stored. Whether its link outlives the server process. */
+  link?: IntelligenceBriefLink;
 }

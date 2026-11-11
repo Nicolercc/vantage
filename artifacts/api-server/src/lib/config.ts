@@ -56,6 +56,29 @@ export function loadConfig(env: Env = process.env): { config: Config; problems: 
     return false;
   };
 
+  const atLeastZero = (name: string) => {
+    const raw = env[name];
+    if (raw === undefined || raw.trim() === "") return;
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) problems.push(`${name} must be zero or a positive number; got "${raw}"`);
+  };
+
+  // Settings the brief pipeline reads where it is used (generate, verify,
+  // geocode). They are checked here, by the same rules those modules apply,
+  // so a bad value stops start-up instead of failing every brief.
+  positive("BRIEF_MODEL_TIMEOUT_MS", 60_000);
+  positive("BRIEF_VERIFIER_TIMEOUT_MS", 25_000);
+  positive("GEOCODER_BUDGET_MS", 9_000);
+  atLeastZero("GEOCODER_MIN_GAP_MS");
+  // The verifier runs unless this is exactly "off" (verify.ts).
+  if (env["BRIEF_VERIFY"] !== undefined && env["BRIEF_VERIFY"] !== "on" && env["BRIEF_VERIFY"] !== "off") {
+    problems.push(`BRIEF_VERIFY must be on or off; got "${env["BRIEF_VERIFY"]}"`);
+  }
+  const geocoderUrl = env["GEOCODER_URL"];
+  if (geocoderUrl !== undefined && !/^https?:$/.test(URL.parse(geocoderUrl)?.protocol ?? "")) {
+    problems.push("GEOCODER_URL must be an http(s) URL");
+  }
+
   let databaseUrl: string | null = null;
   const rawDb = env["DATABASE_URL"]?.trim();
   if (rawDb) {

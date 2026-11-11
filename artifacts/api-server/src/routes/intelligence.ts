@@ -60,6 +60,13 @@ function briefFor(req: Request, { key, input }: Resolved): Promise<StoredBrief> 
   });
 }
 
+/**
+ * A brief as sent to a reader, with whether its link will outlive this
+ * process. Added on the way out, never stored: it describes this server's
+ * storage, not the brief.
+ */
+const withLink = (req: Request, brief: StoredBrief) => ({ ...brief, link: { durable: briefState(req).store.isDurable } });
+
 // ─── Routes ───────────────────────────────────────────────────────────────
 
 router.post("/analyze", async (req, res) => {
@@ -67,7 +74,7 @@ router.post("/analyze", async (req, res) => {
     await briefState(req).limiter.take(req.ip ?? "unknown");
     const body = AnalyzeArticleBody.safeParse(req.body);
     if (!body.success) throw invalidInput(firstIssue(body.error.issues));
-    res.json(await briefFor(req, await resolveArticle(body.data.article, body.data.url)));
+    res.json(withLink(req, await briefFor(req, await resolveArticle(body.data.article, body.data.url))));
   } catch (err) {
     sendError(req, res, err);
   }
@@ -78,7 +85,7 @@ router.post("/explore", async (req, res) => {
     await briefState(req).limiter.take(req.ip ?? "unknown");
     const body = ExploreConflictBody.safeParse(req.body);
     if (!body.success) throw invalidInput(firstIssue(body.error.issues));
-    res.json(await briefFor(req, resolveTopic(body.data.topic)));
+    res.json(withLink(req, await briefFor(req, resolveTopic(body.data.topic))));
   } catch (err) {
     sendError(req, res, err);
   }
@@ -138,7 +145,7 @@ router.post("/stream", async (req: Request, res: Response) => {
   // A comment line every so often keeps idle-connection timeouts from cutting a long wait.
   const heartbeat = setInterval(() => open && res.write(": waiting\n\n"), 15_000);
   try {
-    send("brief", await work);
+    send("brief", withLink(req, await work));
   } catch (err) {
     send("error", errorEvent(req, err));
   } finally {
@@ -160,7 +167,7 @@ briefsRouter.get("/:id", async (req, res) => {
     if (!brief) throw new AppError(404, "NOT_FOUND", "This brief is no longer available.");
     // A stored brief never changes, so it can be cached for a while.
     res.set("Cache-Control", "public, max-age=300");
-    res.json(upgradeStoredBrief(brief));
+    res.json(withLink(req, upgradeStoredBrief(brief)));
   } catch (err) {
     sendError(req, res, err);
   }

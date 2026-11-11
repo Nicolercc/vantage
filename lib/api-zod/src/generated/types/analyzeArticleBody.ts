@@ -13,7 +13,7 @@ export interface AnalyzeArticleBody {
   /**
      * Full text of the conflict news article
      * @minLength 50
-     * @maxLength 20000
+     * @maxLength 8000
      */
   article?: string;
   /**
