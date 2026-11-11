@@ -135,6 +135,25 @@ describe("second-model check of claims", () => {
     }
   });
 
+  it("treats malformed verdict items as an unusable answer: brief kept, writer not rerun", async () => {
+    for (const claims of [
+      [null],
+      [{ n: 1, verdict: "supported" }, "supported"],
+      [{ n: "1", verdict: "supported" }, { n: 2, verdict: "supported" }],
+      [{ n: 1, verdict: "probably" }, { n: 2, verdict: "supported" }],
+      [{ n: 1, verdict: "partly", fix: 42 }, { n: 2, verdict: "supported" }],
+    ]) {
+      resetBriefState(app);
+      create.mockReset();
+      models(() => modelText(JSON.stringify({ claims })));
+      const res = await explore();
+      expect(res.status).toBe(200);
+      expect(res.body.keyFacts.map((k: { support: string }) => k.support)).toEqual(["unverified", "unverified"]);
+      expect(res.body.verification).toEqual({ status: "skipped", checked: 0, removed: 0, corrected: 0 });
+      expect(create).toHaveBeenCalledTimes(2);
+    }
+  });
+
   it("makes no verifier call when there is nothing to check", async () => {
     create.mockImplementation(async () => modelText(JSON.stringify(modelBrief({ keyFacts: [] }))));
     const res = await explore();
