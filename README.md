@@ -105,7 +105,7 @@ const [search, wiki, ...feeds] = await Promise.all([
 For every key fact and comparison the model must copy the words in each source that the claim rests on. Then two checks run:
 
 1. **Quote checks, no model.** A claim is dropped when a quote is not found in the source it names, when a figure in the claim is not inside its quotes, or when the claim shares no vocabulary with them. A comparison between outlets needs a quote from two sources.
-2. **Verifier.** A second model reads each surviving claim next to its quotes. A claim that says more than its quotes is cut back to what they do say — and the new wording goes through the quote checks again — or removed.
+2. **Verifier.** A second model reads each surviving claim next to its quotes. A claim that says more than its quotes is cut back to what they do say — and the new wording goes through the quote checks again and back to the verifier, which must judge it fully supported — or removed.
 
 The reader sees the quote by pressing a citation number, and the brief states how many claims were checked, corrected and removed. If the verifier cannot be reached the brief is still served, with its claims marked unverified.
 
