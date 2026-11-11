@@ -215,7 +215,7 @@ components:
           type: string
           description: Full text of the conflict news article
           minLength: 50
-          maxLength: 20000
+          maxLength: 8000
         url:
           type: string
           description: Public http(s) URL of a conflict news article to fetch
@@ -497,7 +497,7 @@ components:
         article:
           type: string
           minLength: 50
-          maxLength: 20000
+          maxLength: 8000
     ErrorResponse:
       type: object
       properties:

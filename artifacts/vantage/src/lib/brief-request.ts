@@ -10,7 +10,8 @@ export type BriefRequest =
 
 export const TOPIC_MAX = 240;
 export const ARTICLE_MIN = 50;
-export const ARTICLE_MAX = 20_000;
+/** The API refuses longer pasted text: the writer reads no more than this. */
+export const ARTICLE_MAX = 8_000;
 
 const STORE_PREFIX = "vantage:article:";
 const memory = new Map<string, string>();
