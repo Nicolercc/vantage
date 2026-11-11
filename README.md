@@ -8,6 +8,17 @@ Built by Nicole Rodriguez · [Portfolio](https://nicolerodriguez.dev) · [GitHub
 
 ![A Vantage brief: sourced key facts with numbered citations beside model-background sections](docs/images/analysis.jpg)
 
+## Try it in a minute: Sudan humanitarian access
+
+1. **Open the [live search for "Sudan humanitarian access"](https://conflict-analysis-vantage.vercel.app/analysis?topic=Sudan%20humanitarian%20access).** It reuses a recent brief if one exists, or builds a new one in about a minute. (Generated `/brief/...` links are temporary, so this README links to the search, not a brief.)
+2. **Read Key facts.** Each claim carries numbered citations. The note above the list says how many claims the verifier read, cut back, or removed for that brief.
+3. **Press a number.** The popover shows the exact words from the source that the claim rests on, the outlet and date, and a link to the original.
+4. **Compare with the rest of the page.** Sections marked *Model background* (summary, timeline, map, assessment) are the model's own knowledge and carry no citations.
+
+![Vantage Key facts for Sudan humanitarian access. Citation 6 is expanded: a UN News popover dated Nov 6, 2026 quotes "Aid teams working to help millions of people uprooted by the ongoing war in Sudan appealed on Friday for more international assistance amid desperate funding shortages, empty warehouses and overwhelming needs," with a Read the original link.](docs/images/vantage-sudan-key-facts.jpg)
+
+**One source check (Nov 11, 2026).** In the brief above, the aid-funding claim (citation 6) quotes UN News. The quoted sentence appears word for word in the [original UN News article](https://news.un.org/en/story/2026/11/1168753) of 6 November 2026. That is a single manual check, not an evaluation; briefs are regenerated, so the claims and their numbering will differ between runs.
+
 ## The problem
 
 Following an international conflict means piecing together breaking-news reports, casualty figures, maps, history and competing political narratives, from outlets in different countries. A language model can summarise all of that fluently, but fluency hides which statements came from reporting and which the model supplied itself.
