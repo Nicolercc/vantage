@@ -1,337 +1,110 @@
 # Vantage
 
-### AI-Powered Conflict Intelligence & Geopolitical Analysis
+**Vantage turns a conflict topic or a news article into a structured brief whose key facts quote the retrieved reporting they rest on, and labels everything else as the model's background knowledge.**
 
-**Vantage turns a conflict topic or a news article into a structured brief whose key facts link back to the reporting they came from.**
+Built by Nicole Rodriguez · [Portfolio](https://nicolerodriguez.dev) · [GitHub](https://github.com/Nicolercc)
 
-Readers can search a topic, submit an article link, or paste article text. Vantage retrieves current coverage from news outlets in several countries, asks Claude to brief it, and keeps only the claims it can tie to a retrieved source. Everything the model adds from background knowledge is labelled as such.
+[**Live demo**](https://conflict-analysis-vantage.vercel.app) · [![CI](https://github.com/Nicolercc/vantage/actions/workflows/ci.yml/badge.svg)](https://github.com/Nicolercc/vantage/actions/workflows/ci.yml)
 
-**Built end-to-end by Nicole Rodriguez as a full-stack applied AI engineering project.**
+![A Vantage brief: sourced key facts with numbered citations beside model-background sections](docs/images/analysis.jpg)
 
-[Live Demo](https://conflict-analysis-vantage.vercel.app)
+## The problem
 
----
+Following an international conflict means piecing together breaking-news reports, casualty figures, maps, history and competing political narratives, from outlets in different countries. A language model can summarise all of that fluently, but fluency hides which statements came from reporting and which the model supplied itself.
 
-## Why I Built Vantage
+Vantage keeps that line visible. A reader enters a topic ("Sudan", "Red Sea shipping"), an article link, or pasted article text (up to 8,000 characters). The brief separates two kinds of content:
 
-Following an international conflict often means piecing together information scattered across breaking-news reports, historical references, casualty figures, maps, and competing political narratives.
+* **From retrieved reporting:** key facts and a cross-outlet comparison. Each claim quotes the words in the sources it cites; the quotes are checked against the retrieved text before the claim is shown.
+* **Model background, labelled as such:** summary, parties, perspectives, timeline, historical context, escalation assessment, affected population and the map. The headline is model-written too; the page header marks every brief as AI-generated.
 
-The engineering challenge behind Vantage was:
+## How it works
 
-> **How can a system turn fragmented conflict information into a structured, explorable brief without reducing a complex geopolitical event to a single narrative?**
-
-I designed Vantage as a full-stack intelligence pipeline that combines live external data, historical context, structured LLM analysis, and interactive visualization.
-
-The project gave me an opportunity to work across the complete product lifecycle: system architecture, API design, AI orchestration, unreliable-output handling, frontend visualization, caching, deployment, and production-oriented failure states.
-
----
-
-# What Vantage Does
-
-Vantage accepts three forms of input:
-
-* **Topic** — a conflict, crisis or country, e.g. "Sudan" or "Red Sea shipping tensions"
-* **Article link** — the public page is fetched and briefed
-* **Pasted article text** — briefed directly; the text stays in the browser tab and out of the page address
-
-Each brief contains two clearly separated kinds of content.
-
-**Sourced, with numbered citations**
-
-* key facts, each citing the retrieved sources that state it
-* a coverage comparison: where outlets agree and where their framing differs
-* the source list itself: publisher, country, date, link and the publisher's summary
-
-**Model background, labelled as unsourced**
-
-* summary, actors and competing perspectives
-* background timeline and historical context
-* escalation assessment and affected-population context
-* an interactive map of the places involved
-
-The headline is written by the model as well; it carries no per-section label, and the page header marks every brief as AI-generated.
-
----
-
-# System Architecture
-
-```text
-            Topic / article link / pasted text
-                          │
-                          ▼
-              React + TypeScript client
-                          │  HTTP
-                          ▼
-   ┌──────────────── Express API ────────────────┐
-   │ validate input · rate limit · dedupe · cache │
-   └──────────────────────┬──────────────────────┘
-                          ▼
-        Retrieval (all providers concurrently)
-   19 publisher RSS feeds · news search · Wikipedia · reader's article
-                          │
-                          ▼
-     Select: match topic · dedupe · cap per outlet ·
-             spread across countries · assign ids
-                          │
-                          ▼
-     Claude — fixed system prompt; sources in the user turn
-                          │
-                          ▼
-     Check: schema · every cited id was retrieved ·
-            figures appear in the cited text
-                          │
-                          ▼
-            Brief with numbered citations
+```mermaid
+flowchart TD
+  A["Reader: topic, article link or pasted text"] --> B["React client"]
+  B -->|"POST /api/intelligence/stream"| C["Per-client rate limit · validate body"]
+  C -->|"article link"| D["Guarded fetch: http(s), public addresses, size and time caps"]
+  C --> E{"Same request cached, saved or in flight?"}
+  D --> E
+  E -->|"yes"| Q
+  E -->|"no"| F["Concurrency cap · daily generation budget"]
+  F --> G["Retrieval in parallel: 19 RSS feeds · Bing News RSS · Wikipedia · reader's article"]
+  G --> H["Select: topic match · dedupe · cap per outlet · spread countries · ids S1, S2…"]
+  H --> I["Claude writer: constant system prompt, sources in the user turn"]
+  I --> J["Quote checks, no model: quote is in its source · figures are in the quote · shared vocabulary · two sources for a comparison"]
+  J --> K["Claude verifier: supported / partly / unsupported; rewrites are re-verified"]
+  K --> L["Schema validation (Zod generated from OpenAPI); one retry, then a typed error"]
+  L --> M["Geocoding (Nominatim): a pin only where lookup and model estimate agree"]
+  M --> N[("Postgres, or memory")]
+  N --> Q["Server-sent events: stages, sources, then the brief"]
+  Q --> B
 ```
 
----
+The code lives in `artifacts/api-server/src/brief` (retrieval, prompt, generation, checks), `artifacts/api-server/src/lib` (storage, limits, config) and `artifacts/vantage` (React client). Details: [docs/architecture.md](docs/architecture.md). Configuration, readiness, cost tracking and deployment: [docs/operations.md](docs/operations.md).
 
-# Engineering Highlights
+## Key engineering decisions
 
-## 1. Sources come from retrieval, never from the model
+**1. Provenance belongs to code, not the model.** The model refers to sources only by id (`S1`, `S2`…). Publisher, URL, date and country come from the retrieval layer, and any source metadata the model writes is overwritten.
+*Tradeoff:* the brief can cite only what retrieval found, so a quiet conflict gets a thinner sourced section rather than a fuller, unverifiable one.
 
-A source record — publisher, URL, date, country — can only be created by the retrieval layer. The model refers to sources by id (`S1`, `S2`…) and anything it writes into a `sources`, `url` or date field is discarded.
+**2. Two checks before a claim is shown.** First, deterministic quote checks: the quote must occur in the cited source, every figure in the claim must occur in its quotes, and a comparison needs quotes from two sources. Then a second model judges whether the quotes support the claim. It can cut an overreaching claim back to what the quotes say, but the rewrite must pass the quote checks *and* a second verdict before it is labelled verified.
+*Tradeoff:* one or two extra model calls per brief. "Verified" is still a model's judgment: on a hand-labelled set the quote checks alone stop 8 of 11 unsupported claims.
 
-Providers are queried concurrently and report their own outcome (`ok`, `empty`, `failed`), so a slow or unavailable provider neither blocks the brief nor silently looks like "no coverage".
+**3. The OpenAPI spec is the contract.** `lib/api-spec/openapi.yaml` generates the Zod schemas and the React Query client. The server validates requests and the model's brief against the same schemas, and CI fails if generated code drifts.
+*Tradeoff:* a codegen step, and generated code is committed.
 
-```ts
-const [search, wiki, ...feeds] = await Promise.all([
-  searchNews(topic),
-  searchWikipedia(topic),
-  ...FEEDS.map((feed) => searchFeed(feed, topic)),
-]);
-```
+**4. Degrade instead of failing.** If the verifier is unreachable or answers unusably, claims are served marked "unverified". If the database fails, rate limits and the budget continue in-process from the last counts seen. If geocoding misses its deadline, the place is left off the map. A failed retrieval provider is reported, not fatal.
+*Tradeoff:* during a database outage each instance enforces limits separately, so several instances together can exceed the global budget.
 
-## 2. Claims are quoted, checked and verified before they are shown
+**5. Postgres is optional.** With `DATABASE_URL`, saved briefs, limits and the cost ledger survive restarts and are shared by instances. Without it everything lives in the process, and `/api/readyz` reports `durable: false`.
+*Tradeoff:* a deployment without a database loses brief links on every restart.
 
-For every key fact and comparison the model must copy the words in each source that the claim rests on. Then two checks run:
+## Testing and quality
 
-1. **Quote checks, no model.** A claim is dropped when a quote is not found in the source it names, when a figure in the claim is not inside its quotes, or when the claim shares no vocabulary with them. A comparison between outlets needs a quote from two sources.
-2. **Verifier.** A second model reads each surviving claim next to its quotes. A claim that says more than its quotes is cut back to what they do say — and the new wording goes through the quote checks again and back to the verifier, which must judge it fully supported — or removed.
+Measured on this branch (Node 22, pnpm 9.9.0):
 
-The reader sees the quote by pressing a citation number, and the brief states how many claims were checked, corrected and removed. If the verifier cannot be reached the brief is still served, with its claims marked unverified.
+| Suite | Tests |
+|---|---:|
+| API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 210 |
+| API: Postgres-backed store, limit, ledger and deadline tests (run when `TEST_DATABASE_URL` is set; CI sets it) | 12 |
+| Client: input validation, streaming, brief adapter, map, labelling, dev proxy and stylesheet tests | 34 |
+| **Total** | **256** |
 
-On a hand-labelled set, the quote checks stop 8 of 11 unsupported claims and the verifier deals with the other 3 without removing a supported one.
-
-## 3. Unknown stays unknown
-
-* Map coordinates come from a geocoder, not the model. The model names a place and gives its own estimate; a pin is drawn only when the looked-up place and the estimate agree. A vague name, a country-sized answer, a failed lookup or a disagreement leaves the place off the map — there is no default point.
-* Dates come from the provider; when it gives none, the date is `null`.
-* The generation time is stamped by the server once and survives caching, so an old brief never looks new.
-
-## 4. Retrieved text cannot act as instructions
-
-The system prompt is a constant. Retrieved headlines and the reader's article travel in the user turn inside labelled `<source>` blocks, with markup stripped so a source cannot close its own block. A test feeds an article containing "ignore all previous instructions" and asserts it never reaches the system prompt.
-
-## 5. Contract-first API
-
-`lib/api-spec/openapi.yaml` is the source of truth. The React Query client and Zod schemas are generated from it, CI fails if generated code drifts, and the server validates both request bodies and the model's brief against the same schemas. An incomplete brief gets one retry, then a typed error — never a 200 the UI crashes on.
-
-## 6. Protecting an expensive public endpoint
-
-* **Guarded fetching** for article links: http(s) only, default ports, private and reserved addresses refused at connect time and on every redirect, size-capped.
-* **Per-client rate limit**, a **concurrency cap** and a **daily generation budget**.
-* **In-flight dedupe**: identical concurrent requests share one generation.
-* **Bounded cache** with a TTL that never stores failures.
-* **Typed errors** with a stable code, a safe message and a request id; upstream provider messages are logged, never returned.
-
-* **Response headers**: the site sends a content-security policy that allows only its own scripts, its fonts, map tiles and the API; the API sends `default-src 'none'`, no-sniff and HSTS.
-* **Hard deadline on the model call**: one attempt, 60 seconds, so a reader gets an answer or a "try again", never a silent wait.
-
-### Configuration, readiness and cost
-
-* **Configuration is validated at start-up.** A malformed value stops the process with a message naming the variable; every problem is listed at once and no secret is echoed.
-* **`GET /api/readyz`** says whether the instance can do its job and whether what it saves will last (`/api/healthz` only says the process is up). It turns not-ready when the model provider refuses a request — a revoked key, a suspended account, spent credit — and the uptime check then fails and emails the owner. It learns this from real requests, so it reports the problem from the first failed brief onwards.
-* **Every model call is recorded** with its purpose (writer or verifier), tokens, duration and cost. `GET /api/ops/costs`, for whoever holds `OPS_TOKEN`, gives totals per day and the cost per brief — about 1.6 US cents with the default model.
-* **Limits are shared.** The rate limit and the daily budget are counted in the database when there is one, so a restart or a second instance does not hand out a fresh allowance. Client addresses are stored only as a keyed hash. If the database is unreachable the limits still hold per process.
-
-### Watching production
-
-A scheduled workflow (`.github/workflows/uptime.yml`) requests the API's health check and the site every ten minutes; a failure emails the repository owner. Each brief logs its token use, source count and how many claims survived the checks, and every failure logs its code with the request id shown to the reader.
-
-## 7. Accessible by default
-
-Nothing is hidden behind hover. Pages have titles, a status region, ordered headings and managed focus; text is at least 11px and meets 4.5:1 contrast; pinch zoom works; reduced motion is respected.
-
----
-
-# API
-
-```http
-POST /api/intelligence/stream      { "topic": "…" } | { "url": "https://…" } | { "article": "…" }
-                                   → text/event-stream: stage, sources, then brief (or error)
-POST /api/intelligence/explore     { "topic": "Sudan civil war" }
-POST /api/intelligence/analyze     { "article": "Article text…" }  or  { "url": "https://…" }
-GET  /api/briefs/{id}              a saved brief, exactly as first generated
-GET  /api/healthz                  the process is up
-GET  /api/readyz                   ready to serve, and whether storage is durable
-GET  /api/ops/costs?days=7         model spend per day (needs the operations token)
-```
-
-Errors share one shape:
-
-```json
-{ "error": "RATE_LIMITED", "message": "Too many requests. Please wait a few minutes and try again.", "requestId": "…" }
-```
-
-Codes: `INVALID_INPUT`, `FETCH_BLOCKED`, `FETCH_FAILED`, `RATE_LIMITED`, `OVERLOADED`, `PROVIDER_UNAVAILABLE`, `MODEL_OUTPUT_INVALID`, `INTERNAL`.
-
----
-
-# Testing
+* Route tests run the real Express app with a fake model and fake retrieval: no network, no API key, no spend.
+* Fixture tests cover the guarantees directly: quotes that are not in their source, invented figures, unsupported verifier rewrites, malformed verifier output, prompt-injection text kept out of the system prompt, SSRF targets, geocoder disagreement and deadlines.
+* CI (`.github/workflows/ci.yml`) runs a frozen-lockfile install, a codegen drift check, lint, typecheck, build and all tests against Postgres 16.
+* `artifacts/api-server/eval` replays 16 recorded topics through the production generation path and grades them with a stronger model. Historical results are in [eval/REPORT.md](artifacts/api-server/eval/REPORT.md). A full run needs an API key; the workflow skips without one.
 
 ```bash
-pnpm test        # API and frontend unit/route tests
-pnpm typecheck
-pnpm lint
-pnpm codegen     # regenerate client and schemas from the OpenAPI spec
+pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-Route tests run the real Express app against a fake model and fake retrieval, so they need no network and no API key. Each defect found in the project's audit was first captured as a failing test.
+## Running locally
 
-## Evaluation
-
-`artifacts/api-server/eval` measures brief quality in two ways: a hand-labelled claim set that runs in CI, and 16 recorded topics replayed through the real pipeline and graded by a stronger model. A full run must stay within written limits (`eval/thresholds.ts`); the `Evaluation` workflow enforces them weekly and on pull requests that touch the brief pipeline. The latest results are in [`eval/REPORT.md`](artifacts/api-server/eval/REPORT.md); how to run it is in [`eval/README.md`](artifacts/api-server/eval/README.md).
-
----
-
-# Repository Structure
-
-```text
-conflict-analysis/
-├── artifacts/
-│   ├── vantage/              # React client
-│   └── api-server/           # Express API
-│       └── src/brief/        # retrieval, prompt, generation, claim checks
-├── lib/
-│   ├── api-spec/             # OpenAPI contract + codegen config
-│   ├── api-zod/              # generated Zod schemas
-│   ├── api-client-react/     # generated React Query client
-│   └── integrations-anthropic-ai/
-├── .github/workflows/        # CI: codegen drift, lint, typecheck, build, tests; uptime check
-├── Dockerfile                # production API image
-├── render.yaml               # Render API blueprint
-└── pnpm-workspace.yaml
-```
-
----
-
-# Tech Stack
-
-| Layer              | Technology                                   |
-| ------------------ | -------------------------------------------- |
-| Language           | TypeScript                                   |
-| Frontend           | React 19, Vite, TanStack Query, Tailwind CSS |
-| Maps               | Leaflet, OpenStreetMap tiles                 |
-| API                | Node.js 22, Express 5, Zod                   |
-| AI                 | Anthropic Claude                             |
-| News retrieval     | Publisher RSS feeds, Bing News search        |
-| Geocoding          | OpenStreetMap Nominatim                      |
-| Background         | Wikipedia API                                |
-| Contract           | OpenAPI + Orval code generation              |
-| Testing            | Vitest, Supertest                            |
-| Logging            | Pino                                         |
-| Package management | pnpm workspaces                              |
-| Deployment         | Vercel (client), Docker image (API)          |
-
----
-
-# Running Locally
-
-Requirements: **Node.js 22+**, **pnpm 9.9.0**, an Anthropic API key.
+Requirements: Node.js 22+, pnpm 9.9.0, an Anthropic API key. Postgres is optional.
 
 ```bash
-git clone https://github.com/Nicolercc/conflict-analysis.git
-cd conflict-analysis
+git clone https://github.com/Nicolercc/vantage.git
+cd vantage
 pnpm install
-cp .env.example .env      # add your API key
-pnpm dev:api              # API on http://localhost:3001
-pnpm dev                  # client on http://localhost:5173
+cp .env.example .env    # then set PORT=3001 and ANTHROPIC_API_KEY in .env
+pnpm dev:api            # API on http://localhost:3001
+pnpm dev                # client on http://localhost:5173 (proxies /api to the local API)
 ```
 
-`.env.example` documents the optional limits (rate limit, daily budget, cache TTL, allowed origins).
+[`.env.example`](.env.example) lists every variable with a description. The API reads `.env` from the repository root (or from `artifacts/api-server`) and refuses to start, naming every malformed value, if its configuration is invalid. To run the client against a different API, start it with `VITE_API_PROXY_TARGET=<url> pnpm dev`.
 
-## Docker
+## Limitations
 
-```bash
-docker build -t vantage-api .
-docker run --rm -p 3001:3001 --env-file .env vantage-api
-```
+* **Headlines and summaries, not full articles.** RSS feeds and the news search supply a headline and a short summary, so claims are checked against that text. A reader-supplied article is read in full up to 8,000 characters; a fetched page is cut to its first 8,000.
+* **Retrieval has no service agreement.** The news search is Bing's public RSS feed, and publisher feeds hold only recent items. The brief reports how many providers were checked and how many returned something.
+* **"Verified" is a model's opinion** about words that provably occur in a source. In the latest recorded evaluation a stronger model judged 9 of 70 kept claims as only partly supported. The expected-fact lists used for grading are not yet approved by a person.
+* **Prompt injection is mitigated, not proven against.** Retrieved text never enters the system prompt and cannot close its own source block, but no adversarial evaluation against a live model has been run.
+* **No whole-request deadline.** Each model call, fetch and database statement has its own deadline, but a brief can take two writer attempts plus verification and geocoding.
+* **Per-process pieces.** The concurrency cap and in-flight deduplication are per process.
+* **Observability gaps.** Errors carry a request id in the JSON body and the `X-Request-Id` header, but the UI does not show it yet. `/api/ops/costs` counts successful writer calls, so a retried brief counts twice.
+* **Saved briefs are kept indefinitely.** There is no retention period or deletion route. Saved briefs never contain the reader's pasted text, though the model's summary may paraphrase it.
 
-## Deploying the API on Render
+## License
 
-The API is deployed as a Docker web service. `render.yaml` lives at the repo root
-so Render can create or update the service from a Blueprint.
-
-1. Create a Render Blueprint from this repository.
-2. When Render asks for unsynced secrets, set
-   `AI_INTEGRATIONS_ANTHROPIC_API_KEY` to a workspace-scoped Anthropic API key.
-3. Leave `PORT` unset in Render; the platform supplies it and the server binds to
-   `0.0.0.0`.
-4. Keep `CORS_ORIGINS` set to the Vercel frontend origin:
-   `https://conflict-analysis-vantage.vercel.app`.
-5. Set the Vercel frontend build env var
-   `VITE_API_BASE_URL=https://conflict-analysis.onrender.com`, then redeploy the
-   frontend so browser requests go to the Render API.
-
-Render checks `/api/healthz`, which returns a small JSON status response.
-
----
-
-# Current Limits & Next Steps
-
-Vantage is honest about what it can and cannot support today.
-
-### Headlines and summaries, not full articles
-
-RSS feeds and the news search supply a headline and a short summary. Claims are therefore checked against that text, not the full article. Retrieving permitted full text is the next evidence step.
-
-### A feed is a window, not an archive
-
-Publisher feeds hold only recent items, so a quieter conflict relies on the news search for coverage. The search uses a public results feed with no service agreement behind it, and it does not report an outlet's country; a licensed news API would be the dependable replacement. The brief says how many providers were checked and how many had something.
-
-### Verified is a strong word for a model's opinion
-
-"Verified" means a second model found the claim fully supported by words that are provably in the source. In the recorded evaluation a stronger third model still judges 11–13% of kept claims as adding a small detail (and none as unsupported). The expected-fact lists the evaluation uses need approving by a person; `eval:review` records that.
-
-### A database is optional to run, but nothing lasts without one
-
-With `DATABASE_URL` set, saved briefs, the rate limit, the daily budget and the cost ledger live in Postgres: every instance shares them and a restart keeps them. Without it they live in the process, `/api/readyz` says so, and the server logs a warning at start-up. `REQUIRE_DATABASE=true` turns that warning into a refusal to start.
-
-### Progress is streamed; the text is not
-
-While a brief is built the reader sees each step and the sources that were found. The brief itself still arrives whole, because its claims are checked against the sources before anything is shown; streaming checked sections one at a time is the next step.
-
-### Saved briefs are kept indefinitely
-
-There is no retention period or deletion route yet. A saved brief never contains the reader's pasted text, only the brief written from it.
-
----
-
-# What I Learned
-
-Building Vantage pushed me beyond implementing individual frontend or backend features.
-
-The project required me to reason about an entire system:
-
-* where retrieved data ends and generated information begins
-* how to structure nondeterministic AI output for deterministic software
-* how failures in optional dependencies should affect the user
-* when requests can execute concurrently
-* how caching changes latency and API cost
-* how to protect backend credentials
-* how frontend data requirements influence API design
-* and how to communicate technical limitations honestly in an AI product
-
-Vantage is ultimately both a geopolitical-analysis product and an exploration of a broader software engineering problem:
-
-> **How do you build reliable application systems around inherently probabilistic models?**
-
----
-
-## Author
-
-**Nicole Rodriguez**
-Software Engineer
-
-[Portfolio](https://nicolerodriguez.dev) · [GitHub](https://github.com/Nicolercc)
+[MIT](LICENSE) © Nicole Rodriguez
