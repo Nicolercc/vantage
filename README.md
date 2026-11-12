@@ -1,5 +1,11 @@
 # Vantage
 
+![Vantage’s Sudan brief with the aid funding claim and its expanded UN News source excerpt](https://github.com/user-attachments/assets/1e5db4aa-9356-4d4b-867b-d194ac02d21c)
+
+## Try the live demo
+
+[Open Vantage](https://conflict-analysis-vantage.vercel.app/), select **Sudan humanitarian access**, and choose **Run briefing**. Under **Key facts**, open a numbered citation to compare a claim with its source excerpt, then select **Read the original**. The **Model background** label identifies generated context. Live results vary, and generated brief links can expire.
+
 **Vantage turns a conflict topic or a news article into a structured brief whose key facts quote the retrieved reporting they rest on, and labels everything else as the model's background knowledge.**
 
 Built by Nicole Rodriguez · [Portfolio](https://nicolerodriguez.dev) · [GitHub](https://github.com/Nicolercc)
