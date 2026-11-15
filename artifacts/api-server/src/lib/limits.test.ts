@@ -80,6 +80,45 @@ describe("GenerationGate", () => {
   });
 });
 
+describe("GenerationGate background work", () => {
+  const hold = () => {
+    let release!: () => void;
+    const done = new Promise<void>((r) => (release = r));
+    return { done, release };
+  };
+
+  it("always leaves one slot for readers", async () => {
+    const gate = new GenerationGate(2, 100);
+    const h = hold();
+    const reader = gate.run(() => h.done);
+    // One reader running, one slot left: background work may not take it.
+    await expect(gate.runBackground(async () => true, async () => "x")).rejects.toMatchObject({ options: { refused: "busy" } });
+    h.release();
+    await reader;
+    await expect(gate.runBackground(async () => true, async () => "x")).resolves.toBe("x");
+  });
+
+  it("never runs when only one slot exists", async () => {
+    const gate = new GenerationGate(1, 100);
+    await expect(gate.runBackground(async () => true, async () => "x")).rejects.toMatchObject({ options: { refused: "busy" } });
+  });
+
+  it("is charged to its own allowance and the shared daily budget, and says which ran out", async () => {
+    const store = new MemoryUsageStore();
+    const gate = new GenerationGate(4, 2, store);
+    let allowance = 1;
+    const take = async () => allowance-- > 0;
+    await gate.runBackground(take, async () => "first");
+    await expect(gate.runBackground(take, async () => "second")).rejects.toMatchObject({ options: { refused: "budget" } });
+    allowance = 5;
+    await gate.run(async () => "reader");
+    // The shared budget of 2 is now spent by one background brief and one reader.
+    await expect(gate.runBackground(take, async () => "third")).rejects.toMatchObject({ options: { refused: "budget" } });
+    await expect(gate.run(async () => "reader")).rejects.toMatchObject({ code: "OVERLOADED", options: { refused: "budget" } });
+    expect(gate.running).toBe(0);
+  });
+});
+
 describe("BriefCache", () => {
   it("expires entries after the TTL", () => {
     let t = 0;

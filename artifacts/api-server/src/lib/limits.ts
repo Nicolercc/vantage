@@ -32,7 +32,11 @@ export class RateLimiter {
   }
 }
 
-const DAY_MS = 86_400_000;
+export const DAY_MS = 86_400_000;
+
+const busy = () =>
+  new AppError(503, "OVERLOADED", "Vantage is busy generating other briefs. Please try again in a moment.", { retryAfterSec: 20, refused: "busy" });
+const spent = (message: string) => new AppError(503, "OVERLOADED", message, { retryAfterSec: 3600, refused: "budget" });
 
 /**
  * Bounds what the public can make the service spend: how many briefs may be
@@ -49,19 +53,37 @@ export class GenerationGate {
   ) {}
 
   async run<T>(work: () => Promise<T>): Promise<T> {
-    if (this.active >= this.maxConcurrent) {
-      throw new AppError(503, "OVERLOADED", "Vantage is busy generating other briefs. Please try again in a moment.", { retryAfterSec: 20 });
-    }
+    return this.admit(this.maxConcurrent, null, work);
+  }
+
+  /**
+   * Work nobody is waiting for (warming the home page's briefs). It may only
+   * start while at least one slot stays free for readers, and `allowance` is
+   * charged before the daily budget, so background work has its own cap
+   * within it. Refusals carry `refused: "busy"` or `"budget"`.
+   */
+  async runBackground<T>(allowance: () => Promise<boolean>, work: () => Promise<T>): Promise<T> {
+    return this.admit(this.maxConcurrent - 1, allowance, work);
+  }
+
+  private async admit<T>(limit: number, allowance: (() => Promise<boolean>) | null, work: () => Promise<T>): Promise<T> {
+    if (this.active >= limit) throw busy();
     // Hold the slot before the first await, so two requests cannot both take the last one.
     this.active += 1;
     try {
+      if (allowance && !(await allowance())) throw spent("Background generation has reached its limit for today.");
       if (!(await this.store.reserve("budget", "briefs", DAY_MS, this.dailyBudget))) {
-        throw new AppError(503, "OVERLOADED", "Vantage has reached today's limit for new briefs. Previously generated briefs still load.", { retryAfterSec: 3600 });
+        throw spent("Vantage has reached today's limit for new briefs. Previously generated briefs still load.");
       }
       return await work();
     } finally {
       this.active -= 1;
     }
+  }
+
+  /** Generations running in this process now. */
+  get running() {
+    return this.active;
   }
 
   reset() {

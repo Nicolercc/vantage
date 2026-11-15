@@ -30,5 +30,8 @@ export * from './retrievalStatusStatus';
 export * from './source';
 export * from './sourceKind';
 export * from './streamBriefBody';
+export * from './trendingHeadline';
+export * from './trendingResponse';
+export * from './trendingTopic';
 export * from './verification';
 export * from './verificationStatus';

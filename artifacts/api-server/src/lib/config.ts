@@ -22,6 +22,15 @@ export type Config = {
     cacheTtlMs: number;
     cacheMaxEntries: number;
   };
+  /** The home page's "Today" topics: what is most covered, and which briefs to have ready. */
+  trending: {
+    enabled: boolean;
+    intervalMs: number;
+    /** How many of the top topics to brief in advance on each refresh (0 to 8). */
+    pregenerate: number;
+    /** Most briefs warmed per UTC day, within the daily budget. Per process without a database. */
+    dailyMax: number;
+  };
   /** US dollars per million tokens, by model id. A model not listed has no cost recorded. */
   modelPrices: Record<string, { input: number; output: number }>;
 };
@@ -55,6 +64,24 @@ export function loadConfig(env: Env = process.env): { config: Config; problems: 
     if (raw === "true" || raw === "1" || raw === "on") return true;
     problems.push(`${name} must be true or false; got "${env[name]}"`);
     return false;
+  };
+
+  const wholeBetween = (name: string, min: number, max: number, fallback: number) => {
+    const raw = env[name];
+    if (raw === undefined || raw.trim() === "") return fallback;
+    const n = Number(raw);
+    if (!Number.isInteger(n) || n < min || n > max) {
+      problems.push(`${name} must be a whole number from ${min} to ${max}; got "${raw}"`);
+      return fallback;
+    }
+    return n;
+  };
+  const enabledUnlessOff = (name: string) => {
+    const raw = (env[name] ?? "").trim().toLowerCase();
+    if (raw === "" || raw === "true" || raw === "1" || raw === "on") return true;
+    if (raw === "false" || raw === "0" || raw === "off") return false;
+    problems.push(`${name} must be true or false; got "${env[name]}"`);
+    return true;
   };
 
   const atLeastZero = (name: string) => {
@@ -107,6 +134,16 @@ export function loadConfig(env: Env = process.env): { config: Config; problems: 
   const modelKeyPresent = Boolean((env["ANTHROPIC_API_KEY"] ?? env["AI_INTEGRATIONS_ANTHROPIC_API_KEY"])?.trim());
   if (!modelKeyPresent) problems.push("ANTHROPIC_API_KEY is not set");
 
+  const trendingIntervalMinutes = positive("TRENDING_INTERVAL_MINUTES", 60, { integer: false });
+  if (trendingIntervalMinutes < 1) problems.push(`TRENDING_INTERVAL_MINUTES must be at least 1; got "${env["TRENDING_INTERVAL_MINUTES"]}"`);
+  const trending = {
+    enabled: enabledUnlessOff("TRENDING_ENABLED"),
+    intervalMs: Math.max(1, trendingIntervalMinutes) * 60_000,
+    // Warming spends real tokens; a local server does it only when asked to.
+    pregenerate: wholeBetween("TRENDING_PREGENERATE", 0, 8, production ? 4 : 0),
+    dailyMax: positive("TRENDING_DAILY_MAX", 24),
+  };
+
   let modelPrices = DEFAULT_PRICES;
   if (env["MODEL_PRICES"]?.trim()) {
     try {
@@ -134,6 +171,7 @@ export function loadConfig(env: Env = process.env): { config: Config; problems: 
         cacheTtlMs: positive("BRIEF_CACHE_TTL_MINUTES", 360, { integer: false }) * 60_000,
         cacheMaxEntries: positive("BRIEF_CACHE_MAX_ENTRIES", 200),
       },
+      trending,
       modelPrices,
     },
     problems,

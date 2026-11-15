@@ -9,7 +9,12 @@ export class AppError extends Error {
     readonly status: number,
     readonly code: string,
     message: string,
-    readonly options: { cause?: unknown; retryAfterSec?: number } = {},
+    readonly options: {
+      cause?: unknown;
+      retryAfterSec?: number;
+      /** Why generation was refused: busy right now, or out of allowance until the day resets. */
+      refused?: "busy" | "budget";
+    } = {},
   ) {
     super(message, { cause: options.cause });
     this.name = "AppError";
