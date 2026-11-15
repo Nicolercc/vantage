@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { inSentence, labelPoint, listNames } from "./map/countries";
+import { countryWideLabel, mapPlaces } from "./map/places";
+import { useCountries } from "./map/useCountries";
 import type {
 	IntelligenceBrief,
 	RelatedEvent,
@@ -176,7 +179,29 @@ function hubTooltipHtml(brief: IntelligenceBrief) {
 </div>`;
 }
 
-type LegendItem = { key: string; label: string; swatch?: { shape: "dot" | "diamond"; color: string } };
+type LegendItem = { key: string; label: string; swatch?: { shape: "dot" | "diamond" | "area"; color: string } };
+
+const OTHER_AREA_COLOR = "#6b7c8c";
+/** Closer than this to the main pin, the country's own name would sit under the pin's label. */
+const LABEL_CLEARANCE_METRES = 350_000;
+const FOCUS_AREA_STYLE: L.PathOptions = { color: HUB_COLOR, weight: 1.5, opacity: 0.8, fillColor: HUB_COLOR, fillOpacity: 0.1 };
+const OTHER_AREA_STYLE: L.PathOptions = {
+	color: OTHER_AREA_COLOR,
+	weight: 1,
+	opacity: 0.7,
+	dashArray: "4 4",
+	fillColor: OTHER_AREA_COLOR,
+	fillOpacity: 0.06,
+};
+
+/**
+ * A country is framed only when it fits a sensible view. Russia, the United
+ * States (with Alaska) or a country crossing the date line would zoom the map
+ * out to the whole world.
+ */
+function framable(bounds: L.LatLngBounds) {
+	return bounds.isValid() && bounds.getEast() - bounds.getWest() <= 100;
+}
 
 /**
  * One key entry per kind of event on the map, in the colour and shape its
@@ -222,8 +247,11 @@ export function InteractiveConflictMap({
 	const layersRef = useRef<{
 		polylines: L.Polyline[];
 		markers: L.Marker[];
-	}>({ polylines: [], markers: [] });
+		areas: L.GeoJSON[];
+	}>({ polylines: [], markers: [], areas: [] });
 	const [mapReady, setMapReady] = useState(false);
+	const countries = useCountries();
+	const places = mapPlaces(data, countries);
 
 	useEffect(() => {
 		if (!active) {
@@ -288,16 +316,57 @@ export function InteractiveConflictMap({
 		layersRef.current.markers.forEach((m) => {
 			m.remove();
 		});
-		layersRef.current = { polylines: [], markers: [] };
+		layersRef.current.areas.forEach((a) => {
+			a.remove();
+		});
+		layersRef.current = { polylines: [], markers: [], areas: [] };
+
+		// Countries first, so pins and lines draw over them.
+		const { focus, others } = mapPlaces(data, countries);
+		others.forEach((country) => {
+			layersRef.current.areas.push(L.geoJSON(country.shape, { style: OTHER_AREA_STYLE, interactive: false }).addTo(map));
+		});
+		const focusArea = focus ? L.geoJSON(focus.shape, { style: FOCUS_AREA_STYLE, interactive: false }).addTo(map) : null;
+		if (focusArea) layersRef.current.areas.push(focusArea);
+		const focusBounds = focusArea && framable(focusArea.getBounds()) ? focusArea.getBounds() : null;
 
 		const hub = toLatLng(data.location);
+
+		// Country names in English, from the map data. The tiles name places in
+		// their local languages, which a reader may not be able to read.
+		const labelled = focus && countries ? [focus, ...countries.neighbours(focus)] : [];
+		others.forEach((c) => {
+			if (!labelled.includes(c)) labelled.push(c);
+		});
+		labelled.forEach((country) => {
+			let at = labelPoint(country.shape);
+			const isFocus = country === focus;
+			// The main pin carries its own label: move the country's name halfway
+			// towards its southern edge so the two do not sit on each other.
+			if (isFocus && hub && focusArea && map.distance(hub, at) < LABEL_CLEARANCE_METRES) {
+				at = [(at[0] + focusArea.getBounds().getSouth()) / 2, at[1]];
+			}
+			layersRef.current.markers.push(
+				L.marker(at, {
+					icon: L.divIcon({
+						className: `ci-map-country${isFocus ? " ci-map-country--focus" : ""}`,
+						html: `<span>${escapeHtml(country.name)}</span>`,
+						iconSize: [0, 0],
+					}),
+					interactive: false,
+					keyboard: false,
+				}).addTo(map),
+			);
+		});
 		const located = data.relatedEvents.flatMap((evt) => {
 			const pos = toLatLng(evt);
 			return pos ? [{ evt, pos }] : [];
 		});
 		const points = [...(hub ? [hub] : []), ...located.map((l) => l.pos)];
 		if (points.length === 0) {
-			map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
+			if (focusBounds) map.fitBounds(focusBounds, { padding: [24, 24], maxZoom: 7, animate: false });
+			else if (focusArea) map.setView(focusArea.getBounds().getCenter(), MIN_ZOOM);
+			else map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
 			return;
 		}
 
@@ -358,29 +427,51 @@ export function InteractiveConflictMap({
 			layersRef.current.markers.push(marker);
 		});
 
-		// Frame the region the brief is about. An event far away (talks in Geneva,
-		// a vote in New York) stays on the map but does not shrink the view to a
-		// whole hemisphere; the key says it is there.
+		// Frame the region the brief is about: the whole country, and the pins near
+		// it. An event far away (talks in Geneva, a vote in New York) stays on the
+		// map but does not shrink the view to a whole hemisphere; the key says it is there.
 		const near = hub ? points.filter((p) => map.distance(hub, p) <= NEARBY_METRES) : points;
-		if (near.length <= 1) {
+		const frame = L.latLngBounds(near);
+		if (focusBounds) frame.extend(focusBounds);
+		if (!focusBounds && near.length <= 1) {
 			map.setView(near[0] ?? points[0], 6);
 		} else {
 			// Extra room at the top: the main pin and its label stand above their point.
-			map.fitBounds(L.latLngBounds(near), { paddingTopLeft: [36, 84], paddingBottomRight: [36, 36], maxZoom: 8, animate: false });
+			map.fitBounds(frame, { paddingTopLeft: [36, 84], paddingBottomRight: [36, 36], maxZoom: 8, animate: false });
 		}
 
 		queueMicrotask(() => map.invalidateSize());
-	}, [data, active, mapReady]);
+	}, [data, active, mapReady, countries]);
 
 	const hasHub = toLatLng(data.location) !== null;
 	const locatedEvents = data.relatedEvents.filter((e) => toLatLng(e) !== null);
-	const unplotted =
-		(hasHub ? 0 : 1) + (data.relatedEvents.length - locatedEvents.length);
+	const unplotted = places.unknown;
 	const legend: LegendItem[] = [];
+	if (places.focus) {
+		legend.push({
+			key: "focus-area",
+			label: `Shaded: ${places.focus.the ? "the " : ""}${places.focus.name}, the country this brief is about`,
+			swatch: { shape: "area", color: HUB_COLOR },
+		});
+	}
+	if (places.others.length > 0) {
+		legend.push({
+			key: "other-areas",
+			label: `Lightly shaded: ${listNames(places.others.map(inSentence))}, also named in the timeline`,
+			swatch: { shape: "area", color: OTHER_AREA_COLOR },
+		});
+	}
 	if (hasHub) {
-		legend.push({ key: "hub", label: "Primary focus", swatch: { shape: "dot", color: "var(--accent-navy, #1a3a52)" } });
+		const city = data.location.city.trim();
+		legend.push({
+			key: "hub",
+			label: city ? `${city}: the main place in this brief` : "The main place in this brief",
+			swatch: { shape: "dot", color: "var(--accent-navy, #1a3a52)" },
+		});
 	}
 	legend.push(...eventLegend(locatedEvents));
+	const covered = countryWideLabel(places);
+	if (covered) legend.push({ key: "country-wide", label: covered });
 	const hubPoint = toLatLng(data.location);
 	const elsewhere = hubPoint
 		? locatedEvents.filter((e) => metresBetween(hubPoint, toLatLng(e)!) > NEARBY_METRES).length
@@ -411,8 +502,8 @@ export function InteractiveConflictMap({
 				}}
 			>
 				<p className="sr-only">
-					Map of the primary briefing location and related events. Every mapped
-					event is also listed in the background timeline below.
+					Map of the country this brief is about, its main location and related
+					events. Every mapped event is also listed in the background timeline.
 				</p>
 
 				<div
@@ -439,7 +530,11 @@ export function InteractiveConflictMap({
 								<span
 									aria-hidden
 									className={`ci-map-legend__swatch ci-map-legend__swatch--${item.swatch.shape}`}
-									style={{ background: item.swatch.color }}
+									style={
+										item.swatch.shape === "area"
+											? { borderColor: item.swatch.color, background: `${item.swatch.color}26` }
+											: { background: item.swatch.color }
+									}
 								/>
 							) : null}
 							{item.label}

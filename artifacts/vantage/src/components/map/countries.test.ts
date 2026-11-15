@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Topology } from "topojson-specification";
 import world from "world-atlas/countries-110m.json";
-import { buildCountryIndex, describeWhere, listNames, normalise } from "./countries";
+import { buildCountryIndex, describeWhere, labelPoint, listNames, normalise } from "./countries";
 
 const index = buildCountryIndex(world as unknown as Topology);
 
@@ -72,5 +72,24 @@ describe("text helpers", () => {
 
 	it("ignores case, accents and a leading 'the'", () => {
 		expect(normalise("  The Côte-d'Ivoire ")).toBe("cote d'ivoire");
+	});
+});
+
+describe("labelPoint", () => {
+	it("puts a country's name inside the country", () => {
+		const [lat, lng] = labelPoint(index.find("Egypt")!.shape);
+		expect(lat).toBeGreaterThan(22);
+		expect(lat).toBeLessThan(32);
+		expect(lng).toBeGreaterThan(25);
+		expect(lng).toBeLessThan(35);
+	});
+
+	it("uses the largest piece of a country made of several", () => {
+		// The United States: the lower 48 states, not Alaska or Hawaii.
+		const [lat, lng] = labelPoint(index.find("United States")!.shape);
+		expect(lat).toBeGreaterThan(30);
+		expect(lat).toBeLessThan(45);
+		expect(lng).toBeGreaterThan(-110);
+		expect(lng).toBeLessThan(-85);
 	});
 });

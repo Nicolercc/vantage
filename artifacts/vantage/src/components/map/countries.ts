@@ -151,6 +151,29 @@ export function buildCountryIndex(topology: Topology): CountryIndex {
 	};
 }
 
+/**
+ * Where to write a country's name: the middle of its largest piece of land,
+ * so a label sits on the mainland and an island or exclave does not drag it
+ * out to sea. Returns [lat, lng].
+ */
+export function labelPoint(shape: CountryShape): [number, number] {
+	const polygons = shape.geometry.type === "Polygon" ? [shape.geometry.coordinates] : shape.geometry.coordinates;
+	let best: [number, number] = [0, 0];
+	let bestArea = -1;
+	for (const polygon of polygons) {
+		const ring = polygon[0] ?? [];
+		const lngs = ring.map((p) => p[0]);
+		const lats = ring.map((p) => p[1]);
+		const [w, e, s, n] = [Math.min(...lngs), Math.max(...lngs), Math.min(...lats), Math.max(...lats)];
+		const area = (e - w) * (n - s);
+		if (area > bestArea) {
+			bestArea = area;
+			best = [(s + n) / 2, (w + e) / 2];
+		}
+	}
+	return best;
+}
+
 /** "the Central African Republic", "Chad". */
 export function inSentence(country: Country): string {
 	return country.the ? `the ${country.name}` : country.name;
