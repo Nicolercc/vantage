@@ -148,6 +148,8 @@ export type TrendingCluster = {
   outletCount: number;
   headlineCount: number;
   newestAt: string;
+  /** The newest headline counted, as a sample of what the coverage is about. */
+  headline: { title: string; publisher: string; url: string };
   score: number;
 };
 
@@ -184,7 +186,14 @@ export function rankTrending(headlines: Headline[], options: RankOptions = {}) {
 
   const seen = new Set<string>();
   const outlets = new Set<string>();
-  type Entry = { place: Place; newestByOutlet: Map<string, number>; home: Set<string>; findable: Set<string>; headlines: number };
+  type Entry = {
+    place: Place;
+    newestByOutlet: Map<string, number>;
+    home: Set<string>;
+    findable: Set<string>;
+    headlines: number;
+    newest: { at: number; headline: Headline } | null;
+  };
   const byPlace = new Map<string, Entry>();
 
   for (const h of headlines) {
@@ -203,8 +212,12 @@ export function rankTrending(headlines: Headline[], options: RankOptions = {}) {
     if (places.length === 0 || places.length > maxPlacesPerHeadline) continue;
     const when = Math.min(at, now);
     for (const p of places) {
-      const entry = byPlace.get(p.label) ?? { place: p, newestByOutlet: new Map(), home: new Set(), findable: new Set(), headlines: 0 };
+      const entry = byPlace.get(p.label) ?? { place: p, newestByOutlet: new Map(), home: new Set(), findable: new Set(), headlines: 0, newest: null };
       entry.headlines += 1;
+      // Ties are broken by title, so the same headlines in any order give the same sample.
+      if (!entry.newest || when > entry.newest.at || (when === entry.newest.at && title < entry.newest.headline.title)) {
+        entry.newest = { at: when, headline: { ...h, title } };
+      }
       entry.newestByOutlet.set(outlet, Math.max(entry.newestByOutlet.get(outlet) ?? 0, when));
       if (h.outletCountry && h.outletCountry === p.country) entry.home.add(outlet);
       if (matcherFor(p.label)(title)) entry.findable.add(outlet);
@@ -213,8 +226,8 @@ export function rankTrending(headlines: Headline[], options: RankOptions = {}) {
   }
 
   const clusters: TrendingCluster[] = [];
-  for (const { place: p, newestByOutlet, home, findable, headlines: count } of byPlace.values()) {
-    if (newestByOutlet.size < minOutlets) continue;
+  for (const { place: p, newestByOutlet, home, findable, headlines: count, newest } of byPlace.values()) {
+    if (newestByOutlet.size < minOutlets || !newest) continue;
     // The brief searches for the label itself. If too few outlets used that
     // word ("Kyiv says…" never says "Ukraine"), the brief would be thin.
     if (findable.size < minOutlets) continue;
@@ -230,6 +243,7 @@ export function rankTrending(headlines: Headline[], options: RankOptions = {}) {
       outletCount: newestByOutlet.size,
       headlineCount: count,
       newestAt: new Date(Math.max(...times)).toISOString(),
+      headline: { title: newest.headline.title, publisher: newest.headline.publisher, url: newest.headline.url },
       score: Math.round(score * 1000) / 1000,
     });
   }

@@ -43,6 +43,7 @@ export function createBriefState(config: Config = loadConfig().config) {
     gate,
     ledger,
     progress,
+    usage,
     reset() {
       cache.reset();
       store.reset();
