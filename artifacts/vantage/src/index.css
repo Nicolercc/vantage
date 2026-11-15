@@ -5,6 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+	/* One side margin and one reading column for every page, so edges line up. */
+	--gutter: 20px;
+	--content: 760px;
+	/* The smallest comfortable touch target. */
+	--tap: 44px;
 	/* Stacking order, lowest to highest. Anything that floats uses one of these,
 	   so nothing in the page can end up drawn over the site header. */
 	--z-popover: 200;
@@ -140,7 +145,8 @@ body {
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
 	gap: 0.5rem 1rem;
-	padding: 0.5rem clamp(1rem, 3vw, 1.75rem);
+	/* The logo lines up with the reading column below it. */
+	padding: 0.5rem max(var(--gutter), calc((100% - var(--content)) / 2));
 	/* Solid: page content scrolling underneath must not show through. */
 	background: var(--bg-primary);
 	border-bottom: 1px solid var(--border-light);
@@ -192,7 +198,7 @@ body {
 
 .site-header__brand-tag {
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
@@ -216,7 +222,7 @@ body {
 
 .site-header__pill {
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -229,7 +235,7 @@ body {
 
 @media (max-width: 720px) {
 	.site-header {
-		padding: 0.45rem 0.75rem;
+		padding: 0.45rem var(--gutter);
 		gap: 0.35rem 0.5rem;
 	}
 
@@ -238,7 +244,7 @@ body {
 	}
 
 	.site-header__cell--center a {
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 	}
 
 	.site-header__brand-name {
@@ -274,7 +280,7 @@ body {
 
 .section-label {
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 11px;
+	font-size: 13px;
 	font-weight: 500;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -292,3 +298,17 @@ body {
 	padding: 24px;
 }
 
+
+/* Header links are full-height touch targets. */
+.site-header__cell--center a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+}
+
+/* The logo is a full-height touch target like the links beside it. */
+.site-header__brand {
+	min-height: var(--tap);
+	display: inline-flex;
+	align-items: center;
+}
