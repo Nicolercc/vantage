@@ -1,290 +1,288 @@
 /**
- * Analysis loading surface — uses global design tokens only (index.css :root).
- * Layout: generous max-width, two-column on wide viewports (container queries).
+ * The page while a brief is built. Global tokens only (index.css :root).
+ * One column on a phone, two from 900px.
  */
 
-.analysis-loader {
-	--al-radar-ink: color-mix(in srgb, var(--accent-navy) 88%, var(--text-primary));
-	--al-radar-mid: color-mix(in srgb, var(--accent-navy) 55%, var(--bg-primary));
-	--al-radar-grid: color-mix(in srgb, var(--accent-navy-border) 35%, transparent);
-	--al-sweep: color-mix(in srgb, var(--accent-navy) 25%, transparent);
-
-	min-height: min(100vh, 1200px);
-	width: 100%;
-	padding: clamp(1.5rem, 4vw, 3rem);
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.al {
+	min-height: 100vh;
 	background: var(--bg-primary);
 	background-image: radial-gradient(
-		ellipse 120% 80% at 50% -20%,
-		color-mix(in srgb, var(--accent) 8%, transparent),
-		transparent 55%
+		ellipse 120% 70% at 50% -10%,
+		color-mix(in srgb, var(--accent-navy) 7%, transparent),
+		transparent 60%
 	);
+	padding: 24px 16px 64px;
 	box-sizing: border-box;
 }
 
-.analysis-loader__shell {
-	width: 100%;
-	max-width: 1200px;
+.al__inner {
+	max-width: 1080px;
 	margin: 0 auto;
-	container-type: inline-size;
-	container-name: aloader;
-	background: var(--bg-surface);
-	border: 1px solid var(--border-light);
-	border-radius: 20px;
-	padding: clamp(1.75rem, 4vw, 2.75rem);
-	box-shadow:
-		0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
-		0 24px 56px color-mix(in srgb, var(--accent-navy) 10%, transparent);
 }
 
-.analysis-loader__top {
-	margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
-	padding-bottom: clamp(1.25rem, 2vw, 1.75rem);
-	border-bottom: 1px solid var(--border-light);
+.al__head {
+	margin-bottom: 20px;
 }
 
-.analysis-loader__eyebrow {
+.al__eyebrow {
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 0.6875rem;
+	font-size: 12px;
 	font-weight: 500;
-	letter-spacing: 0.18em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--accent-navy);
-	margin-bottom: 0.65rem;
+	margin: 0 0 8px;
 }
 
-.analysis-loader__title {
+.al__clock {
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}
+
+.al__title {
 	font-family: "Newsreader", Georgia, serif;
-	font-size: clamp(1.65rem, 3.5vw, 2.125rem);
-	font-weight: 500;
-	line-height: 1.15;
-	letter-spacing: -0.02em;
+	font-size: clamp(28px, 6vw, 44px);
+	font-weight: 400;
+	line-height: 1.12;
+	letter-spacing: -0.01em;
 	color: var(--text-primary);
-	margin: 0 0 0.65rem;
+	margin: 0 0 18px;
+	overflow-wrap: anywhere;
 }
 
-.analysis-loader__lede {
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.9375rem;
-	line-height: 1.6;
-	color: var(--text-secondary);
-	max-width: 62ch;
-	margin: 0;
-}
-
-/* Progress — time-based estimate (no server streaming) */
-.analysis-loader__progress-block {
-	margin-bottom: clamp(1.5rem, 2.5vw, 2rem);
-}
-
-.analysis-loader__progress-meta {
+/* Four steps, joined by a line that fills as the brief moves on */
+.al-steps {
 	display: grid;
-	grid-template-columns: 1fr auto;
-	gap: 1rem 1.5rem;
-	align-items: end;
-	margin-bottom: 0.65rem;
+	grid-template-columns: repeat(4, 1fr);
+	list-style: none;
+	margin: 0 0 10px;
+	padding: 0;
+	position: relative;
+	max-width: 520px;
 }
 
-@media (max-width: 520px) {
-	.analysis-loader__progress-meta {
-		grid-template-columns: 1fr;
-		align-items: start;
+.al-steps__step {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	position: relative;
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+.al-steps__step + .al-steps__step::before {
+	content: "";
+	position: absolute;
+	top: 14px;
+	right: 50%;
+	width: 100%;
+	height: 2px;
+	background: var(--border-light);
+	z-index: 0;
+}
+
+.al-steps__step--done + .al-steps__step::before {
+	background: var(--accent-navy);
+}
+
+.al-steps__dot {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 2px solid var(--border-medium);
+	background: var(--bg-surface);
+	font-family: "IBM Plex Mono", ui-monospace, monospace;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-muted);
+	transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.al-steps__step--done .al-steps__dot {
+	background: var(--accent-navy);
+	border-color: var(--accent-navy);
+	color: #fff;
+}
+
+.al-steps__step--current .al-steps__dot {
+	border-color: var(--accent-navy);
+	color: var(--accent-navy);
+	animation: al-pulse 1.8s ease-out infinite;
+}
+
+.al-steps__step--current,
+.al-steps__step--done {
+	color: var(--text-primary);
+	font-weight: 500;
+}
+
+@keyframes al-pulse {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-navy) 35%, transparent);
+	}
+	100% {
+		box-shadow: 0 0 0 10px transparent;
 	}
 }
 
-.analysis-loader__elapsed-block {
-	min-width: 0;
-}
-
-.analysis-loader__elapsed-label {
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.625rem;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	margin-bottom: 0.2rem;
-}
-
-.analysis-loader__elapsed-value {
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: clamp(1.75rem, 4vw, 2.25rem);
-	font-weight: 600;
-	font-variant-numeric: tabular-nums;
-	line-height: 1;
-	letter-spacing: -0.02em;
+.al__now {
+	font-size: 15px;
 	color: var(--text-primary);
+	margin: 0 0 4px;
 }
 
-.analysis-loader__progress-track {
-	height: 6px;
-	border-radius: 999px;
-	background: var(--bg-overlay);
-	overflow: hidden;
-	border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
+.al__lede {
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 0;
+	max-width: 60ch;
 }
 
-.analysis-loader__progress-fill {
-	height: 100%;
-	border-radius: 999px;
-	background: linear-gradient(
-		90deg,
-		var(--accent-navy),
-		color-mix(in srgb, var(--accent-navy) 70%, var(--accent))
-	);
-	transition: width 0.65s cubic-bezier(0.4, 0, 0.2, 1);
-	box-shadow: 0 0 16px color-mix(in srgb, var(--accent-navy) 35%, transparent);
+.al__grid {
+	display: grid;
+	gap: 16px;
 }
 
-/* Status column */
-.analysis-loader__status {
-	display: flex;
-	flex-direction: column;
-	gap: 1.25rem;
+.al__col {
+	display: grid;
+	gap: 16px;
+	align-content: start;
 	min-width: 0;
 }
 
-.analysis-loader__tips {
-	padding: 1.1rem 1.2rem;
+@media (min-width: 900px) {
+	.al {
+		padding: 40px 32px 80px;
+	}
+	.al__grid {
+		grid-template-columns: 1.15fr 1fr;
+		gap: 20px;
+	}
+	.al__col {
+		gap: 20px;
+	}
+}
+
+.al-card {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
 	border-radius: 14px;
-	background: color-mix(in srgb, var(--accent-navy-light) 55%, var(--bg-surface));
-	border: 1px solid color-mix(in srgb, var(--accent-navy-border) 65%, var(--border-light));
-	min-height: 7.5rem;
+	padding: 18px;
+	box-shadow:
+		0 1px 2px color-mix(in srgb, var(--text-primary) 4%, transparent),
+		0 12px 32px color-mix(in srgb, var(--accent-navy) 6%, transparent);
+	min-width: 0;
 }
 
-.analysis-loader__tips-label {
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.625rem;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--accent-navy);
-	margin-bottom: 0.5rem;
+.al-card__title {
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin: 0 0 12px;
+	line-height: 1.3;
 }
 
-.analysis-loader__tips-body {
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.9375rem;
-	line-height: 1.58;
-	color: var(--text-secondary);
-	margin: 0;
-	transition: opacity 0.35s ease;
+.al-card__text {
+	font-family: "Newsreader", Georgia, serif;
+	font-size: 18px;
+	line-height: 1.55;
+	color: var(--text-primary);
+	margin: 12px 0 0;
 }
 
-.analysis-loader__steps-head {
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.625rem;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+.al-card__title + .al-card__text {
+	margin-top: 0;
+}
+
+.al-card__note {
+	font-size: 13px;
 	color: var(--text-muted);
-	margin-bottom: 0.65rem;
+	margin: 8px 0 0;
 }
 
-.analysis-loader__steps {
+/* The still map of where the search is about */
+.ci-place-map {
+	height: clamp(200px, 42vw, 300px);
+	border-radius: 10px;
+	overflow: hidden;
+	border: 1px solid var(--border-light);
+	background: #e8eef2;
+}
+
+.ci-place-map .leaflet-control-attribution {
+	font-size: 10px;
+}
+
+/* Sources as they are found */
+.al-sources {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.45rem;
+	display: grid;
+	gap: 10px;
 }
 
-.analysis-loader__step {
-	display: flex;
-	align-items: flex-start;
-	gap: 0.65rem;
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
-	line-height: 1.45;
+.al-sources__item {
+	display: grid;
+	gap: 2px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: var(--bg-subtle);
+	min-width: 0;
+}
+
+.al-sources__publisher {
+	font-family: "IBM Plex Mono", ui-monospace, monospace;
+	font-size: 12px;
+	letter-spacing: 0.04em;
+	color: var(--accent-navy);
+}
+
+.al-sources__title {
+	font-size: 15px;
+	line-height: 1.4;
+	color: var(--text-primary);
+	overflow-wrap: anywhere;
+}
+
+.al-sources__when {
+	font-size: 12px;
 	color: var(--text-muted);
-	transition:
-		color 0.25s ease,
-		opacity 0.25s ease;
 }
 
-
-.analysis-loader__steps {
-	padding-left: 1.5rem;
+/* Placeholder rows while retrieval runs */
+.al-skeleton {
+	display: grid;
+	gap: 10px;
 }
 
-.analysis-loader__steps .analysis-loader__step {
-	display: list-item;
-	list-style: decimal;
-	padding: 0.35rem 0 0.35rem 0.25rem;
-	opacity: 1;
-	color: var(--text-secondary);
+.al-skeleton span {
+	display: block;
+	height: 52px;
+	border-radius: 10px;
+	background: linear-gradient(90deg, var(--bg-subtle) 0%, var(--bg-overlay) 50%, var(--bg-subtle) 100%);
+	background-size: 200% 100%;
+	animation: al-shimmer 1.4s ease-in-out infinite;
 }
 
-.analysis-loader__lede {
-	margin-bottom: 1.25rem;
-}
-
-/* Indeterminate: the server reports no progress, so the bar does not pretend to. */
-.analysis-loader__progress-fill--indeterminate {
-	width: 35%;
-	animation: analysis-loader-slide 1.6s ease-in-out infinite;
-}
-
-@keyframes analysis-loader-slide {
+@keyframes al-shimmer {
 	0% {
-		transform: translateX(-100%);
+		background-position: 100% 0;
 	}
 	100% {
-		transform: translateX(290%);
+		background-position: -100% 0;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.analysis-loader__progress-fill--indeterminate {
-		width: 100%;
-		opacity: 0.45;
+	.al-steps__step--current .al-steps__dot,
+	.al-skeleton span {
 		animation: none;
 	}
-}
-
-/* The step the server reports it is on */
-.analysis-loader__step--done {
-	color: var(--text-muted);
-}
-
-.analysis-loader__step--done span::after {
-	content: " ✓";
-}
-
-.analysis-loader__step--current {
-	color: var(--text-primary);
-	font-weight: 600;
-}
-
-/* Sources shown as soon as retrieval finishes */
-.analysis-loader__found {
-	margin-bottom: 1.25rem;
-}
-
-.analysis-loader__found-list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	gap: 6px;
-	font-family: "Newsreader", Georgia, serif;
-	font-size: 15px;
-	line-height: 1.45;
-	color: var(--text-secondary);
-}
-
-.analysis-loader__found-list strong {
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 11px;
-	font-weight: 500;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	margin-right: 6px;
-}
-
-.analysis-loader__found-note {
-	margin: 8px 0 0;
-	font-size: 13px;
-	color: var(--text-muted);
 }
