@@ -556,6 +556,30 @@
 	margin: 0;
 }
 
+/* Who is involved in a story that is not a conflict: the same cards as perspectives. */
+.ci-stakeholders {
+	display: grid;
+	gap: 10px;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ci-stakeholders__item {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	border: 1px solid var(--border-light);
+	border-radius: 8px;
+	background: var(--bg-surface);
+	padding: 14px 16px;
+}
+
+.ci-stakeholders__stance {
+	color: var(--text-secondary);
+}
+
 .ci-perspective {
 	border: 1px solid var(--border-light);
 	border-radius: 8px;
