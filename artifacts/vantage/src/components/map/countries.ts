@@ -25,6 +25,11 @@ export type CountryIndex = {
 	find(name: string | null | undefined): Country | null;
 	/** Countries sharing a land border, in the map data's order. */
 	neighbours(country: Country): Country[];
+	/**
+	 * The first country named anywhere in free text, such as a search topic:
+	 * "Sudan humanitarian access", "Houthi attacks", "Ukrainian front line".
+	 */
+	scan(text: string): Country | null;
 };
 
 /** Map-data abbreviations, spelled out. */
@@ -102,6 +107,60 @@ const ALIASES: Record<string, string> = {
 	"islamic republic of iran": "Iran",
 };
 
+/**
+ * Words in a search that point to a country without naming it: what people
+ * are called, and regions or groups reporting uses for the whole conflict.
+ * Used only to find the place a search is about, never to name a place.
+ */
+const TEXT_ALIASES: Record<string, string> = {
+	sudanese: "Sudan",
+	darfur: "Sudan",
+	"south sudanese": "S. Sudan",
+	ukrainian: "Ukraine",
+	ukrainians: "Ukraine",
+	russian: "Russia",
+	russians: "Russia",
+	israeli: "Israel",
+	israelis: "Israel",
+	palestinian: "Palestine",
+	palestinians: "Palestine",
+	syrian: "Syria",
+	iranian: "Iran",
+	iraqi: "Iraq",
+	lebanese: "Lebanon",
+	hezbollah: "Lebanon",
+	yemeni: "Yemen",
+	houthi: "Yemen",
+	houthis: "Yemen",
+	afghan: "Afghanistan",
+	taliban: "Afghanistan",
+	haitian: "Haiti",
+	somali: "Somalia",
+	"al shabaab": "Somalia",
+	ethiopian: "Ethiopia",
+	tigray: "Ethiopia",
+	eritrean: "Eritrea",
+	libyan: "Libya",
+	malian: "Mali",
+	burmese: "Myanmar",
+	rohingya: "Myanmar",
+	taiwanese: "Taiwan",
+	venezuelan: "Venezuela",
+	colombian: "Colombia",
+	nigerian: "Nigeria",
+	pakistani: "Pakistan",
+	armenian: "Armenia",
+	azerbaijani: "Azerbaijan",
+	"nagorno karabakh": "Azerbaijan",
+	congolese: "Dem. Rep. Congo",
+	kyiv: "Ukraine",
+	khartoum: "Sudan",
+	"el fasher": "Sudan",
+};
+
+/** Aliases too common as ordinary words to read as a country in free text. */
+const NOT_IN_TEXT = new Set(["us", "car", "america"]);
+
 /** Lower case, no accents, no leading "the", single spaces. */
 export function normalise(name: string): string {
 	return name
@@ -139,10 +198,25 @@ export function buildCountryIndex(topology: Topology): CountryIndex {
 		if (country) byName.set(normalise(alias), country);
 	}
 
+	const inText = new Map([...byName].filter(([name]) => !NOT_IN_TEXT.has(name)));
+	for (const [word, key] of Object.entries(TEXT_ALIASES)) {
+		const country = byName.get(normalise(key));
+		if (country) inText.set(normalise(word), country);
+	}
+	// Longest first, so "south sudan" is found before "sudan".
+	const scanOrder = [...inText.keys()].sort((a, b) => b.length - a.length);
+
 	return {
 		find(name) {
 			if (!name) return null;
 			return byName.get(normalise(name)) ?? null;
+		},
+		scan(text) {
+			const t = ` ${normalise(text)} `;
+			for (const name of scanOrder) {
+				if (t.includes(` ${name} `)) return inText.get(name) ?? null;
+			}
+			return null;
 		},
 		neighbours(country) {
 			const i = countries.indexOf(country);
