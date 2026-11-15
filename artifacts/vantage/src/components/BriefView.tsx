@@ -12,7 +12,7 @@ import { EventTimeline } from "./EventTimeline";
 import { CasualtyPanel } from "./CasualtyPanel";
 import { InteractiveConflictMap } from "./InteractiveConflictMap";
 import { ConflictBackground } from "./ConflictBackground";
-import { KindTag, type Kind } from "./SourceKind";
+import { KindMark, ReadingKey, type Kind } from "./SourceKind";
 import { temporaryLinkNotice } from "@/lib/share-link";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
@@ -73,13 +73,13 @@ function Section({
 }) {
 	const heading = (
 		<>
-			<h2 className="ci-section__title">{title}</h2>
-			<KindTag kind={kind} />
+			<h3 className="ci-section__title">{title}</h3>
+			<KindMark kind={kind} />
 		</>
 	);
 	if (!collapsible) {
 		return (
-			<section id={id} className="ci-section" aria-labelledby={`${id}-h`} tabIndex={-1}>
+			<section id={id} className={`ci-section ci-section--${kind}`} aria-labelledby={`${id}-h`} tabIndex={-1}>
 				<div className="ci-section__head" id={`${id}-h`}>
 					{heading}
 				</div>
@@ -88,7 +88,7 @@ function Section({
 		);
 	}
 	return (
-		<section id={id} className="ci-section" tabIndex={-1}>
+		<section id={id} className={`ci-section ci-section--${kind}`} tabIndex={-1}>
 			<details className="ci-section__details" open={startOpen}>
 				<summary className="ci-section__head ci-section__head--toggle">{heading}</summary>
 				{children}
@@ -164,8 +164,6 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 		titleRef.current?.focus();
 	}, [briefData.id, briefData.headline]);
 
-	// Decided once per page: background sections start folded on a phone.
-	const [wide] = useState(() => window.matchMedia("(min-width: 721px)").matches);
 
 	const countries = useCountries();
 	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
@@ -189,16 +187,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 	const hasComparison =
 		briefData.coverage.agreements.length > 0 || briefData.coverage.differences.length > 0;
 
+	// Three layers, each a step deeper: orientation, then the checked facts, then background.
 	const nav: { id: string; label: string }[] = [
-		{ id: "summary", label: "Summary" },
-		{ id: "map", label: "Map" },
-		{ id: "key-facts", label: "Key facts" },
-		...(hasComparison ? [{ id: "coverage", label: "Coverage" }] : []),
-		{ id: "assessment", label: "Assessment" },
-		{ id: "timeline", label: "Timeline" },
-		{ id: "perspectives", label: "Perspectives" },
-		...(briefData.casualtyData ? [{ id: "population", label: "Population" }] : []),
-		{ id: "context", label: "Context" },
+		{ id: "layer-orient", label: "In 30 seconds" },
+		{ id: "layer-facts", label: "The facts" },
+		{ id: "layer-deeper", label: "Go deeper" },
 		{ id: "sources", label: `Sources (${briefData.sources.length})` },
 	];
 
@@ -282,17 +275,23 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 						</ul>
 					</nav>
 
-					<div className="ci-columns">
-						<div className="ci-main">
-							<InThirtySeconds orientation={briefData.orientation} />
+					<ReadingKey />
+
+					<div className="ci-layers">
+						<section id="layer-orient" className="ci-layer" aria-labelledby="layer-orient-h" tabIndex={-1}>
+							<h2 className="ci-layer__title" id="layer-orient-h">
+								In 30 seconds
+							</h2>
+							{briefData.orientation?.inScope ? (
+								<InThirtySeconds orientation={briefData.orientation} titled={false} glossary={briefData.glossary} used={termsShown} />
+							) : null}
 							<Section id="summary" title="What happened" kind="background" startOpen>
 								<p className="ci-summary">
 									<TermText text={analysis.summary} glossary={briefData.glossary} used={termsShown} />
 								</p>
 								<KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} />
 							</Section>
-
-							{/* Right after the summary: a reader new to the story needs to know where it is before the details. */}
+							<PartiesPanel parties={analysis.parties} />
 							<Section id="map" title="Where this is" kind="background" startOpen>
 								<WhereThisIs brief={briefData} countries={countries} />
 								<div className="ci-map-outer">
@@ -304,7 +303,13 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									confirms them or on the sea or strait they name.
 								</p>
 							</Section>
+						</section>
 
+						<section id="layer-facts" className="ci-layer" aria-labelledby="layer-facts-h" tabIndex={-1}>
+							<h2 className="ci-layer__title" id="layer-facts-h">
+								The facts
+							</h2>
+							<p className="ci-layer__lede">From reporting retrieved for this brief. Every statement quotes its source.</p>
 							<Section id="key-facts" title="Key facts" kind="sourced" startOpen>
 								<p className="ci-section__note">{checkNote(briefData)}</p>
 								<ClaimList
@@ -313,12 +318,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									empty="Nothing in the retrieved sources could be tied to a specific claim, so none is shown."
 								/>
 							</Section>
-
 							{hasComparison && (
 								<Section id="coverage" title="How coverage compares" kind="sourced" startOpen>
 									<div className="ci-compare">
 										<div>
-											<h3 className="ci-compare__head">Where outlets agree</h3>
+											<h4 className="ci-compare__head">Where outlets agree</h4>
 											<ClaimList
 												claims={briefData.coverage.agreements}
 												sources={briefData.sources}
@@ -326,7 +330,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 											/>
 										</div>
 										<div>
-											<h3 className="ci-compare__head">Where framing differs</h3>
+											<h4 className="ci-compare__head">Where framing differs</h4>
 											<ClaimList
 												claims={briefData.coverage.differences}
 												sources={briefData.sources}
@@ -336,9 +340,18 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									</div>
 								</Section>
 							)}
+							<Section id="sources" title={`Sources (${briefData.sources.length})`} kind="retrieved" collapsible startOpen={false}>
+								<RetrievalSummary retrieval={briefData.retrieval} />
+								<SourceList sources={briefData.sources} />
+							</Section>
+						</section>
 
-
-							<Section id="assessment" title="Assessment" kind="background" startOpen>
+						<section id="layer-deeper" className="ci-layer" aria-labelledby="layer-deeper-h" tabIndex={-1}>
+							<h2 className="ci-layer__title" id="layer-deeper-h">
+								Go deeper
+							</h2>
+							<p className="ci-layer__lede">Background from the model&apos;s general knowledge. Tap a heading to open it.</p>
+							<Section id="assessment" title="Where this could go" kind="background" collapsible startOpen={false}>
 								<p className="ci-assessment">
 									<span className="ci-assessment__label">Escalation risk</span>{" "}
 									<strong className={`ci-risk ci-risk--${RISK_CLASS[briefData.escalationRisk]}`}>
@@ -353,40 +366,26 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									</p>
 								) : null}
 							</Section>
-
-							<Section id="timeline" title="Background timeline" kind="background" collapsible startOpen={wide}>
+							<Section id="timeline" title="How we got here" kind="background" collapsible startOpen={false}>
 								<EventTimeline events={briefData.relatedEvents} active={true} onShowOnMap={showOnMap} />
 							</Section>
-
-							<Section id="perspectives" title="Perspectives" kind="background" collapsible startOpen={wide}>
+							<Section id="perspectives" title="How each side sees it" kind="background" collapsible startOpen={false}>
 								<PerspectivesPanel perspectives={briefData.perspectives} active={true} />
 							</Section>
-
 							{briefData.casualtyData && (
-								<Section id="population" title="Affected population" kind="background" collapsible startOpen={wide}>
+								<Section id="population" title="People affected" kind="background" collapsible startOpen={false}>
 									<CasualtyPanel data={briefData.casualtyData} active={true} />
 								</Section>
 							)}
-
 							{briefData.glossary?.length ? (
-								<Section id="words" title="Words to know" kind="background" collapsible startOpen={wide}>
+								<Section id="words" title="Words to know" kind="background" collapsible startOpen={false}>
 									<WordsToKnow glossary={briefData.glossary} />
 								</Section>
 							) : null}
-
-							<Section id="context" title="Historical context" kind="background" collapsible startOpen={wide}>
+							<Section id="context" title="History" kind="background" collapsible startOpen={false}>
 								<ConflictBackground text={analysis.historicalContext} active={true} />
 							</Section>
-
-							<Section id="sources" title="Sources" kind="retrieved" startOpen>
-								<RetrievalSummary retrieval={briefData.retrieval} />
-								<SourceList sources={briefData.sources} />
-							</Section>
-						</div>
-
-						<aside className="ci-sidebar" aria-label="Parties involved">
-							<PartiesPanel parties={analysis.parties} active={true} />
-						</aside>
+						</section>
 					</div>
 
 					<p className="ci-footnote">
