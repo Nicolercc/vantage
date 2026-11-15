@@ -246,6 +246,13 @@ export interface Orientation {
   whyItMatters: string;
 }
 
+export type IntelligenceBriefGlossaryItem = {
+  /** @maxLength 80 */
+  term: string;
+  /** @maxLength 240 */
+  meaning: string;
+};
+
 export type IntelligenceBriefEscalationRisk = typeof IntelligenceBriefEscalationRisk[keyof typeof IntelligenceBriefEscalationRisk];
 
 
@@ -273,6 +280,11 @@ export interface IntelligenceBrief {
   headline: string;
   location: Location;
   orientation?: Orientation | null;
+  /**
+     * @maxItems 8
+     * @nullable
+     */
+  glossary?: IntelligenceBriefGlossaryItem[] | null;
   summary: string;
   actors: string[];
   perspectives: Perspective[];

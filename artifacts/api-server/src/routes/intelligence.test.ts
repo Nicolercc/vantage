@@ -126,6 +126,20 @@ describe("POST /api/intelligence/explore — trust contract", () => {
     expect(res.body).not.toHaveProperty("credibility");
   });
 
+  it("keeps glossary entries only for terms the brief uses", async () => {
+    modelAnswers(
+      modelBrief({
+        summary: "Fighting between the SAF and a paramilitary group continues.",
+        glossary: [
+          { term: "SAF", meaning: "Sudanese Armed Forces, the national army." },
+          { term: "IPC", meaning: "A hunger scale the brief never mentions." },
+        ],
+      }),
+    );
+    const res = await explore("Sudan humanitarian access");
+    expect(res.body.glossary).toEqual([{ term: "SAF", meaning: "Sudanese Armed Forces, the national army." }]);
+  });
+
   it("lists each party once, at most six, when the model repeats itself", async () => {
     const loop = Array.from({ length: 40 }, (_, i) => (i % 2 ? "European Union / Italy" : "International commercial shipping companies"));
     modelAnswers(modelBrief({ actors: ["Houthi movement (Yemen)", "United States", ...loop, " united states ", "Israel", "Iran", "Egypt", "Saudi Arabia"] }));

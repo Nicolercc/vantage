@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { Link } from "wouter";
 import type { IntelligenceBrief } from "@workspace/api-client-react";
 import { InThirtySeconds } from "./InThirtySeconds";
+import { KeyNumbers } from "./KeyNumbers";
+import { TermText, WordsToKnow } from "./Term";
 import "./AnalysisLoader.css";
 import { Shell } from "./Notice";
 import { PerspectivesPanel } from "./PerspectivesPanel";
@@ -177,6 +179,8 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 			: null,
 	);
 
+	// Each defined term is explained once on the page, at its first appearance.
+	const termsShown = new Set<string>();
 	const analysis = adaptBrief(briefData);
 	const regionBits = analysis.region.split("·").map((s) => s.trim());
 	const regionBadge = regionBits[0]?.toUpperCase() ?? "";
@@ -282,7 +286,10 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 						<div className="ci-main">
 							<InThirtySeconds orientation={briefData.orientation} />
 							<Section id="summary" title="What happened" kind="background" startOpen>
-								<p className="ci-summary">{analysis.summary}</p>
+								<p className="ci-summary">
+									<TermText text={analysis.summary} glossary={briefData.glossary} used={termsShown} />
+								</p>
+								<KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} />
 							</Section>
 
 							{/* Right after the summary: a reader new to the story needs to know where it is before the details. */}
@@ -360,6 +367,12 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									<CasualtyPanel data={briefData.casualtyData} active={true} />
 								</Section>
 							)}
+
+							{briefData.glossary?.length ? (
+								<Section id="words" title="Words to know" kind="background" collapsible startOpen={wide}>
+									<WordsToKnow glossary={briefData.glossary} />
+								</Section>
+							) : null}
 
 							<Section id="context" title="Historical context" kind="background" collapsible startOpen={wide}>
 								<ConflictBackground text={analysis.historicalContext} active={true} />

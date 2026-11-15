@@ -153,3 +153,24 @@ export function uniqueActors(raw: unknown): unknown {
   }
   return out;
 }
+
+/** Keep definitions only for terms readers can find in the displayed brief. */
+export function normalizeGlossary(raw: unknown, fields: unknown[]) {
+  if (!Array.isArray(raw)) return null;
+  const text = fields.filter((field): field is string => typeof field === "string").join("\n");
+  const entries: { term: string; meaning: string }[] = [];
+  const seen = new Set<string>();
+  for (const item of raw) {
+    if (typeof item?.term !== "string" || typeof item?.meaning !== "string") continue;
+    const term = item.term.trim();
+    const meaning = item.meaning.trim();
+    const key = term.toLowerCase();
+    if (!term || term.length > 80 || !meaning || meaning.length > 240 || meaning.split(/\s+/).length > 25 || seen.has(key)) continue;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!new RegExp(`(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])`, "iu").test(text)) continue;
+    entries.push({ term, meaning });
+    seen.add(key);
+    if (entries.length === 8) break;
+  }
+  return entries;
+}

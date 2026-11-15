@@ -1048,3 +1048,115 @@ span.ci-source__title {
 		font-size: 18px;
 	}
 }
+
+/* A defined word: dotted underline, a real button for keyboard and tap */
+.ci-term {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	text-decoration: underline dotted;
+	text-decoration-color: var(--accent-navy);
+	text-underline-offset: 4px;
+	text-decoration-thickness: 2px;
+}
+
+.ci-term[aria-expanded="true"] {
+	color: var(--accent-navy);
+}
+
+.ci-term:focus-visible {
+	outline: 2px solid var(--accent-navy);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+.ci-term__def {
+	display: block;
+	margin: 6px 0 8px;
+	padding: 10px 12px;
+	border-left: 3px solid var(--accent-navy);
+	background: var(--accent-navy-light);
+	border-radius: 0 8px 8px 0;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 15px;
+	font-style: normal;
+	line-height: 1.5;
+	color: var(--text-primary);
+}
+
+.ci-term__def[hidden] {
+	display: none;
+}
+
+.ci-term__src {
+	display: block;
+	margin-top: 4px;
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+/* Words to know */
+.ci-words {
+	display: grid;
+	gap: 10px;
+	margin: 0;
+}
+
+.ci-words__item {
+	padding: 10px 12px;
+	background: var(--bg-subtle);
+	border-radius: 10px;
+}
+
+.ci-words dt {
+	font-weight: 600;
+	font-size: 15px;
+	color: var(--text-primary);
+}
+
+.ci-words dd {
+	margin: 2px 0 0;
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--text-secondary);
+}
+
+/* Key numbers: big figures from checked facts */
+.ci-numbers {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 12px;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.ci-numbers__item {
+	display: grid;
+	gap: 6px;
+	padding: 14px 16px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
+	border-radius: 12px;
+}
+
+.ci-numbers__figure {
+	font-family: "Newsreader", Georgia, serif;
+	font-size: clamp(32px, 7vw, 44px);
+	line-height: 1;
+	color: var(--accent-navy);
+	font-variant-numeric: tabular-nums;
+}
+
+.ci-numbers__caption {
+	font-size: 14px;
+	line-height: 1.45;
+	color: var(--text-secondary);
+}
+
+.ci-numbers {
+	margin-top: 18px;
+}

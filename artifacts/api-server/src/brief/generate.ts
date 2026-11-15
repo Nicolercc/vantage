@@ -7,7 +7,7 @@ import { classifyModelError, noteModelFailure, noteModelSuccess } from "../lib/m
 import { logger } from "../lib/logger";
 import { NEVER, until } from "./abort";
 import { GEOCODER_BUDGET_MS, locateBrief } from "./geocode";
-import { extractJSON, normalizeLatLng, tryExtractJsonFallback, uniqueActors } from "./json";
+import { extractJSON, normalizeLatLng, tryExtractJsonFallback, uniqueActors, normalizeGlossary } from "./json";
 import { getOrientation, type Orientation } from "./orientation";
 import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
 import { RETRIEVAL_MAX_MS, searchCoverage, type Coverage } from "./retrieval";
@@ -159,6 +159,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
   // strips anything outside the contract and rejects missing or mistyped fields.
   const candidate = {
     ...parsed,
+    orientation: null,
     id: briefId,
     generatedAt: new Date().toISOString(),
     inScope: parsed["inScope"] !== false,
@@ -185,7 +186,25 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
     retrieval: coverage.retrieval,
   };
 
-  const checked = ExploreConflictResponse.safeParse(candidate);
+  // A definition is kept only for a term the reader can find on the page.
+  const list = (v: unknown) => (Array.isArray(v) ? (v as Array<Record<string, unknown>>) : []);
+  const casualty = (parsed["casualtyData"] ?? {}) as Record<string, unknown>;
+  const glossary = normalizeGlossary(parsed["glossary"], [
+    parsed["headline"],
+    parsed["summary"],
+    ...list(parsed["actors"]),
+    ...[...keyFacts, ...agreements, ...differences].map((claim) => claim.text),
+    ...list(candidate.relatedEvents).flatMap((event) => [event?.["title"], event?.["description"]]),
+    ...list(parsed["perspectives"]).flatMap((p) => [p?.["actor"], p?.["framing"], p?.["interests"]]),
+    parsed["escalationReason"],
+    parsed["keyQuestion"],
+    parsed["historicalContext"],
+    parsed["affectedPopulation"],
+    casualty["description"],
+    casualty["civilianImpact"],
+    casualty["allSides"],
+  ]);
+  const checked = ExploreConflictResponse.safeParse({ ...candidate, glossary });
   if (!checked.success) {
     throw new Error(`brief failed contract: ${checked.error.issues.slice(0, 5).map((i) => `${i.path.join(".")} ${i.message}`).join("; ")}`);
   }

@@ -9,6 +9,7 @@ import type { CasualtyData } from './casualtyData';
 import type { Claim } from './claim';
 import type { CoverageComparison } from './coverageComparison';
 import type { IntelligenceBriefEscalationRisk } from './intelligenceBriefEscalationRisk';
+import type { IntelligenceBriefGlossaryItem } from './intelligenceBriefGlossaryItem';
 import type { IntelligenceBriefLink } from './intelligenceBriefLink';
 import type { Location } from './location';
 import type { Orientation } from './orientation';
@@ -28,6 +29,11 @@ export interface IntelligenceBrief {
   headline: string;
   location: Location;
   orientation?: Orientation | null;
+  /**
+     * @maxItems 8
+     * @nullable
+     */
+  glossary?: IntelligenceBriefGlossaryItem[] | null;
   summary: string;
   actors: string[];
   perspectives: Perspective[];

@@ -441,6 +441,19 @@ components:
           anyOf:
             - $ref: "#/components/schemas/Orientation"
             - type: "null"
+        glossary:
+          type: [array, "null"]
+          maxItems: 8
+          items:
+            type: object
+            properties:
+              term:
+                type: string
+                maxLength: 80
+              meaning:
+                type: string
+                maxLength: 240
+            required: [term, meaning]
         summary:
           type: string
         actors:

@@ -39,6 +39,12 @@ export const analyzeArticleResponseOrientationOneWhoMax = 220;
 
 export const analyzeArticleResponseOrientationOneWhyItMattersMax = 220;
 
+export const analyzeArticleResponseGlossaryItemTermMax = 80;
+
+export const analyzeArticleResponseGlossaryItemMeaningMax = 240;
+
+export const analyzeArticleResponseGlossaryMax = 8;
+
 
 
 
@@ -63,6 +69,10 @@ export const AnalyzeArticleResponse = zod.object({
   "who": zod.string().max(analyzeArticleResponseOrientationOneWhoMax),
   "whyItMatters": zod.string().max(analyzeArticleResponseOrientationOneWhyItMattersMax)
 }),zod.null()]).optional(),
+  "glossary": zod.array(zod.object({
+  "term": zod.string().max(analyzeArticleResponseGlossaryItemTermMax),
+  "meaning": zod.string().max(analyzeArticleResponseGlossaryItemMeaningMax)
+})).max(analyzeArticleResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({
@@ -169,6 +179,12 @@ export const getBriefResponseOrientationOneWhoMax = 220;
 
 export const getBriefResponseOrientationOneWhyItMattersMax = 220;
 
+export const getBriefResponseGlossaryItemTermMax = 80;
+
+export const getBriefResponseGlossaryItemMeaningMax = 240;
+
+export const getBriefResponseGlossaryMax = 8;
+
 
 
 
@@ -193,6 +209,10 @@ export const GetBriefResponse = zod.object({
   "who": zod.string().max(getBriefResponseOrientationOneWhoMax),
   "whyItMatters": zod.string().max(getBriefResponseOrientationOneWhyItMattersMax)
 }),zod.null()]).optional(),
+  "glossary": zod.array(zod.object({
+  "term": zod.string().max(getBriefResponseGlossaryItemTermMax),
+  "meaning": zod.string().max(getBriefResponseGlossaryItemMeaningMax)
+})).max(getBriefResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({
@@ -334,6 +354,12 @@ export const exploreConflictResponseOrientationOneWhoMax = 220;
 
 export const exploreConflictResponseOrientationOneWhyItMattersMax = 220;
 
+export const exploreConflictResponseGlossaryItemTermMax = 80;
+
+export const exploreConflictResponseGlossaryItemMeaningMax = 240;
+
+export const exploreConflictResponseGlossaryMax = 8;
+
 
 
 
@@ -358,6 +384,10 @@ export const ExploreConflictResponse = zod.object({
   "who": zod.string().max(exploreConflictResponseOrientationOneWhoMax),
   "whyItMatters": zod.string().max(exploreConflictResponseOrientationOneWhyItMattersMax)
 }),zod.null()]).optional(),
+  "glossary": zod.array(zod.object({
+  "term": zod.string().max(exploreConflictResponseGlossaryItemTermMax),
+  "meaning": zod.string().max(exploreConflictResponseGlossaryItemMeaningMax)
+})).max(exploreConflictResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({
