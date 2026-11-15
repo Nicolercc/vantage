@@ -32,9 +32,13 @@ type Run = {
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 
-/** One line per measure that is past its limit; empty when the run passes. */
+/**
+ * One line per measure that is past its limit; empty when the run passes.
+ * Only the conflict cohort counts, so adding news cases can neither hide a
+ * conflict regression nor fail a run while their limits are unknown.
+ */
 export function checkThresholds(run: Run, limits = LIMITS): string[] {
-  const all = run.results;
+  const all = run.results.filter((r) => (r.cohort ?? "conflict") === "conflict");
   const inScope = all.filter((r) => r.scope.expected);
   const sum = (f: (r: CaseResult) => number) => inScope.reduce((a, r) => a + f(r), 0);
   const judged = sum((r) => r.judged.supported + r.judged.partly + r.judged.unsupported);

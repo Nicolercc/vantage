@@ -64,10 +64,20 @@ const delay = <T>(ms: number, value: T) =>
   });
 
 /**
+ * A typed search that is plainly not news (a recipe, homework) and that no
+ * outlet reports on is declined without writing. Anything less clear, and any
+ * article a reader supplied, goes to the writer, which can decline too.
+ */
+export function declinesUnwritten(topicType: string | undefined, coverage: Coverage, hasArticle: boolean): boolean {
+  const newsSources = coverage.sources.filter((src) => src.kind === "news").length;
+  return topicType === "not_news" && !hasArticle && newsSources < MIN_NEWS_TO_WRITE;
+}
+
+/**
  * The brief for a search that is not a news story. Nothing is written by the
  * writer; it records what was searched and says so plainly.
  */
-function declineBrief(briefId: string, coverage: Coverage, orientation: Orientation | null) {
+export function declineBrief(briefId: string, coverage: Coverage, orientation: Orientation | null) {
   return ExploreConflictResponse.parse({
     id: briefId,
     generatedAt: new Date().toISOString(),
@@ -411,13 +421,7 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
     const waitedMs = Date.now() - waitStarted;
     if (waitedMs > 50) logger.info({ briefId, waitedMs, classified: Boolean(classified) }, "waited for orientation");
     const topicType = classified?.topicType;
-    const newsSources = coverage.sources.filter((src) => src.kind === "news").length;
-    // A typed search that is plainly not news (a recipe, homework) and that no
-    // outlet reports on is declined without writing. Anything less clear, and
-    // any article a reader supplied, goes to the writer, which can decline too.
-    if (topicType === "not_news" && !supplied && newsSources < MIN_NEWS_TO_WRITE) {
-      return declineBrief(briefId, coverage, classified);
-    }
+    if (declinesUnwritten(topicType, coverage, Boolean(supplied))) return declineBrief(briefId, coverage, classified);
     const { brief } = await generateFromCoverage(
       coverage,
       { topic: input.topic, hasArticle: Boolean(supplied), topicType },

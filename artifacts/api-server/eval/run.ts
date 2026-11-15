@@ -1,12 +1,14 @@
 /**
  * Replay every recorded case through the production brief pipeline and score
- * the result. Needs an API key; costs one brief and one grading call per case.
+ * the result. Needs an API key; costs one orientation call, one brief and one
+ * grading call per case.
  * Run: pnpm --filter @workspace/api-server eval [-- --only sudan,gaza-ceasefire]
  */
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { generateFromCoverage } from "../src/brief/generate";
+import { declineBrief, declinesUnwritten, generateFromCoverage, type GenerationStats } from "../src/brief/generate";
+import { getOrientation } from "../src/brief/orientation";
 import { readingGrade } from "../src/brief/readability";
 import { VERIFIER_MODEL } from "../src/brief/verify";
 import type { Coverage } from "../src/brief/retrieval";
@@ -28,7 +30,11 @@ export type CaseResult = {
   ok: boolean;
   error?: string;
   seconds: number;
+  /** For the conflict cohort, an in-scope case is correct only if it was also briefed as a conflict. */
   scope: { expected: boolean; got: boolean | null; correct: boolean };
+  cohort: "conflict" | "news";
+  /** The orientation's classification, which picks the writer as in production. */
+  type: { expected: string[]; got: string | null; correct: boolean };
   /** "correct" inside the expected region, "none" when no pin was drawn, "wrong" outside it. */
   pin: "correct" | "none" | "wrong" | "n/a";
   pinDetail?: string;
@@ -76,6 +82,7 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
   const base = {
     id: t.id,
     topic: t.topic,
+    cohort: t.cohort,
     sources: recorded.sources.length,
     eventPins: 0,
     readingGrade: null,
@@ -88,10 +95,25 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
     usage: { inputTokens: 0, outputTokens: 0 },
   };
   const started = Date.now();
+  let typeGot: string | null = null;
   try {
-    const { brief, stats } = await generateFromCoverage(recorded, { topic: t.topic, hasArticle: false });
+    // Classify and route exactly as a reader's search would be.
+    const classified = await getOrientation(t.topic, `eval-${t.id}`, new AbortController().signal);
+    const topicType = classified?.topicType;
+    typeGot = topicType ?? null;
+    const unwritten = declinesUnwritten(topicType, recorded, false);
+    const noStats: GenerationStats = {
+      claimsProposed: 0, claimsKept: 0, dropped: [], rejected: [], attempts: 0,
+      usage: { inputTokens: 0, outputTokens: 0 }, verifierUsage: { inputTokens: 0, outputTokens: 0 },
+    };
+    const { brief, stats } = unwritten
+      ? { brief: declineBrief(`eval-${t.id}`, recorded, classified), stats: noStats }
+      : await generateFromCoverage(recorded, { topic: t.topic, hasArticle: false, topicType });
     const seconds = (Date.now() - started) / 1000;
-    const kept = t.inScope ? [...brief.keyFacts, ...brief.coverage.agreements, ...brief.coverage.differences] : [];
+    const moduleClaims = Object.values(brief.modules ?? {}).flatMap((m) =>
+      m ? [...("marketEffect" in m ? m.marketEffect : []), ...("officialGuidance" in m ? m.officialGuidance : []), ...("status" in m ? m.status : [])] : [],
+    );
+    const kept = t.inScope ? [...brief.keyFacts, ...brief.coverage.agreements, ...brief.coverage.differences, ...moduleClaims] : [];
     let graded: Judgement = { claims: [], expected: [] };
     if (t.inScope && brief.inScope) {
       graded = await judge({
@@ -106,7 +128,12 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
       ...base,
       ok: true,
       seconds,
-      scope: { expected: t.inScope, got: brief.inScope, correct: brief.inScope === t.inScope },
+      scope: {
+        expected: t.inScope,
+        got: brief.inScope,
+        correct: brief.inScope === t.inScope && (t.cohort === "news" || !t.inScope || brief.topicType === "conflict"),
+      },
+      type: { expected: t.types, got: typeGot, correct: typeGot !== null && t.types.includes(typeGot as (typeof t.types)[number]) },
       ...pinVerdict(t, brief.location),
       eventPins: brief.relatedEvents.filter((e) => e.lat !== null).length,
       events: brief.relatedEvents.length,
@@ -134,6 +161,7 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
       error: err instanceof Error ? `${err.message}${err.cause instanceof Error ? ` (${err.cause.message})` : ""}` : String(err),
       seconds: (Date.now() - started) / 1000,
       scope: { expected: t.inScope, got: null, correct: false },
+      type: { expected: t.types, got: typeGot, correct: false },
       pin: t.region ? "none" : "n/a",
     };
   }
@@ -147,7 +175,7 @@ for (let i = 0; i < topics.length; i += 2) {
   for (const r of batch) {
     results.push(r);
     console.log(
-      `${r.ok ? "ok  " : "FAIL"} ${r.id.padEnd(20)} ${r.seconds.toFixed(0).padStart(3)}s  claims ${r.claims.kept}/${r.claims.proposed}  judged ${r.judged.supported}/${r.judged.partly}/${r.judged.unsupported}  facts ${r.expected.conveyed}/${r.expected.total}  pin ${r.pin}${r.error ? `  ${r.error}` : ""}`,
+      `${r.ok ? "ok  " : "FAIL"} ${r.id.padEnd(24)} type ${(r.type.got ?? "-").padEnd(14)}${r.type.correct ? " " : "!"} ${r.seconds.toFixed(0).padStart(3)}s  claims ${r.claims.kept}/${r.claims.proposed}  judged ${r.judged.supported}/${r.judged.partly}/${r.judged.unsupported}  facts ${r.expected.conveyed}/${r.expected.total}  pin ${r.pin}${r.error ? `  ${r.error}` : ""}`,
     );
   }
 }

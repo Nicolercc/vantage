@@ -18,11 +18,17 @@ pnpm --filter @workspace/api-server eval --only sudan,gaza-ceasefire
 pnpm --filter @workspace/api-server eval:record     # snapshot topics that have none
 ```
 
-- `topics.ts` — 12 conflict topics and 4 that are out of scope, each with the
-  region its main map pin must fall in.
+- `topics.ts` — two cohorts. The conflict cohort is the original set: 12
+  conflict topics, each with the region its main map pin must fall in, and 3
+  searches that are not news. The news cohort holds topics of other kinds
+  (sport, so far), each
+  with the topic types a correct classification may give. Each case is first
+  classified by the production orientation call, which picks the writer, so a
+  conflict case sent to the general writer counts as a scope error.
 - `cases/*.json` — the sources retrieval returned on the day they were recorded.
   A run replays them, so scores move only when the prompt, the model or the
   checks change. Re-record (`--force`) only on purpose: it resets the baseline.
+  `--only id1,id2` records just those cases, so adding one never touches the rest.
 - `expectations.ts` — facts each brief should carry. Drafted from headlines;
   see "Review by a person" below.
 - `judge.ts` — a stronger model than the one that wrote or verified the brief
@@ -41,7 +47,7 @@ pnpm --filter @workspace/api-server eval:record     # snapshot topics that have 
 
 ## Limits
 
-`thresholds.ts` holds the limits a full run must stay within: every brief produced, scope always right, at least 82% of kept claims fully supported, at most 3% unsupported, no main pin in the wrong region, and on the labelled set at most one unsupported claim past both checks. `pnpm eval -- --check` exits non-zero when any is exceeded. The `Evaluation` workflow runs that weekly, on demand, and on pull requests that touch the brief pipeline; it needs an `ANTHROPIC_API_KEY` repository secret and skips itself without one.
+`thresholds.ts` holds the limits a full run must stay within. They apply to the conflict cohort only; news cases are reported in their own section of the report until they have a run history: every brief produced, scope always right, at least 82% of kept claims fully supported, at most 3% unsupported, no main pin in the wrong region, and on the labelled set at most one unsupported claim past both checks. `pnpm eval -- --check` exits non-zero when any is exceeded. The `Evaluation` workflow runs that weekly, on demand, and on pull requests that touch the brief pipeline; it needs an `ANTHROPIC_API_KEY` repository secret and skips itself without one.
 
 ## Review by a person
 
