@@ -20,6 +20,7 @@ type Run = {
 };
 
 const pct = (n: number, d: number) => (d === 0 ? "n/a" : `${Math.round((100 * n) / d)}% (${n}/${d})`);
+const median = (xs: number[]) => (xs.length ? [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)].toFixed(1) : "n/a");
 const sum = (rows: CaseResult[], f: (r: CaseResult) => number) => rows.reduce((a, r) => a + f(r), 0);
 
 export function renderReport(run: Run): string {
@@ -64,6 +65,7 @@ export function renderReport(run: Run): string {
     `| Main pin in the wrong region | ${pct(inScope.filter((r) => r.pin === "wrong").length, inScope.length)} |`,
     `| No main pin drawn | ${pct(inScope.filter((r) => r.pin === "none").length, inScope.length)} |`,
     `| Timeline events with a map pin | ${pct(sum(done, (r) => r.eventPins), sum(done, (r) => r.events))} |`,
+    `| Reading grade of summaries (median, Flesch-Kincaid; aim 8 or below) | ${median(done.map((r) => r.readingGrade).filter((g): g is number => g !== null))} |`,
     `| Median seconds per brief | ${[...all].map((r) => r.seconds).sort((a, b) => a - b)[Math.floor(all.length / 2)]?.toFixed(0) ?? "n/a"} |`,
     `| Tokens per brief (in / out, mean) | ${Math.round(sum(all, (r) => r.usage.inputTokens) / Math.max(1, all.length))} / ${Math.round(sum(all, (r) => r.usage.outputTokens) / Math.max(1, all.length))} |`,
     "",
