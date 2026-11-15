@@ -176,6 +176,27 @@ function hubTooltipHtml(brief: IntelligenceBrief) {
 </div>`;
 }
 
+type LegendItem = { key: string; label: string; swatch?: { shape: "dot" | "diamond"; color: string } };
+
+/**
+ * One key entry per kind of event on the map, in the colour and shape its
+ * marker is drawn with, so every pin can be matched to its label.
+ */
+export function eventLegend(events: Pick<RelatedEvent, "type">[]): LegendItem[] {
+	const present = new Set(events.map((e) => e.type));
+	return (Object.keys(TYPE_META) as RelatedEventType[])
+		.filter((type) => present.has(type))
+		.map((type) => ({
+			key: type,
+			label: TYPE_META[type].label,
+			swatch: { shape: type === "strike" ? "diamond" : "dot", color: TYPE_META[type].color },
+		}));
+}
+
+/** The view when nothing in the brief can be placed. Never below the map's own minimum zoom. */
+const MIN_ZOOM = 3;
+const WORLD_VIEW: { center: L.LatLngTuple; zoom: number } = { center: [20, 0], zoom: MIN_ZOOM };
+
 const TOOLTIP_OPTS: L.TooltipOptions = {
 	sticky: true,
 	direction: "top",
@@ -217,7 +238,7 @@ export function InteractiveConflictMap({
 			scrollWheelZoom: true,
 			zoomControl: true,
 			attributionControl: true,
-			minZoom: 3,
+			minZoom: MIN_ZOOM,
 			maxZoom: 14,
 			worldCopyJump: true,
 		});
@@ -276,7 +297,7 @@ export function InteractiveConflictMap({
 		});
 		const points = [...(hub ? [hub] : []), ...located.map((l) => l.pos)];
 		if (points.length === 0) {
-			map.setView([20, 0], 2);
+			map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
 			return;
 		}
 
@@ -355,21 +376,11 @@ export function InteractiveConflictMap({
 	const locatedEvents = data.relatedEvents.filter((e) => toLatLng(e) !== null);
 	const unplotted =
 		(hasHub ? 0 : 1) + (data.relatedEvents.length - locatedEvents.length);
-	const presentKinds = [...new Set(locatedEvents.map((e) => markerKind(e)))];
-
-	const legend: { key: string; label: string; swatch?: { shape: "dot" | "diamond"; color: string } }[] = [];
+	const legend: LegendItem[] = [];
 	if (hasHub) {
 		legend.push({ key: "hub", label: "Primary focus", swatch: { shape: "dot", color: "var(--accent-navy, #1a3a52)" } });
 	}
-	if (presentKinds.includes("strike")) {
-		legend.push({ key: "strike", label: "Strike", swatch: { shape: "diamond", color: "#C2536A" } });
-	}
-	if (presentKinds.includes("affected")) {
-		legend.push({ key: "affected", label: "Affected", swatch: { shape: "dot", color: "#E07B39" } });
-	}
-	if (presentKinds.includes("talks")) {
-		legend.push({ key: "talks", label: "Diplomacy", swatch: { shape: "dot", color: "#4A9B8B" } });
-	}
+	legend.push(...eventLegend(locatedEvents));
 	const hubPoint = toLatLng(data.location);
 	const elsewhere = hubPoint
 		? locatedEvents.filter((e) => metresBetween(hubPoint, toLatLng(e)!) > NEARBY_METRES).length

@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("leaflet", () => ({}));
 vi.mock("leaflet/dist/leaflet.css", () => ({}));
 
-import { overlapOffsets } from "./InteractiveConflictMap";
+import { eventLegend, overlapOffsets } from "./InteractiveConflictMap";
 
 describe("overlapOffsets", () => {
 	it("leaves markers in distinct places where they are", () => {
@@ -22,5 +22,19 @@ describe("overlapOffsets", () => {
 		const offsets = overlapOffsets(null, [[15.5, 32.56], [15.5, 32.56]]);
 		expect(offsets[0]).toEqual([0, 0]);
 		expect(offsets[1]).not.toEqual([0, 0]);
+	});
+});
+
+describe("eventLegend", () => {
+	it("labels each kind of event on the map in the colour its marker uses", () => {
+		const legend = eventLegend([{ type: "humanitarian" }, { type: "strike" }, { type: "humanitarian" }]);
+		expect(legend).toEqual([
+			{ key: "strike", label: "Strike", swatch: { shape: "diamond", color: "#C2536A" } },
+			{ key: "humanitarian", label: "Humanitarian", swatch: { shape: "dot", color: "#3B78D4" } },
+		]);
+	});
+
+	it("has no entry for a kind of event that is not on the map", () => {
+		expect(eventLegend([])).toEqual([]);
 	});
 });
