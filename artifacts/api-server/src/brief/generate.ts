@@ -9,7 +9,7 @@ import { NEVER, until } from "./abort";
 import { GEOCODER_BUDGET_MS, locateBrief } from "./geocode";
 import { extractJSON, normalizeLatLng, tryExtractJsonFallback, uniqueActors, normalizeGlossary } from "./json";
 import { getOrientation, type Orientation } from "./orientation";
-import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
+import { buildUserMessage, GENERAL_PROMPT, SYSTEM_PROMPT } from "./prompt";
 import { RETRIEVAL_MAX_MS, searchCoverage, type Coverage } from "./retrieval";
 import { toPublicSource, type Candidate } from "./sources";
 import { checkClaims } from "./support";
@@ -90,6 +90,22 @@ function declineBrief(briefId: string, coverage: Coverage, orientation: Orientat
   });
 }
 
+/** A brief on any other news must say who is involved, and has no conflict sections. */
+export const GeneralBrief = ExploreConflictResponse.required({ stakeholders: true, modules: true });
+
+export type TopicType = NonNullable<ReturnType<typeof ExploreConflictResponse.parse>["topicType"]>;
+const GENERAL_TYPES = new Set<TopicType>(["politics", "business", "technology", "science_health", "disaster", "society"]);
+const CONFLICT_ONLY = ["perspectives", "escalationRisk", "escalationReason", "affectedPopulation", "casualtyData"] as const;
+
+/**
+ * Which writer briefs a topic. Conflicts, and any topic whose type is not
+ * known, get the conflict writer, exactly as before general news existed;
+ * every other type, including a "not news" search that outlets do report on,
+ * gets the general writer.
+ */
+export type Route = "conflict" | TopicType;
+const isGeneral = (route: Route) => route !== "conflict";
+
 const timedOut = () => new AppError(504, "TIMED_OUT", "This brief took too long to prepare. Please try again.");
 
 const providerUnavailable = (cause: unknown) =>
@@ -109,7 +125,8 @@ export type GenerationStats = {
 };
 
 /** One model call, parsed and checked against the evidence and the response contract. */
-async function generateOnce(coverage: Coverage, userMessage: string, onProgress: OnProgress, signal: AbortSignal, briefId: string) {
+async function generateOnce(coverage: Coverage, userMessage: string, route: Route, onProgress: OnProgress, signal: AbortSignal, briefId: string) {
+  const general = isGeneral(route);
   const started = Date.now();
   let message;
   try {
@@ -117,7 +134,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
       {
         model: BRIEF_MODEL,
         max_tokens: 6000,
-        system: SYSTEM_PROMPT,
+        system: general ? GENERAL_PROMPT : SYSTEM_PROMPT,
         messages: [{ role: "user", content: userMessage }],
       },
       // One attempt with a hard deadline: a reader should get an answer or a
@@ -161,37 +178,85 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
 
   // First check, no model: every quote is really in its source, and the claim's
   // figures are in its quotes. A comparison needs quotes from two sources.
+  const rawModules = (general && parsed["modules"] && typeof parsed["modules"] === "object" ? parsed["modules"] : {}) as Record<string, unknown>;
+  const moduleOf = (name: string) => {
+    const m = rawModules[name];
+    return m && typeof m === "object" ? (m as Record<string, unknown>) : null;
+  };
+  // Each module's time-sensitive part is a list of claims, checked like key facts.
+  const MODULES = [
+    { name: "business", names: "companies", claims: "marketEffect" },
+    { name: "disaster", names: "affectedAreas", claims: "officialGuidance" },
+    { name: "outage", names: "servicesAffected", claims: "status" },
+  ] as const;
   const quoted = {
     // More candidates than will be shown: some will not survive the second check.
     keyFacts: checkClaims(parsed["keyFacts"], coverage.sources, 9),
     agreements: checkClaims(rawCoverage["agreements"], coverage.sources, 3, 2),
     differences: checkClaims(rawCoverage["differences"], coverage.sources, 3, 2),
   };
-  const dropped = [...quoted.keyFacts.dropped, ...quoted.agreements.dropped, ...quoted.differences.dropped];
+  const moduleClaims = general ? MODULES.map((m) => checkClaims(moduleOf(m.name)?.[m.claims], coverage.sources, 3)) : [];
+  const dropped = [...quoted.keyFacts.dropped, ...quoted.agreements.dropped, ...quoted.differences.dropped, ...moduleClaims.flatMap((c) => c.dropped)];
   if (dropped.length > 0) logger.info({ dropped }, "claims failed the quote checks");
 
   // Second check: another model reads each claim against its quotes.
   onProgress({ type: "stage", stage: "checking" });
-  const verified = await verifyClaims([quoted.keyFacts.kept, quoted.agreements.kept, quoted.differences.kept], coverage.sources, briefId, signal);
+  const verified = await verifyClaims(
+    [quoted.keyFacts.kept, quoted.agreements.kept, quoted.differences.kept, ...moduleClaims.map((c) => c.kept)],
+    coverage.sources,
+    briefId,
+    signal,
+  );
   if (verified.removed.length > 0) logger.info({ removed: verified.removed }, "claims removed by the verifier");
   // Pasted text is checked against but never sent back or stored, so a quote
   // from it is withheld. (An article supplied by link is public and is quoted.)
   const privateIds = new Set(coverage.sources.filter((src) => src.kind === "article" && src.url === null).map((src) => src.id));
-  const LIMITS = [6, 3, 2];
-  const [keyFacts = [], agreements = [], differences = []] = verified.groups.map((group, i) =>
+  const LIMITS = [6, 3, 2, 3, 3, 3];
+  const [keyFacts = [], agreements = [], differences = [], ...checkedModuleClaims] = verified.groups.map((group, i) =>
     group.slice(0, LIMITS[i]).map((claim) => ({
       ...claim,
       evidence: claim.evidence.map((e) => (privateIds.has(e.sourceId) ? { ...e, quote: "" } : e)),
     })),
   );
-  const claimsKept = keyFacts.length + agreements.length + differences.length;
+  const claimsKept = keyFacts.length + agreements.length + differences.length + checkedModuleClaims.flat().length;
+
+  // Names are background; a module with nothing left in it is left out.
+  const names = (v: unknown) =>
+    (Array.isArray(v) ? v : []).filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean).slice(0, 8);
+  const modules = general
+    ? Object.fromEntries(
+        MODULES.map((m, i) => {
+          const raw = moduleOf(m.name);
+          const listed = names(raw?.[m.names]);
+          const claims = checkedModuleClaims[i] ?? [];
+          return [m.name, raw && (listed.length > 0 || claims.length > 0) ? { [m.names]: listed, [m.claims]: claims } : null];
+        }),
+      )
+    : undefined;
+  const stakeholders = general
+    ? (Array.isArray(parsed["stakeholders"]) ? (parsed["stakeholders"] as Array<Record<string, unknown>>) : [])
+        .map((x) => ({ name: str(x?.["name"]).trim(), role: str(x?.["role"]).trim(), stance: str(x?.["stance"]).trim() }))
+        .filter((x) => x.name)
+        .slice(0, 6)
+    : undefined;
 
   // An out-of-scope topic has no risk level, parties or timeline. The model
   // sometimes says so with "N/A" or by leaving fields out, which would fail the
   // contract and surface as an error. The reader is only ever shown a notice
   // for such a brief, so the unused fields are given neutral values.
   const outOfScope = parsed["inScope"] === false;
-  const neutral = outOfScope
+  const neutral = outOfScope && general
+    ? {
+        headline: str(parsed["headline"]) || "Not a news story",
+        summary: str(parsed["summary"]) || "This search does not look like a news story.",
+        actors: [],
+        stakeholders: [],
+        relatedEvents: [],
+        historicalContext: "",
+        keyQuestion: "",
+        modules: null,
+      }
+    : outOfScope
     ? {
         headline: str(parsed["headline"]) || "Outside scope",
         summary: str(parsed["summary"]) || "This topic is not a conflict, humanitarian crisis or geopolitical tension.",
@@ -209,8 +274,18 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
 
   // Provenance fields are set here and never by the model. The schema parse
   // strips anything outside the contract and rejects missing or mistyped fields.
+  // The general writer's own classification only matters when the
+  // orientation said "not news" and the writer found news after all.
+  const writerType = GENERAL_TYPES.has(parsed["topicType"] as TopicType) ? (parsed["topicType"] as TopicType) : "society";
+  const topicType: TopicType | undefined = !general
+    ? outOfScope ? undefined : "conflict"
+    : outOfScope ? "not_news" : route === "not_news" ? writerType : (route as TopicType);
+  // A brief on other news never shows conflict sections, whatever the model wrote.
+  const ownFields = general ? Object.fromEntries(Object.entries(parsed).filter(([k]) => !(CONFLICT_ONLY as readonly string[]).includes(k))) : parsed;
   const candidate = {
-    ...parsed,
+    ...ownFields,
+    ...(topicType ? { topicType } : {}),
+    ...(general ? { stakeholders, modules } : {}),
     orientation: null,
     id: briefId,
     generatedAt: new Date().toISOString(),
@@ -255,8 +330,10 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
     casualty["description"],
     casualty["civilianImpact"],
     casualty["allSides"],
+    ...(stakeholders ?? []).flatMap((x) => [x.name, x.role, x.stance]),
+    ...checkedModuleClaims.flat().map((claim) => claim.text),
   ]);
-  const checked = ConflictBrief.safeParse({ ...candidate, glossary });
+  const checked = (general ? GeneralBrief : ConflictBrief).safeParse({ ...candidate, glossary });
   if (!checked.success) {
     throw new Error(`brief failed contract: ${checked.error.issues.slice(0, 5).map((i) => `${i.path.join(".")} ${i.message}`).join("; ")}`);
   }
@@ -341,11 +418,14 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
     if (topicType === "not_news" && !supplied && newsSources < MIN_NEWS_TO_WRITE) {
       return declineBrief(briefId, coverage, classified);
     }
-    const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress, stop.signal, briefId);
-    // Only a brief the conflict writer accepted is known to be about a conflict.
-    // Its declines carry no type, so they are written again, not served, once
-    // other news is briefed.
-    return { ...brief, orientation, ...(brief.inScope ? { topicType: "conflict" as const } : {}) };
+    const { brief } = await generateFromCoverage(
+      coverage,
+      { topic: input.topic, hasArticle: Boolean(supplied), topicType },
+      onProgress,
+      stop.signal,
+      briefId,
+    );
+    return { ...brief, orientation };
   })();
   try {
     return await Promise.race([work, expired]);
@@ -361,12 +441,13 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
  */
 export async function generateFromCoverage(
   coverage: Coverage,
-  request: { topic: string; hasArticle: boolean },
+  request: { topic: string; hasArticle: boolean; topicType?: TopicType },
   onProgress: OnProgress = () => {},
   signal: AbortSignal = NEVER,
   briefId = newBriefId(),
 ) {
   const userMessage = buildUserMessage(coverage.sources, request);
+  const route: Route = !request.topicType || request.topicType === "conflict" ? "conflict" : request.topicType;
 
   let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt++) {
@@ -374,7 +455,7 @@ export async function generateFromCoverage(
     const attemptStarted = Date.now();
     try {
       onProgress({ type: "stage", stage: "writing" });
-      const { brief, stats } = await generateOnce(coverage, userMessage, onProgress, signal, briefId);
+      const { brief, stats } = await generateOnce(coverage, userMessage, route, onProgress, signal, briefId);
       onProgress({ type: "stage", stage: "locating" });
       logger.info({ sources: coverage.sources.length, attempt, ...stats.usage, claimsKept: stats.claimsKept }, "brief generated");
       // The model's coordinates are a guess; the map shows only looked-up places.
