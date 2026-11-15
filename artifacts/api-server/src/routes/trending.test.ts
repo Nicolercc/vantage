@@ -14,6 +14,13 @@ import { TrendingService } from "../brief/trending-service";
 import type { HeadlinePull } from "../brief/retrieval/headlines";
 import type { BriefState } from "../lib/brief-state";
 import { DAY_MS } from "../lib/limits";
+import { ORIENTATION_MODEL } from "../brief/orientation";
+
+/**
+ * Briefs written, counted by writer calls. Every brief also makes a small
+ * orientation call to another model, which is not a brief of its own.
+ */
+const writerCalls = () => create.mock.calls.filter(([params]) => params.model !== ORIENTATION_MODEL).length;
 
 const state = () => app.locals["briefs"] as BriefState;
 const service = () => app.locals["trending"] as TrendingService;
@@ -69,25 +76,25 @@ describe("GET /api/trending", () => {
     ]);
     // Al Jazeera, Example News and Example Wire (the 30-hour-old story is out of the window).
     expect(body.outletCount).toBe(3);
-    expect(create).not.toHaveBeenCalled();
+    expect(writerCalls()).toBe(0);
   });
 
   it("warms the top topic on the next refresh, and a reader asking for it is answered from that brief", async () => {
     await service().refresh();
     await service().refresh();
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(writerCalls()).toBe(1);
     const { topics } = GetTrendingResponse.parse((await trending()).body);
     expect(topics[0]?.briefId).toEqual(expect.any(String));
 
-    const calls = create.mock.calls.length;
+    const calls = writerCalls();
     const read = await request(app).post("/api/intelligence/explore").send({ topic: "  sudan " });
     expect(read.status).toBe(200);
     expect(read.body.id).toBe(topics[0]?.briefId);
-    expect(create.mock.calls.length).toBe(calls);
+    expect(writerCalls()).toBe(calls);
 
     // A ready brief is not written again on the following refresh.
     await service().refresh();
-    expect(create.mock.calls.length).toBe(calls);
+    expect(writerCalls()).toBe(calls);
   });
 
   it("counts a warmed brief against the shared daily budget and the cost ledger", async () => {
@@ -105,7 +112,7 @@ describe("GET /api/trending", () => {
     create.mockImplementation(async () => modelText(JSON.stringify(modelBrief({ inScope: false }))));
     await service().refresh();
     await service().refresh();
-    expect(create).toHaveBeenCalled();
+    expect(writerCalls()).toBeGreaterThan(0);
     const { topics } = GetTrendingResponse.parse((await trending()).body);
     expect(topics[0]?.briefId).toBeNull();
   });
@@ -133,22 +140,22 @@ describe("warming within the budget", () => {
     const svc = make({ dailyMax: 1 });
     await svc.refresh();
     await svc.refresh();
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(writerCalls()).toBe(1);
     await svc.refresh();
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(writerCalls()).toBe(1);
   });
 
   it("warms only as many topics as asked, and nothing when set to zero", async () => {
     const one = make({ pregenerate: 1 });
     await one.refresh();
     await one.refresh();
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(writerCalls()).toBe(1);
     create.mockClear();
     resetBriefState(app);
     const none = make({ pregenerate: 0 });
     await none.refresh();
     await none.refresh();
-    expect(create).not.toHaveBeenCalled();
+    expect(writerCalls()).toBe(0);
   });
 
   it("spends nothing once the shared daily budget is gone, so readers are refused no sooner", async () => {
@@ -156,7 +163,7 @@ describe("warming within the budget", () => {
     const svc = make();
     await svc.refresh();
     await svc.refresh();
-    expect(create).not.toHaveBeenCalled();
+    expect(writerCalls()).toBe(0);
     // It gave up at the first refusal: at most that one attempt was charged to its own cap.
     let capLeft = 0;
     while (await state().usage.reserve("budget", "trending", DAY_MS, 24)) capLeft += 1;
