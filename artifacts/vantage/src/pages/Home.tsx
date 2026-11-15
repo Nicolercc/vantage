@@ -22,14 +22,15 @@ const MODES: { id: Mode; label: string }[] = [
 ];
 
 const QUICK_TOPICS = [
-	"Red Sea shipping tensions",
-	"Sudan humanitarian access",
-	"Gaza ceasefire reporting",
-	"Ukraine front-line updates",
+	"Red Sea shipping",
+	"Sudan aid access",
+	"Gaza ceasefire",
+	"Ukraine front line",
 ];
 
+// Text is readable from the first frame; only a short rise is animated.
 const fadeUp = {
-	initial: { opacity: 0, y: 18 },
+	initial: { opacity: 1, y: 8 },
 	animate: { opacity: 1, y: 0 },
 };
 
@@ -211,7 +212,7 @@ export function Home() {
 												placeholder={
 													mode === "url"
 														? "https://…"
-														: "e.g. Gaza ceasefire, Red Sea tensions, Sudan…"
+														: "e.g. Sudan, Red Sea, Gaza"
 												}
 												autoComplete="off"
 												autoCapitalize={mode === "url" ? "off" : "sentences"}
@@ -222,7 +223,7 @@ export function Home() {
 										</>
 									)}
 									<button type="submit" className="home-search__submit">
-										Run briefing
+										Explain this
 									</button>
 								</div>
 								<div id="search-help">
@@ -233,7 +234,7 @@ export function Home() {
 									) : (
 										<p className="home-search__hint">
 											{mode === "topic"
-												? "Search a conflict, crisis or country · No account required"
+												? "A conflict, crisis or country · No account needed"
 												: mode === "url"
 													? "We fetch the public page and brief that article"
 													: `Up to ${ARTICLE_MAX.toLocaleString()} characters · Pasted text stays out of the page address`}
@@ -247,9 +248,9 @@ export function Home() {
 							<p
 								style={{
 									flexBasis: "100%",
-									textAlign: "center",
+									textAlign: "left",
 									fontFamily: "var(--mono)",
-									fontSize: "11px",
+									fontSize: "13px",
 									textTransform: "uppercase",
 									letterSpacing: ".08em",
 									color: "var(--color-text-secondary)",
