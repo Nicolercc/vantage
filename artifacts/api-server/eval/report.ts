@@ -63,6 +63,7 @@ export function renderReport(run: Run): string {
     `| Main pin in the right region | ${pct(inScope.filter((r) => r.pin === "correct").length, inScope.length)} |`,
     `| Main pin in the wrong region | ${pct(inScope.filter((r) => r.pin === "wrong").length, inScope.length)} |`,
     `| No main pin drawn | ${pct(inScope.filter((r) => r.pin === "none").length, inScope.length)} |`,
+    `| Timeline events with a map pin | ${pct(sum(done, (r) => r.eventPins), sum(done, (r) => r.events))} |`,
     `| Median seconds per brief | ${[...all].map((r) => r.seconds).sort((a, b) => a - b)[Math.floor(all.length / 2)]?.toFixed(0) ?? "n/a"} |`,
     `| Tokens per brief (in / out, mean) | ${Math.round(sum(all, (r) => r.usage.inputTokens) / Math.max(1, all.length))} / ${Math.round(sum(all, (r) => r.usage.outputTokens) / Math.max(1, all.length))} |`,
     "",
