@@ -62,7 +62,7 @@ Return ONLY valid JSON — no markdown, no code fences, no preamble. This holds 
       "title": "string",
       "description": "string (1 sentence — why this event is relevant now)",
       "type": "strike" | "escalation" | "negotiation" | "humanitarian" | "political",
-      "place": "string | null (where it happened, as 'City, Country' or 'Region, Country', specific enough to find on a map; null when the event has no single location)",
+      "place": "string | null (where it happened, as specific as the record allows: 'City, Country' or 'Region, Country', e.g. 'El Fasher, North Darfur, Sudan', not 'Sudan'; the country name alone only when the event truly covers the whole country; null when it has no location)",
       "lat": number | null,
       "lng": number | null (your best estimate for that place; null for both when not known),
       "searchQuery": "string (5-8 word Google News query)"
