@@ -1,0 +1,416 @@
+{
+  "id": "news-starship",
+  "topic": "SpaceX Starship",
+  "recordedAt": "2026-11-15T20:20:13.377Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (World)",
+      "publisher": "BBC News",
+      "title": "'Can you believe it?': SpaceX catches part of its Starship rocket on return to Earth",
+      "url": "https://bbc.co.uk/news/videos/cwlym2gy3y3eo",
+      "publishedAt": "2026-11-14T22:09:40.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "SpaceX has performed the historic catch using mechanical arms nicknamed \"chopsticks\".",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "'Can you believe it?': SpaceX catches part of its Starship rocket on return to Earth. SpaceX has performed the historic catch using mechanical arms nicknamed \"chopsticks\"."
+    },
+    {
+      "kind": "news",
+      "provider": "NPR RSS (Technology)",
+      "publisher": "NPR",
+      "title": "SpaceX makes history with Starship catch",
+      "url": "https://npr.org/2026/11/14/nx-s1-6041089/spacex-makes-history-with-starship-catch",
+      "publishedAt": "2026-11-14T22:31:41.000Z",
+      "language": "English",
+      "country": "United States",
+      "excerpt": "SpaceX catches its Starship rocket as it comes back from space for the very first time.",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX makes history with Starship catch. SpaceX catches its Starship rocket as it comes back from space for the very first time."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Newsweek",
+      "title": "What Elon Musk’s SpaceX Starship Catch Means for Moon Missions",
+      "url": "https://newsweek.com/what-elon-musks-spacex-starship-catch-means-for-moon-missions-12717074",
+      "publishedAt": "2026-11-15T03:25:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Starship can’t leave Earth carrying all the rocket fuel, or propellant, it needs to reach orbit and then continue to the Moon. SpaceX therefore plans to refuel Starship in orbit, using other ...",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "What Elon Musk’s SpaceX Starship Catch Means for Moon Missions. Starship can’t leave Earth carrying all the rocket fuel, or propellant, it needs to reach orbit and then continue to the Moon. SpaceX therefore plans to refuel Starship in orbit, using other ..."
+    },
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (Science)",
+      "publisher": "BBC News",
+      "title": "SpaceX successfully catches top of huge Starship rocket for first time",
+      "url": "https://bbc.co.uk/news/articles/ckregdgnl0xpo",
+      "publishedAt": "2026-11-14T22:15:52.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "The rocket stage was caught mid air using huge mechanical arms nicknamed \"chopsticks\".",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX successfully catches top of huge Starship rocket for first time. The rocket stage was caught mid air using huge mechanical arms nicknamed \"chopsticks\"."
+    },
+    {
+      "kind": "news",
+      "provider": "PBS NewsHour RSS",
+      "publisher": "PBS NewsHour",
+      "title": "SpaceX's Starship returns from orbit and is captured by launch pad arms in a dramatic first",
+      "url": "https://pbs.org/newshour/science/spacexs-starship-returns-from-orbit-and-is-captured-by-launch-pad-arms-in-a-dramatic-first",
+      "publishedAt": "2026-11-14T21:56:15.000Z",
+      "language": "English",
+      "country": "United States",
+      "excerpt": "It was the grand finale that Elon Musk and his team hoped for — the first-ever capture of a Starship flying back from space. But with the first-stage booster exploding shortly after Friday's liftoff from Texas, the company fell short of its desired double catch.",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX's Starship returns from orbit and is captured by launch pad arms in a dramatic first. It was the grand finale that Elon Musk and his team hoped for — the first-ever capture of a Starship flying back from space. But with the first-stage booster exploding shortly after Friday's liftoff from Texas, the company fell short of its desired double catch."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "UPI News",
+      "title": "SpaceX catches Starship at launch tower for first time",
+      "url": "https://msn.com/en-us/news/other/spacex-catches-starship-at-launch-tower-for-first-time/ar-AA2hstOz",
+      "publishedAt": "2026-11-14T16:58:24.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "SpaceX caught its Starship spacecraft at its launch tower, the first time the company has recovered the upper stage of a rocket after a flight.",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX catches Starship at launch tower for first time. SpaceX caught its Starship spacecraft at its launch tower, the first time the company has recovered the upper stage of a rocket after a flight."
+    },
+    {
+      "kind": "news",
+      "provider": "The Guardian RSS (Science)",
+      "publisher": "The Guardian",
+      "title": "SpaceX’s Starship returns to launch pad from orbit in victory for company",
+      "url": "https://theguardian.com/science/2026/nov/14/spacex-starship-double-catch",
+      "publishedAt": "2026-11-14T22:35:06.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Although booster exploded, company caught upper stage for first time in campaign to make megarocket reusable SpaceX’s megarocket Starship returned to its Texas launch tower on Saturday, a milestone in the company’s efforts to make the craft suitable for human spaceflight. The 171ft (52-meter) bullet-shaped upper stage…",
+      "id": "S7",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX’s Starship returns to launch pad from orbit in victory for company. Although booster exploded, company caught upper stage for first time in campaign to make megarocket reusable SpaceX’s megarocket Starship returned to its Texas launch tower on Saturday, a milestone in the company’s efforts to make the craft suitable for human spaceflight. The 171ft (52-meter) bullet-shaped upper stage…"
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Space.com",
+      "title": "What's next for SpaceX's Starship after epic Flight 15 chopsticks catch?",
+      "url": "https://msn.com/en-us/news/other/whats-next-for-spacexs-starship-after-epic-flight-15-chopsticks-catch/ar-AA2hto1g",
+      "publishedAt": "2026-11-15T03:00:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "SpaceX just made spaceflight history, catching the upper stage of its Starship megarocket when it returned to Earth. But Starship still has some pretty big boxes left to check.",
+      "id": "S8",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "What's next for SpaceX's Starship after epic Flight 15 chopsticks catch?. SpaceX just made spaceflight history, catching the upper stage of its Starship megarocket when it returned to Earth. But Starship still has some pretty big boxes left to check."
+    },
+    {
+      "kind": "news",
+      "provider": "The Guardian RSS (Science)",
+      "publisher": "The Guardian",
+      "title": "SpaceX’s Starship returns to launch pad from orbit – video",
+      "url": "https://theguardian.com/science/video/2026/nov/15/spacex-starship-returns-launch-pad-video",
+      "publishedAt": "2026-11-15T12:26:27.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "The top part of SpaceX’s megarocket Starship returned to its Texas launch tower on Saturday, a milestone in the company’s efforts to make the craft suitable for human spaceflight. Starship’s 15th test flight was envisioned as a historic double-catch mission, where all parts of the rocket would be returned intact, but…",
+      "id": "S9",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX’s Starship returns to launch pad from orbit – video. The top part of SpaceX’s megarocket Starship returned to its Texas launch tower on Saturday, a milestone in the company’s efforts to make the craft suitable for human spaceflight. Starship’s 15th test flight was envisioned as a historic double-catch mission, where all parts of the rocket would be returned intact, but…"
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Associated Press News",
+      "title": "SpaceX catches its Starship rocket on return from orbit for the first time",
+      "url": "https://apnews.com/video/spacexs-starship-returns-from-orbit-and-is-caught-by-giant-mechanical-arms-at-the-pad-e1fa5975e9fd4ae3bf2130fc2f7efdc5",
+      "publishedAt": "2026-11-14T14:50:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "SpaceX’s Starship made a triumphant return to Earth on Saturday, caught in midair by giant mechanical arms where its journey began 22 hours earlier.",
+      "id": "S10",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX catches its Starship rocket on return from orbit for the first time. SpaceX’s Starship made a triumphant return to Earth on Saturday, caught in midair by giant mechanical arms where its journey began 22 hours earlier."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "CNBC",
+      "title": "SpaceX catches upper stage of Starship rocket in historic first",
+      "url": "https://msn.com/en-us/money/markets/spacex-catches-upper-stage-of-starship-rocket-in-historic-first/ar-AA2hrGZR",
+      "publishedAt": "2026-11-14T13:14:46.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Starship Test Flight 15 marked the first time Elon Musk's company tried to catch both the booster and upper stage of the rocket.",
+      "id": "S11",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "SpaceX catches upper stage of Starship rocket in historic first. Starship Test Flight 15 marked the first time Elon Musk's company tried to catch both the booster and upper stage of the rocket."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Gizmodo",
+      "title": "UPDATED: SpaceX Successfully Salvages Its Attempt to Catch a Starship",
+      "url": "https://gizmodo.com/watch-spacex-try-to-salvage-its-attempt-to-catch-a-starship-2000840083",
+      "publishedAt": "2026-11-14T09:22:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Starship space vehicles, a two-stage system with a Super Heavy booster, and an upper phase with a payload of 26 Starlink satellites; catch the Super Heavy booste ...",
+      "id": "S12",
+      "retrievedAt": "2026-11-15T20:20:13.377Z",
+      "text": "UPDATED: SpaceX Successfully Salvages Its Attempt to Catch a Starship. Starship space vehicles, a two-stage system with a Super Heavy booster, and an upper phase with a payload of 26 Starlink satellites; catch the Super Heavy booste ..."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "SpaceX Starship",
+      "url": "https://en.wikipedia.org/wiki/SpaceX_Starship",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "Starship is a two-stage, fully reusable, super heavy-lift launch vehicle under development by American aerospace company SpaceX. Currently built and launched from Starbase in Texas, it is intended as the successor to the company's Falcon 9 and Falcon Heavy rockets, and is part of SpaceX's broader reusable launch…",
+      "text": "SpaceX Starship. Starship is a two-stage, fully reusable, super heavy-lift launch vehicle under development by American aerospace company SpaceX. Currently built and launched from Starbase in Texas, it is intended as the successor to the company's Falcon 9 and Falcon Heavy rockets, and is part of SpaceX's broader reusable launch system development program. If completed as designed, Starship would be the first fully reusable orbital rocket and have the highest payload capacity of any launch vehicle to date. As of September 28, 2026, Starship has launched 15 times, with 10 successful flights and 5 failures.",
+      "id": "S13",
+      "retrievedAt": "2026-11-15T20:20:13.377Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 6
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "ok",
+      "count": 2
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

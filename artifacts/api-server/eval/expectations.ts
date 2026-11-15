@@ -65,4 +65,26 @@ export const EXPECTATIONS: Record<string, { facts: ExpectedFact[] }> = {
   "south-sudan": {
     facts: [{ fact: "South Sudan rejected claims that it had ordered foreigners to leave.", evidence: /rejects claims of foreigners' expulsion order/i }],
   },
+  // General news. Drafted from the headlines recorded on 2026-11-15; not yet reviewed.
+  "news-airlines-outage": {
+    facts: [
+      { fact: "US flights were halted nationwide after an FAA communications outage.", evidence: /halt flights nationwide after FAA communications outage/i },
+      { fact: "About 9,000 flights were cancelled after the FAA system outage.", evidence: /9,000 cancelled after FAA system outage/i },
+    ],
+  },
+  "news-microsoft-outage": {
+    facts: [
+      { fact: "Microsoft said its services were fully restored after the outage.", evidence: /services fully restored after/i },
+      { fact: "Microsoft ruled out a cyberattack as the cause.", evidence: /rules out cyberattack/i },
+    ],
+  },
+  "news-starship": {
+    facts: [{ fact: "SpaceX caught its Starship upper stage at the launch tower for the first time.", evidence: /catches (its )?Starship (rocket )?(at launch tower|on return from orbit) for the first time/i }],
+  },
+  "news-senate-leader": {
+    facts: [{ fact: "Chris Van Hollen is challenging Chuck Schumer for Senate Democratic leader.", evidence: /Van Hollen to challenge Schumer/i }],
+  },
+  "news-antidepressant": {
+    facts: [{ fact: "An analysis found escitalopram more effective at preventing relapse.", evidence: /escitalopram more effective at preventing relapse/i }],
+  },
 };

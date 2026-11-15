@@ -1,0 +1,276 @@
+{
+  "id": "news-antidepressant",
+  "topic": "escitalopram antidepressant relapse study",
+  "recordedAt": "2026-11-15T20:20:13.702Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (Health)",
+      "publisher": "BBC News",
+      "title": "Antidepressant escitalopram more effective at preventing relapse, analysis finds",
+      "url": "https://bbc.co.uk/news/articles/cv62yyng00jyo",
+      "publishedAt": "2026-11-11T00:17:42.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Three pills came top and outperformed Prozac for preventing relapse in a large number of patients.",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:13.701Z",
+      "text": "Antidepressant escitalopram more effective at preventing relapse, analysis finds. Three pills came top and outperformed Prozac for preventing relapse in a large number of patients."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The News International",
+      "title": "Common antidepressant comes out on top in major study for depression relapse",
+      "url": "https://thenews.com.pk/latest/1423262-common-antidepressant-comes-out-on-top-in-major-study-for-depression-relapse",
+      "publishedAt": "2026-11-11T05:25:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "One drug has come out top in a large analysis of how effective antidepressants are at keeping patients free of symptoms of depression.Escitalopram performed best at preventing patients ...",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:13.701Z",
+      "text": "Common antidepressant comes out on top in major study for depression relapse. One drug has come out top in a large analysis of how effective antidepressants are at keeping patients free of symptoms of depression.Escitalopram performed best at preventing patients ..."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "Escitalopram",
+      "url": "https://en.wikipedia.org/wiki/Escitalopram",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "Escitalopram, sold under the brand names Lexapro and Cipralex, among others, is an antidepressant medication of the selective serotonin reuptake inhibitor (SSRI) class. It is mainly used to treat major depressive disorder, generalized anxiety disorder, panic disorder, obsessive–compulsive disorder (OCD), and social…",
+      "text": "Escitalopram. Escitalopram, sold under the brand names Lexapro and Cipralex, among others, is an antidepressant medication of the selective serotonin reuptake inhibitor (SSRI) class. It is mainly used to treat major depressive disorder, generalized anxiety disorder, panic disorder, obsessive–compulsive disorder (OCD), and social anxiety disorder. Escitalopram is taken by mouth. For commercial use, it is formulated as an oxalate salt exclusively.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:13.701Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

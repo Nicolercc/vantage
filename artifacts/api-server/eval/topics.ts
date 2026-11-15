@@ -41,4 +41,13 @@ export const TOPICS: EvalTopic[] = [
   { id: "oos-python", topic: "how to learn Python programming", ...notNews },
   // Sport is news now; this case was out of scope before general news.
   { id: "oos-football", topic: "Premier League transfer news", ...news("society") },
+  { id: "news-airlines-outage", topic: "usa airlines outage", ...news("technology", "business") },
+  { id: "news-microsoft-outage", topic: "Microsoft outage", ...news("technology", "business") },
+  { id: "news-meta-fine", topic: "Italy fines Meta", ...news("technology", "business", "politics") },
+  { id: "news-nvidia-scandal", topic: "Nvidia Jensen Huang scandal", ...news("business", "technology", "politics") },
+  { id: "news-senate-leader", topic: "Senate Democratic leader race", ...news("politics") },
+  { id: "news-starship", topic: "SpaceX Starship", ...news("science_health", "technology") },
+  { id: "news-antidepressant", topic: "escitalopram antidepressant relapse study", ...news("science_health") },
+  { id: "news-helene-recovery", topic: "Hurricane Helene recovery", ...news("disaster", "politics") },
+  { id: "news-mcilroy", topic: "Rory McIlroy", ...news("society") },
 ];

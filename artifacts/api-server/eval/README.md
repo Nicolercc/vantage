@@ -21,7 +21,7 @@ pnpm --filter @workspace/api-server eval:record     # snapshot topics that have 
 - `topics.ts` — two cohorts. The conflict cohort is the original set: 12
   conflict topics, each with the region its main map pin must fall in, and 3
   searches that are not news. The news cohort holds topics of other kinds
-  (sport, so far), each
+  (an airline outage, a Senate leadership race, a rocket launch, sport), each
   with the topic types a correct classification may give. Each case is first
   classified by the production orientation call, which picks the writer, so a
   conflict case sent to the general writer counts as a scope error.

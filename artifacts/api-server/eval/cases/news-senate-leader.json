@@ -1,0 +1,290 @@
+{
+  "id": "news-senate-leader",
+  "topic": "Senate Democratic leader race",
+  "recordedAt": "2026-11-15T20:20:13.148Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (US and Canada)",
+      "publisher": "BBC News",
+      "title": "Democratic Senate leader Schumer set to face leadership challenge",
+      "url": "https://bbc.co.uk/news/articles/cmy4930jq749o",
+      "publishedAt": "2026-11-13T19:03:10.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Maryland Senator Van Hollen says \"new leadership\" is needed for Democrats following the party's recent midterm successes.",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:13.148Z",
+      "text": "Democratic Senate leader Schumer set to face leadership challenge. Maryland Senator Van Hollen says \"new leadership\" is needed for Democrats following the party's recent midterm successes."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Los Angeles Times",
+      "title": "Van Hollen to challenge Schumer for Senate Democratic leader",
+      "url": "https://latimes.com/world-nation/story/2026-11-13/van-hollen-to-challenge-schumer-for-senate-democratic-leader",
+      "publishedAt": "2026-11-13T07:53:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Democratic Sen. Chris Van Hollen of Maryland said in a statement that “the American people called for change” and that is why he is running.",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:13.148Z",
+      "text": "Van Hollen to challenge Schumer for Senate Democratic leader. Democratic Sen. Chris Van Hollen of Maryland said in a statement that “the American people called for change” and that is why he is running."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "U.S. News & World Report",
+      "title": "Could Chuck Schumer Be Replaced as Senate Democratic Leader?",
+      "url": "https://usnews.com/news/politics/articles/2026-11-11/could-chuck-schumer-be-replaced-as-senate-democratic-leader",
+      "publishedAt": "2026-11-11T10:08:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Democrats hold slight leads in two outstanding Senate races in Alaska and Mississippi. The Democrats in those races, Mary Peltola of Alaska and Scott Colom of Mississippi, were recruited by Schumer.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:13.148Z",
+      "text": "Could Chuck Schumer Be Replaced as Senate Democratic Leader?. Democrats hold slight leads in two outstanding Senate races in Alaska and Mississippi. The Democrats in those races, Mary Peltola of Alaska and Scott Colom of Mississippi, were recruited by Schumer."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "2026 United States Senate election in Maine",
+      "url": "https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Maine",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "The 2026 United States Senate election in Maine was held on November 3, 2026, to elect a member of the United States Senate to represent the state of Maine. Democratic former state Senate president Troy Jackson defeated Republican incumbent Susan Collins. The election was conducted with ranked-choice voting.",
+      "text": "2026 United States Senate election in Maine. The 2026 United States Senate election in Maine was held on November 3, 2026, to elect a member of the United States Senate to represent the state of Maine. Democratic former state Senate president Troy Jackson defeated Republican incumbent Susan Collins. The election was conducted with ranked-choice voting.",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:13.148Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 2
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

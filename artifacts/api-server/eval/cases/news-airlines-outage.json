@@ -1,0 +1,318 @@
+{
+  "id": "news-airlines-outage",
+  "topic": "usa airlines outage",
+  "recordedAt": "2026-11-15T20:20:11.553Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "Dawn RSS",
+      "publisher": "Dawn",
+      "title": "'Check, one two': Technical glitch hits US presser on air travel chaos",
+      "url": "https://dawn.com/news/2044519/check-one-two-technical-glitch-hits-us-presser-on-air-travel-chaos",
+      "publishedAt": "2026-11-14T18:50:41.000Z",
+      "language": "English",
+      "country": "Pakistan",
+      "excerpt": "Trump administration officials were left red-faced on Saturday when their public effort to address the massive tech disruption that grounded thousands of US flights was itself hit with embarrassing technical glitches. Secretary of Transportation Sean Duffy took the podium and began addressing a much-anticipated and…",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:11.553Z",
+      "text": "'Check, one two': Technical glitch hits US presser on air travel chaos. Trump administration officials were left red-faced on Saturday when their public effort to address the massive tech disruption that grounded thousands of US flights was itself hit with embarrassing technical glitches. Secretary of Transportation Sean Duffy took the podium and began addressing a much-anticipated and…"
+    },
+    {
+      "kind": "news",
+      "provider": "The Guardian RSS (Business)",
+      "publisher": "The Guardian",
+      "title": "Microsoft outage shakes up companies, schools and local governments across US",
+      "url": "https://theguardian.com/technology/2026/nov/13/microsoft-outage-shakes-up-companies-local-governments",
+      "publishedAt": "2026-11-13T21:13:59.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Local officials warn some services remain unavailable even as Outlook starts to resume normal operations after outage Microsoft outage – live updates The Microsoft Outlook outage has shaken up companies and local governments across the US that use its suite of email, calendar, video conferencing and cloud storage…",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:11.553Z",
+      "text": "Microsoft outage shakes up companies, schools and local governments across US. Local officials warn some services remain unavailable even as Outlook starts to resume normal operations after outage Microsoft outage – live updates The Microsoft Outlook outage has shaken up companies and local governments across the US that use its suite of email, calendar, video conferencing and cloud storage…"
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "MEAWW News",
+      "title": "US airports halt flights nationwide after FAA communications outage disrupts air traffic control",
+      "url": "https://news.meaww.com/us-airports-halt-flights-nationwide-after-faa-communications-outage-disrupts-air-traffic-control",
+      "publishedAt": "2026-11-13T18:43:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "The disruption came as more than 11,000 flights carrying over 1.5 million passengers were scheduled to depart US airports after 4 pm ET on Friday, November 13 ...",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:11.553Z",
+      "text": "US airports halt flights nationwide after FAA communications outage disrupts air traffic control. The disruption came as more than 11,000 flights carrying over 1.5 million passengers were scheduled to depart US airports after 4 pm ET on Friday, November 13 ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Sunday Guardian Live",
+      "title": "Microsoft outage: Why were thousands of US flights cancelled? Microsoft denies link as FAA system failure triggers nationwide travel chaos",
+      "url": "https://msn.com/en-in/news/other/microsoft-outage-why-were-thousands-of-us-flights-cancelled-microsoft-denies-link-as-faa-system-failure-triggers-nationwide-travel-chaos/ar-AA2hr0IN",
+      "publishedAt": "2026-11-14T08:28:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "India, Nov. 14 -- US Flights Cancelled Amid Microsoft Outage: The United States faced a major aviation disruption after thousands of flights were delayed or cancelled following a nationwide Federal ...",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:11.553Z",
+      "text": "Microsoft outage: Why were thousands of US flights cancelled? Microsoft denies link as FAA system failure triggers nationwide travel chaos. India, Nov. 14 -- US Flights Cancelled Amid Microsoft Outage: The United States faced a major aviation disruption after thousands of flights were delayed or cancelled following a nationwide Federal ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "beinsure",
+      "title": "US airports flights grounded: 9,000 cancelled after FAA system outage",
+      "url": "https://beinsure.com/news/us-airports-flights-grounded-8000-cancelled-after-faa-system-outage",
+      "publishedAt": "2026-11-14T09:58:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "US airports flights grounded by a nationwide FAA outage face thousands more cancellations as router failures disrupt air traffic control and airline operations ...",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:11.553Z",
+      "text": "US airports flights grounded: 9,000 cancelled after FAA system outage. US airports flights grounded by a nationwide FAA outage face thousands more cancellations as router failures disrupt air traffic control and airline operations ..."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "2026 FAA nationwide ground stop",
+      "url": "https://en.wikipedia.org/wiki/2026_FAA_nationwide_ground_stop",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "On November 13, 2026, at 20:54 UTC, the Federal Aviation Administration (FAA) issued a nationwide ground stop across the United States due to a communication outage. Originating from and first issued at O'Hare International Airport and Midway International Airport in Chicago, the FAA ordered all airports to…",
+      "text": "2026 FAA nationwide ground stop. On November 13, 2026, at 20:54 UTC, the Federal Aviation Administration (FAA) issued a nationwide ground stop across the United States due to a communication outage. Originating from and first issued at O'Hare International Airport and Midway International Airport in Chicago, the FAA ordered all airports to immediately ground flights due to \"extraordinary circumstances and for reasons of safety\". The ground stop was lifted at 01:15 UTC, four hours and twenty-one minutes later.",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:11.553Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 3
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

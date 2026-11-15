@@ -1,0 +1,416 @@
+{
+  "id": "news-mcilroy",
+  "topic": "Rory McIlroy",
+  "recordedAt": "2026-11-15T20:20:14.231Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Yahoo Sports",
+      "title": "Rory McIlroy Wins Eighth Title, Dedicates It To Ailing Father",
+      "url": "https://sports.yahoo.com/articles/rory-mcilroy-wins-eighth-title-184403874.html",
+      "publishedAt": "2026-11-15T10:44:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory McIlroy captured his eighth Race to Dubai title on Sunday but the real story was his emotional tribute to his hospitalized father, Gerry.",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy Wins Eighth Title, Dedicates It To Ailing Father. Rory McIlroy captured his eighth Race to Dubai title on Sunday but the real story was his emotional tribute to his hospitalized father, Gerry."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Yahoo Sports",
+      "title": "How Much Money Did Rory McIlroy Get for Race to Dubai Win?",
+      "url": "https://sports.yahoo.com/articles/much-money-did-rory-mcilroy-172906552.html",
+      "publishedAt": "2026-11-15T09:29:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory McIlroy left Dubai with another piece of golf history and a multimillion-dollar payday. Although Tyrrell Hatton won the DP World Tour Championship on Sunday, November 15, McIlroy’s second-place ...",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "How Much Money Did Rory McIlroy Get for Race to Dubai Win?. Rory McIlroy left Dubai with another piece of golf history and a multimillion-dollar payday. Although Tyrrell Hatton won the DP World Tour Championship on Sunday, November 15, McIlroy’s second-place ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "USA TODAY",
+      "title": "Rory McIlroy fights back tears after revealing family health issue",
+      "url": "https://msn.com/en-us/sports/motorsports/rory-mcilroy-fights-back-tears-after-revealing-family-health-issue/ar-AA2huboV",
+      "publishedAt": "2026-11-15T09:46:14.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "After wrapping up his record-tying eighth championship, Rory McIlroy revealed his father has been hospitalized while recovering from surgery.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy fights back tears after revealing family health issue. After wrapping up his record-tying eighth championship, Rory McIlroy revealed his father has been hospitalized while recovering from surgery."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "ESPN",
+      "title": "Rory McIlroy tearfully dedicates Dubai title to ailing father: 'This one's for him'",
+      "url": "https://msn.com/en-us/news/other/rory-mcilroy-tearfully-dedicates-dubai-title-to-ailing-father-this-ones-for-him/ar-AA2htgF1",
+      "publishedAt": "2026-11-15T07:05:50.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory McIlroy captured the seasonlong Race to Dubai golf title for a record-tying eighth time when he secured a top-two finish at the World Tour Championship.",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy tearfully dedicates Dubai title to ailing father: 'This one's for him'. Rory McIlroy captured the seasonlong Race to Dubai golf title for a record-tying eighth time when he secured a top-two finish at the World Tour Championship."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "CBS Sports",
+      "title": "Rory McIlroy claims record eighth Race to Dubai crown despite Tyrrell Hatton taking DP World Tour Championship",
+      "url": "https://msn.com/en-us/news/other/rory-mcilroy-claims-record-eighth-race-to-dubai-crown-despite-tyrrell-hatton-taking-dp-world-tour-championship/ar-AA2htVGk",
+      "publishedAt": "2026-11-15T07:00:49.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "It came down to the wire, but McIlroy emerged as the top man in Europe once again, this time to conclude the 2026 season ...",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy claims record eighth Race to Dubai crown despite Tyrrell Hatton taking DP World Tour Championship. It came down to the wire, but McIlroy emerged as the top man in Europe once again, this time to conclude the 2026 season ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "USA TODAY",
+      "title": "Rory McIlroy equals Colin Montgomerie record with 8th Race to Dubai title",
+      "url": "https://usatoday.com/story/sports/golf/2026/11/15/rory-mcilroy-race-dubai-record-eighth-title-colin-montgomerie/92795478007",
+      "publishedAt": "2026-11-15T07:51:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory McIlroy secured a record-equalling eighth Race to Dubai title, matching Colin Montgomerie's mark for the most Order of Merit victories.",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy equals Colin Montgomerie record with 8th Race to Dubai title. Rory McIlroy secured a record-equalling eighth Race to Dubai title, matching Colin Montgomerie's mark for the most Order of Merit victories."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "NBC New York",
+      "title": "Rory McIlroy wins season-long title on European tour for record-tying 8th time",
+      "url": "https://nbcnewyork.com/news/sports/golf/rory-mcilroy-wins-race-to-dubai-european-tour-record/6572576",
+      "publishedAt": "2026-11-15T06:29:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory McIlroy captured the season-long Race to Dubai title on the European tour for a record-tying eighth time with his second-place finish Sunday.",
+      "id": "S7",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy wins season-long title on European tour for record-tying 8th time. Rory McIlroy captured the season-long Race to Dubai title on the European tour for a record-tying eighth time with his second-place finish Sunday."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Bleacher Report",
+      "title": "Rory McIlroy Makes History, Final Scores and Top Highlights from 2026 Race to Dubai Golf Title Win",
+      "url": "https://bleacherreport.com/articles/25533550-rory-mcilroy-makes-history-final-scores-and-top-highlights-2026-race-dubai-golf-title-win",
+      "publishedAt": "2026-11-15T05:25:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "A runner-up finish in the DP World Tour Championship was enough for Rory McIlroy to secure another Race to Dubai title.",
+      "id": "S8",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Rory McIlroy Makes History, Final Scores and Top Highlights from 2026 Race to Dubai Golf Title Win. A runner-up finish in the DP World Tour Championship was enough for Rory McIlroy to secure another Race to Dubai title."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Golf Digest",
+      "title": "Crazy Eight: Rory McIlroy clinches a record-tying eighth Race to Dubai title",
+      "url": "https://golfdigest.com/story/rory-mcilroy-clinches-a-historic-eighth-race-to-dubai-title-dp-world-tour",
+      "publishedAt": "2026-11-15T05:04:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "For McIlroy, more history. Besides being the eighth Race to Dubai title of his career, it is his fifth straight. His case for being Europe’s greatest player was certainly boosted today. No European ...",
+      "id": "S9",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Crazy Eight: Rory McIlroy clinches a record-tying eighth Race to Dubai title. For McIlroy, more history. Besides being the eighth Race to Dubai title of his career, it is his fifth straight. His case for being Europe’s greatest player was certainly boosted today. No European ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Golf Channel",
+      "title": "‘This one’s for him': Rory McIlroy emotionally dedicates Race to Dubai win to ailing dad",
+      "url": "https://golfchannel.com/dp-world-tour/news/rory-mcilroy-gets-emotional-while-dedicating-race-to-dubai-win-to-ailing-father",
+      "publishedAt": "2026-11-15T00:14:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "McIlroy said his father, Gerry, had a \"serious operation in September,\" and told his son to go win the Race to Dubai.",
+      "id": "S10",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "‘This one’s for him': Rory McIlroy emotionally dedicates Race to Dubai win to ailing dad. McIlroy said his father, Gerry, had a \"serious operation in September,\" and told his son to go win the Race to Dubai."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Associated Press- Sports",
+      "title": "Tearful Rory McIlroy wins season-long title on European tour for record-tying 8th time",
+      "url": "https://msn.com/en-us/news/other/tearful-rory-mcilroy-wins-season-long-title-on-european-tour-for-record-tying-8th-time/ar-AA2htxrT",
+      "publishedAt": "2026-11-15T04:04:03.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "DUBAI, United Arab Emirates (AP) — Rory McIlroy flew to the Middle East two weeks ago in a quest to make more golfing history and with the parting words of his hospital-bound father, Gerry, providing ...",
+      "id": "S11",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Tearful Rory McIlroy wins season-long title on European tour for record-tying 8th time. DUBAI, United Arab Emirates (AP) — Rory McIlroy flew to the Middle East two weeks ago in a quest to make more golfing history and with the parting words of his hospital-bound father, Gerry, providing ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Kansas City Star",
+      "title": "Emotional Rory McIlroy wins 8th Race to Dubai",
+      "url": "https://kansascity.com/sports/golf/article318090702.html",
+      "publishedAt": "2026-11-15T03:49:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "An emotional Rory McIlroy shot a 67 to finish second at the DP World Tour Championship, his 10-under 278 good enough to win the Race to Dubai for a record-tying eighth time.",
+      "id": "S12",
+      "retrievedAt": "2026-11-15T20:20:14.231Z",
+      "text": "Emotional Rory McIlroy wins 8th Race to Dubai. An emotional Rory McIlroy shot a 67 to finish second at the DP World Tour Championship, his 10-under 278 good enough to win the Race to Dubai for a record-tying eighth time."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "Rory McIlroy",
+      "url": "https://en.wikipedia.org/wiki/Rory_McIlroy",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "Rory Daniel McIlroy is a Northern Irish professional golfer who plays on the PGA Tour and the European Tour. He is a former world number one in the Official World Golf Ranking and has spent over 100 weeks in that position during his career. A six-time major champion, he is the sixth man to complete the modern career…",
+      "text": "Rory McIlroy. Rory Daniel McIlroy is a Northern Irish professional golfer who plays on the PGA Tour and the European Tour. He is a former world number one in the Official World Golf Ranking and has spent over 100 weeks in that position during his career. A six-time major champion, he is the sixth man to complete the modern career grand slam—after Gene Sarazen, Ben Hogan, Gary Player, Jack Nicklaus, and Tiger Woods—and the first European to do so.",
+      "id": "S13",
+      "retrievedAt": "2026-11-15T20:20:14.231Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 12
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

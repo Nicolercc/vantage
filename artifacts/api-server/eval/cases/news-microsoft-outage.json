@@ -1,0 +1,416 @@
+{
+  "id": "news-microsoft-outage",
+  "topic": "Microsoft outage",
+  "recordedAt": "2026-11-15T20:20:12.056Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "The Hindu RSS",
+      "publisher": "The Hindu",
+      "title": "How the Microsoft outage affected millions worldwide | Explained",
+      "url": "https://thehindu.com/sci-tech/technology/microsoft-outage-why-did-microsoft-outlook-and-other-products-go-offline-globally/article71696554.ece",
+      "publishedAt": "2026-11-15T13:24:58.000Z",
+      "language": "English",
+      "country": "India",
+      "excerpt": "The number of affected services came with significant consequences for professional users as well as entire sectors",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "How the Microsoft outage affected millions worldwide | Explained. The number of affected services came with significant consequences for professional users as well as entire sectors"
+    },
+    {
+      "kind": "news",
+      "provider": "Dawn RSS",
+      "publisher": "Dawn",
+      "title": "Microsoft announces service 'restored', global outage over",
+      "url": "https://dawn.com/news/2044507/microsoft-announces-service-restored-global-outage-over",
+      "publishedAt": "2026-11-14T17:28:45.000Z",
+      "language": "English",
+      "country": "Pakistan",
+      "excerpt": "Tech giant Microsoft said on Saturday it has “restored service” to customers, effectively drawing a close to a massive outage that caused chaos and disrupted public services and business around the world. “We have completed our efforts to address the underlying issue of the incident and restored service to the…",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft announces service 'restored', global outage over. Tech giant Microsoft said on Saturday it has “restored service” to customers, effectively drawing a close to a massive outage that caused chaos and disrupted public services and business around the world. “We have completed our efforts to address the underlying issue of the incident and restored service to the…"
+    },
+    {
+      "kind": "news",
+      "provider": "Africanews RSS",
+      "publisher": "Africanews",
+      "title": "Microsoft apologises for global outage and rules out cyberattack",
+      "url": "http://africanews.com/2026/11/14/microsoft-apologises-for-global-outage-and-rules-out-cyberattack",
+      "publishedAt": "2026-11-14T14:34:21.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "The tech giant said on Saturday that service has now been restored across Teams, Outlook, and its other products, ending the shutdown.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft apologises for global outage and rules out cyberattack. The tech giant said on Saturday that service has now been restored across Teams, Outlook, and its other products, ending the shutdown."
+    },
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (Business)",
+      "publisher": "BBC News",
+      "title": "Microsoft says services fully restored after day-long global outage",
+      "url": "https://bbc.co.uk/news/articles/c6rrg51rkz09o",
+      "publishedAt": "2026-11-14T06:42:27.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Efforts to address the underlying problem with Outlook, Teams and Copilot are complete, the tech firm says.",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft says services fully restored after day-long global outage. Efforts to address the underlying problem with Outlook, Teams and Copilot are complete, the tech firm says."
+    },
+    {
+      "kind": "news",
+      "provider": "NPR RSS (Business)",
+      "publisher": "NPR",
+      "title": "A negative Outlook: Microsoft scrambles to fix email outage",
+      "url": "https://npr.org/2026/11/12/nx-s1-6039343/outlook-down-widespread-outage-microsoft-email",
+      "publishedAt": "2026-11-13T01:26:24.000Z",
+      "language": "English",
+      "country": "United States",
+      "excerpt": "Early Friday, after Outlook had been down for more than 12 hours, Microsoft reported \"marginal success.\"",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "A negative Outlook: Microsoft scrambles to fix email outage. Early Friday, after Outlook had been down for more than 12 hours, Microsoft reported \"marginal success.\""
+    },
+    {
+      "kind": "news",
+      "provider": "South China Morning Post RSS (Business)",
+      "publisher": "South China Morning Post",
+      "title": "Microsoft Outlook outage puts Hong Kong’s financial sector on hold",
+      "url": "https://scmp.com/business/banking-finance/article/3374291/microsoft-outlook-outage-disrupts-workers-hong-kongs-financial-sector",
+      "publishedAt": "2026-11-13T03:44:09.000Z",
+      "language": "English",
+      "country": "Hong Kong",
+      "excerpt": "A multihour outage of Microsoft’s office software Outlook, beginning on Friday morning, severely disrupted work in Hong Kong’s financial sector, according to staff members at several of the city’s investment banks. Some bankers from Goldman Sachs and Nomura said their work had been interrupted, the South China Morning…",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft Outlook outage puts Hong Kong’s financial sector on hold. A multihour outage of Microsoft’s office software Outlook, beginning on Friday morning, severely disrupted work in Hong Kong’s financial sector, according to staff members at several of the city’s investment banks. Some bankers from Goldman Sachs and Nomura said their work had been interrupted, the South China Morning…"
+    },
+    {
+      "kind": "news",
+      "provider": "The Hindu RSS",
+      "publisher": "The Hindu",
+      "title": "Microsoft says services fully restored after hourslong global outage",
+      "url": "https://thehindu.com/sci-tech/technology/microsoft-says-consumer-products-services-recovered-still-monitoring-enterprise-services/article71701075.ece",
+      "publishedAt": "2026-11-14T09:58:34.000Z",
+      "language": "English",
+      "country": "India",
+      "excerpt": "The ‌technology giant said it was “monitoring the backlog of email messages ‌accrued during this ​event” before considering the issue with ⁠the enterprise services resolved.",
+      "id": "S7",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft says services fully restored after hourslong global outage. The ‌technology giant said it was “monitoring the backlog of email messages ‌accrued during this ​event” before considering the issue with ⁠the enterprise services resolved."
+    },
+    {
+      "kind": "news",
+      "provider": "Africanews RSS",
+      "publisher": "Africanews",
+      "title": "Outlook outage hits users in 74 countries as Microsoft seeks fix",
+      "url": "http://africanews.com/2026/11/13/outlook-outage-hits-users-in-74-countries-as-microsoft-seeks-fix",
+      "publishedAt": "2026-11-13T10:53:46.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Microsoft said on Thursday that efforts to repair a major outage of Outlook were not going as expected and the firm was seeking alternative solutions as users around the world were left without its crucial services.",
+      "id": "S8",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Outlook outage hits users in 74 countries as Microsoft seeks fix. Microsoft said on Thursday that efforts to repair a major outage of Outlook were not going as expected and the firm was seeking alternative solutions as users around the world were left without its crucial services."
+    },
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (Business)",
+      "publisher": "BBC News",
+      "title": "Why is Microsoft's outage lasting so long and will emails be lost?",
+      "url": "https://bbc.co.uk/news/articles/cwvg238zrnm5o",
+      "publishedAt": "2026-11-13T18:36:57.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Microsoft says it is continuing to restore services including Outlook and Teams following a global outage.",
+      "id": "S9",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Why is Microsoft's outage lasting so long and will emails be lost?. Microsoft says it is continuing to restore services including Outlook and Teams following a global outage."
+    },
+    {
+      "kind": "news",
+      "provider": "NPR RSS (Technology)",
+      "publisher": "NPR",
+      "title": "Microsoft outage disrupts work and gives some a chance to unplug",
+      "url": "https://npr.org/2026/11/13/nx-s1-6040004/microsoft-outage-disrupts-work-and-gives-some-a-chance-to-unplug",
+      "publishedAt": "2026-11-13T21:06:07.000Z",
+      "language": "English",
+      "country": "United States",
+      "excerpt": "Millions of individuals, organizations and businesses were left without access to Microsoft's Outlook email on Thursday. Some people celebrated a day without email, while others work around obstacles.",
+      "id": "S10",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft outage disrupts work and gives some a chance to unplug. Millions of individuals, organizations and businesses were left without access to Microsoft's Outlook email on Thursday. Some people celebrated a day without email, while others work around obstacles."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "CBS News",
+      "title": "Microsoft seeing continued recovery amid major worldwide outage",
+      "url": "https://msn.com/en-us/news/other/microsoft-seeing-continued-recovery-amid-major-worldwide-outage/ar-AA2hmrDJ",
+      "publishedAt": "2026-11-13T07:03:36.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "A Microsoft outage involving services like Outlook and Teams has dragged on for hours and impacted many users, companies and some government operations.",
+      "id": "S11",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft seeing continued recovery amid major worldwide outage. A Microsoft outage involving services like Outlook and Teams has dragged on for hours and impacted many users, companies and some government operations."
+    },
+    {
+      "kind": "news",
+      "provider": "The Guardian RSS (Business)",
+      "publisher": "The Guardian",
+      "title": "Microsoft outage shakes up companies, schools and local governments across US",
+      "url": "https://theguardian.com/technology/2026/nov/13/microsoft-outage-shakes-up-companies-local-governments",
+      "publishedAt": "2026-11-13T21:13:59.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "Local officials warn some services remain unavailable even as Outlook starts to resume normal operations after outage Microsoft outage – live updates The Microsoft Outlook outage has shaken up companies and local governments across the US that use its suite of email, calendar, video conferencing and cloud storage…",
+      "id": "S12",
+      "retrievedAt": "2026-11-15T20:20:12.053Z",
+      "text": "Microsoft outage shakes up companies, schools and local governments across US. Local officials warn some services remain unavailable even as Outlook starts to resume normal operations after outage Microsoft outage – live updates The Microsoft Outlook outage has shaken up companies and local governments across the US that use its suite of email, calendar, video conferencing and cloud storage…"
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "2026 Microsoft outage",
+      "url": "https://en.wikipedia.org/wiki/2026_Microsoft_outage",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "A major global Microsoft outage started on 12 November 2026, with 140,000 people from 74 countries reporting issues on Downdetector by the evening of 12 November, covering numerous services including Microsoft 365, Outlook, Microsoft Teams and Copilot.",
+      "text": "2026 Microsoft outage. A major global Microsoft outage started on 12 November 2026, with 140,000 people from 74 countries reporting issues on Downdetector by the evening of 12 November, covering numerous services including Microsoft 365, Outlook, Microsoft Teams and Copilot.",
+      "id": "S13",
+      "retrievedAt": "2026-11-15T20:20:12.053Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "ok",
+      "count": 2
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "ok",
+      "count": 2
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "ok",
+      "count": 2
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}
