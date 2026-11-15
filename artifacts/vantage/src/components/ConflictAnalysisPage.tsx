@@ -122,7 +122,7 @@ export function ConflictAnalysisPageRoute() {
 		return (
 			<Shell status={status}>
 				<div style={{ paddingTop: "56px" }}>
-					<AnalysisLoader stage={state.stage} sources={state.sources} retrieval={state.retrieval} />
+					<AnalysisLoader request={request} stage={state.stage} sources={state.sources} retrieval={state.retrieval} />
 				</div>
 			</Shell>
 		);
