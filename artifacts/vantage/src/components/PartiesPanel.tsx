@@ -1,51 +1,25 @@
 import type { Party } from "./conflict/types";
-import { KindTag } from "./SourceKind";
+import { KindMark } from "./SourceKind";
 
-export function PartiesPanel({ parties, active }: { parties: Party[]; active: boolean }) {
+/** Who is involved, as chips. Written by the model from general knowledge, and marked so. */
+export function PartiesPanel({ parties }: { parties: Party[]; active?: boolean }) {
 	if (!parties.length) return null;
-
 	return (
-		<div
-			style={{
-				opacity: active ? 1 : 0,
-				transition: "opacity 0.45s ease",
-			}}
-		>
-			<span className="section-label">Parties involved</span>
-			<div style={{ margin: "-8px 0 12px" }}>
-				<KindTag kind="background" />
+		<section id="who" className="ci-section ci-section--background" aria-labelledby="who-h" tabIndex={-1}>
+			<div className="ci-section__head">
+				<h3 className="ci-section__title" id="who-h">
+					Who's involved
+				</h3>
+				<KindMark kind="background" />
 			</div>
-			<div style={{ display: "flex", flexDirection: "column" as const, gap: "2px" }}>
-				{parties.map((p, i) => (
-					<div
-						key={i}
-						className="pr-r"
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "9px",
-						}}
-					>
-						<div
-							style={{
-								width: "7px",
-								height: "7px",
-								borderRadius: "50%",
-								background: p.color,
-								flexShrink: 0,
-							}}
-						/>
-						<span
-							style={{
-								fontSize: "13px",
-								color: "var(--text-secondary)",
-							}}
-						>
-							{p.name}
-						</span>
-					</div>
+			<ul className="ci-parties">
+				{parties.map((p) => (
+					<li key={p.name} className="ci-parties__chip">
+						<span className="ci-parties__dot" style={{ background: p.color }} aria-hidden />
+						{p.name}
+					</li>
 				))}
-			</div>
-		</div>
+			</ul>
+		</section>
 	);
 }

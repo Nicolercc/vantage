@@ -1160,3 +1160,210 @@ span.ci-source__title {
 .ci-numbers {
 	margin-top: 18px;
 }
+
+/* Three layers, one reading column */
+.ci-layers {
+	max-width: 760px;
+	margin: 0 auto;
+	display: grid;
+	gap: 40px;
+}
+
+.ci-layer {
+	display: grid;
+	gap: 0;
+	scroll-margin-top: 112px;
+}
+
+.ci-layer__title {
+	font-family: "Newsreader", Georgia, serif;
+	font-size: clamp(26px, 5vw, 32px);
+	font-weight: 500;
+	line-height: 1.15;
+	color: var(--text-primary);
+	margin: 0 0 6px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid var(--text-primary);
+}
+
+.ci-layer__lede {
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--text-muted);
+	margin: 8px 0 4px;
+}
+
+/* Where a section's content comes from: a quiet left rule and a small mark */
+.ci-section--sourced {
+	border-left: 3px solid var(--risk-low);
+	padding-left: 14px;
+}
+
+.ci-section--background {
+	border-left: 3px solid var(--border-medium);
+	padding-left: 14px;
+}
+
+.ci-section--retrieved {
+	border-left: 3px solid var(--accent-navy-border);
+	padding-left: 14px;
+}
+
+.ci-mark {
+	display: inline-grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: help;
+	flex-shrink: 0;
+}
+
+.ci-mark--sourced {
+	background: var(--risk-low-bg);
+	color: var(--risk-low);
+}
+
+.ci-mark--background {
+	background: var(--bg-subtle);
+	color: var(--text-muted);
+	border: 1px solid var(--border-medium);
+}
+
+.ci-mark--retrieved {
+	background: var(--accent-navy-light);
+	color: var(--accent-navy);
+}
+
+/* The one explanation of the marks */
+.ci-key {
+	max-width: 760px;
+	margin: 0 auto 28px;
+	padding: 12px 16px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 16px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
+	border-radius: 12px;
+}
+
+.ci-key__title {
+	font-weight: 600;
+	font-size: 16px;
+	margin: 0 0 8px;
+	color: var(--text-primary);
+}
+
+.ci-key__title {
+	flex-basis: 100%;
+}
+
+.ci-key__list {
+	flex: 1 1 260px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--text-secondary);
+}
+
+.ci-key__close {
+	min-height: 44px;
+	padding: 0 18px;
+	border-radius: 999px;
+	border: 1px solid var(--border-medium);
+	background: var(--bg-surface);
+	font: inherit;
+	font-size: 15px;
+	cursor: pointer;
+}
+
+.ci-key__close:focus-visible {
+	outline: 2px solid var(--accent-navy);
+	outline-offset: 2px;
+}
+
+/* Who's involved, as chips */
+.ci-parties {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.ci-parties__chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
+	font-size: 15px;
+	color: var(--text-primary);
+}
+
+.ci-parties__dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+/* In 30 seconds: label above answer, four rows */
+.ci-thirty {
+	margin: 16px 0 8px;
+}
+
+.ci-thirty__rows {
+	margin: 0;
+	display: grid;
+	gap: 14px;
+}
+
+.ci-thirty__row dt {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--accent-navy);
+	margin-bottom: 2px;
+}
+
+.ci-thirty__row dd {
+	margin: 0;
+	font-family: "Newsreader", Georgia, serif;
+	font-size: 19px;
+	line-height: 1.5;
+	color: var(--text-primary);
+}
+
+.ci-section__head {
+	align-items: center;
+}
+
+/* Grid items default to min-width: auto, so a wide child (the map, a long
+ * timeline row) would stretch the column past a phone screen. */
+.ci-layers,
+.ci-layer {
+	grid-template-columns: minmax(0, 1fr);
+	min-width: 0;
+}
+
+.ci-thirty__kind {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 12px;
+	font-size: 13px;
+	color: var(--text-muted);
+}
