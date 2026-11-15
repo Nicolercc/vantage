@@ -494,6 +494,16 @@
 	margin: 0;
 }
 
+/* Where this is: the one or two sentences above the map */
+.ci-where {
+	font-family: "Newsreader", Georgia, serif;
+	font-size: 17px;
+	line-height: 1.6;
+	color: var(--text-primary);
+	margin: 0 0 14px;
+	max-width: 68ch;
+}
+
 /* Perspectives: every framing is on the page, nothing behind hover */
 .ci-perspectives {
 	display: grid;
