@@ -14,10 +14,13 @@
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query": "catalog:",
+    "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.22",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/topojson-client": "3.1.5",
+    "@types/topojson-specification": "1.0.5",
     "@vercel/og": "0.6.8",
     "@vitejs/plugin-react": "catalog:",
     "@workspace/api-client-react": "workspace:*",
@@ -32,6 +35,8 @@
     "wouter": "^3.9.0"
   },
   "dependencies": {
-    "leaflet": "^1.9.4"
+    "leaflet": "^1.9.4",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
   }
 }
