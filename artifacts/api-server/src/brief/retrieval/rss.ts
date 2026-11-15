@@ -2,7 +2,7 @@ import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
 import { cleanText, topicMatcher, truncate, type Candidate, type ProviderResult } from "../sources";
 
-type Feed = { provider: string; publisher: string; country: string | null; url: string };
+export type Feed = { provider: string; publisher: string; country: string | null; url: string };
 
 const feed = (publisher: string, country: string | null, url: string, section = ""): Feed => ({
   provider: `${publisher} RSS${section ? ` (${section})` : ""}`,
@@ -44,9 +44,10 @@ const parser = new XMLParser({ ignoreAttributes: true, processEntities: true });
 const text = (v: unknown): string =>
   typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
 
-export function parseFeed(xml: string, feed: Feed, topic: string): Candidate[] {
+/** Keep only items about `topic`, or those a given filter accepts (discovery keeps every item). */
+export function parseFeed(xml: string, feed: Feed, topic: string | ((title: string) => boolean)): Candidate[] {
   // A feed is everything the outlet published lately; keep only items about the topic.
-  const isAboutTopic = topicMatcher(topic);
+  const isAboutTopic = typeof topic === "string" ? topicMatcher(topic) : topic;
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const raw = doc.rss?.channel?.item;
   const items = (Array.isArray(raw) ? raw : raw ? [raw] : []) as Array<Record<string, unknown>>;
@@ -92,6 +93,8 @@ async function loadFeed(url: string, signal: AbortSignal): Promise<string | null
   });
   if (!res.ok) return null;
   const xml = await res.text();
+  // An error or consent page is not a feed: do not keep it for ten minutes.
+  if (!/<rss[\s>]/i.test(xml)) return null;
   feedCache.set(url, { at: Date.now(), xml });
   return xml;
 }
@@ -101,6 +104,18 @@ export async function searchFeed(feed: Feed, topic: string, signal: AbortSignal 
     const xml = await loadFeed(feed.url, signal);
     if (xml === null) return { provider: feed.provider, status: "failed", candidates: [] };
     const candidates = parseFeed(xml, feed, topic);
+    return { provider: feed.provider, status: candidates.length ? "ok" : "empty", candidates };
+  } catch {
+    return { provider: feed.provider, status: "failed", candidates: [] };
+  }
+}
+
+/** Every recent item from one feed, unfiltered, for working out what is most covered. */
+export async function latestFeedItems(feed: Feed, signal: AbortSignal = NEVER): Promise<ProviderResult> {
+  try {
+    const xml = await loadFeed(feed.url, signal);
+    if (xml === null) return { provider: feed.provider, status: "failed", candidates: [] };
+    const candidates = parseFeed(xml, feed, () => true);
     return { provider: feed.provider, status: candidates.length ? "ok" : "empty", candidates };
   } catch {
     return { provider: feed.provider, status: "failed", candidates: [] };
