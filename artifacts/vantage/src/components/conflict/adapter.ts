@@ -24,6 +24,26 @@ function hasCoords<T extends { lat: number | null; lng: number | null }>(
   return typeof p.lat === 'number' && typeof p.lng === 'number';
 }
 
+/** The most parties shown; the server keeps the same limit for new briefs. */
+const MAX_PARTIES = 6;
+
+/**
+ * Each party once, at most MAX_PARTIES. Briefs saved before the server
+ * removed repeats can list the same few names dozens of times.
+ */
+export function uniqueParties(actors: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const actor of actors) {
+    const name = actor.replace(/\s+/g, ' ').trim();
+    if (!name || seen.has(name.toLowerCase())) continue;
+    seen.add(name.toLowerCase());
+    out.push(name);
+    if (out.length === MAX_PARTIES) break;
+  }
+  return out;
+}
+
 export function adaptBrief(brief: IntelligenceBrief): ConflictAnalysis {
   const news = brief.sources.filter((s) => s.kind === 'news');
 
@@ -62,7 +82,7 @@ export function adaptBrief(brief: IntelligenceBrief): ConflictAnalysis {
       outlets: new Set(news.map((s) => s.publisher)).size,
       countries: new Set(news.map((s) => s.country).filter(Boolean)).size,
     },
-    parties: brief.actors.map((name, i) => ({
+    parties: uniqueParties(brief.actors).map((name, i) => ({
       name,
       color: PARTY_COLORS[i % PARTY_COLORS.length],
     })),

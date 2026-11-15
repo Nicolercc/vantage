@@ -7,7 +7,7 @@ import { classifyModelError, noteModelFailure, noteModelSuccess } from "../lib/m
 import { logger } from "../lib/logger";
 import { NEVER, until } from "./abort";
 import { GEOCODER_BUDGET_MS, locateBrief } from "./geocode";
-import { extractJSON, normalizeLatLng, tryExtractJsonFallback } from "./json";
+import { extractJSON, normalizeLatLng, tryExtractJsonFallback, uniqueActors } from "./json";
 import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
 import { RETRIEVAL_MAX_MS, searchCoverage, type Coverage } from "./retrieval";
 import { toPublicSource, type Candidate } from "./sources";
@@ -169,6 +169,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
       region: str(rawLoc["region"]),
       ...normalizeLatLng(rawLoc["lat"], rawLoc["lng"]),
     },
+    actors: uniqueActors(parsed["actors"]),
     relatedEvents: Array.isArray(parsed["relatedEvents"])
       ? (parsed["relatedEvents"] as Array<Record<string, unknown>>).map((ev) => ({
           ...ev,

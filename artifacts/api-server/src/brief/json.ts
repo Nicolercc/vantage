@@ -128,3 +128,28 @@ export function tryExtractJsonFallback(text: string): object | null {
   }
   return null;
 }
+
+/** The most parties a brief lists; the prompt asks for two to five. */
+export const MAX_ACTORS = 6;
+
+/**
+ * The model's list of parties, each named once and at most MAX_ACTORS of them.
+ * A model can fall into a loop and repeat the same few names dozens of times;
+ * the reader should see each party once. Anything that is not a list is passed
+ * through for the contract check to reject.
+ */
+export function uniqueActors(raw: unknown): unknown {
+  if (!Array.isArray(raw)) return raw;
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    const name = item.replace(/\s+/g, " ").trim();
+    const key = name.toLowerCase();
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+    if (out.length === MAX_ACTORS) break;
+  }
+  return out;
+}

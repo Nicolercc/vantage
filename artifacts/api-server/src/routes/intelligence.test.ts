@@ -123,6 +123,20 @@ describe("POST /api/intelligence/explore — trust contract", () => {
     expect(res.body).not.toHaveProperty("credibility");
   });
 
+  it("lists each party once, at most six, when the model repeats itself", async () => {
+    const loop = Array.from({ length: 40 }, (_, i) => (i % 2 ? "European Union / Italy" : "International commercial shipping companies"));
+    modelAnswers(modelBrief({ actors: ["Houthi movement (Yemen)", "United States", ...loop, " united states ", "Israel", "Iran", "Egypt", "Saudi Arabia"] }));
+    const res = await explore("Sudan humanitarian access");
+    expect(res.body.actors).toEqual([
+      "Houthi movement (Yemen)",
+      "United States",
+      "International commercial shipping companies",
+      "European Union / Italy",
+      "Israel",
+      "Iran",
+    ]);
+  });
+
   it("stamps the brief with a server generation time that survives caching", async () => {
     const first = await explore("Sudan humanitarian access");
     expect(Number.isNaN(Date.parse(first.body.generatedAt))).toBe(false);
