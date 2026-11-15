@@ -222,3 +222,6 @@ describe("http hardening", () => {
     expect(res.headers["x-powered-by"]).toBeUndefined();
   });
 });
+
+// These cases isolate the writer and verifier. Orientation has its own stream coverage.
+vi.mock("../brief/orientation", () => ({ getOrientation: async () => null }));

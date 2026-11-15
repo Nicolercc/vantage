@@ -19,6 +19,7 @@ export * from './intelligenceBrief';
 export * from './intelligenceBriefEscalationRisk';
 export * from './intelligenceBriefLink';
 export * from './location';
+export * from './orientation';
 export * from './perspective';
 export * from './perspectiveAlignment';
 export * from './relatedEvent';

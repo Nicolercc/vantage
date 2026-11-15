@@ -217,7 +217,7 @@ describe("prompt boundaries", () => {
       ],
     });
     await explore();
-    const [params] = create.mock.calls[0];
+    const [params] = create.mock.calls.find(([call]) => call.system === SYSTEM_PROMPT)!;
     expect(params.system).toBe(SYSTEM_PROMPT);
     expect(params.system).not.toMatch(/IGNORE ALL PREVIOUS/);
     const user: string = params.messages[0].content;

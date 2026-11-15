@@ -1,3 +1,4 @@
+import type { Orientation } from "./orientation";
 import type { StoredBrief } from "../lib/brief-store";
 
 type AnyClaim = { text?: unknown; sourceIds?: unknown; evidence?: unknown; support?: unknown };
@@ -24,9 +25,11 @@ export function upgradeStoredBrief<T extends StoredBrief>(brief: T): T {
     keyFacts?: AnyClaim[];
     coverage?: { agreements?: AnyClaim[]; differences?: AnyClaim[] };
     verification?: unknown;
+    orientation?: Orientation | null;
   };
   return {
     ...b,
+    orientation: b.orientation ?? null,
     keyFacts: (b.keyFacts ?? []).map(upgradeClaim),
     coverage: {
       agreements: (b.coverage?.agreements ?? []).map(upgradeClaim),

@@ -75,3 +75,15 @@ describe("streamBrief", () => {
 		await expect(streamBrief({ kind: "topic", topic: "Sudan" }, () => {})).rejects.toMatchObject({ code: "NETWORK" });
 	});
 });
+
+it("delivers valid orientation and ignores malformed orientation", async () => {
+	const orientation = { inScope: true, what: "Fighting limits aid.", where: "Sudan", who: "Armed groups", whyItMatters: "Families need food." };
+	vi.stubGlobal("fetch", vi.fn(async () => streamed([
+		sse("orientation", { orientation: { inScope: true } }),
+		sse("orientation", { orientation }),
+		sse("brief", { id: "abcdefghijkl", orientation }),
+	])));
+	const seen: BriefStreamEvent[] = [];
+	const brief = await streamBrief({ kind: "topic", topic: "Sudan" }, (event) => seen.push(event));
+	expect(seen).toEqual([{ type: "orientation", orientation }, { type: "brief", brief }]);
+});

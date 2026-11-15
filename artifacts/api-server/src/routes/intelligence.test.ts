@@ -9,13 +9,16 @@ vi.mock("@workspace/integrations-anthropic-ai", () => ({
 }));
 
 import app from "../app";
+import { ORIENTATION_MODEL } from "../brief/orientation";
+
+const orientation = { inScope: true, what: "Fighting limits access to aid.", where: "Sudan", who: "Armed groups", whyItMatters: "Families need safe access to food." };
 
 const explore = (topic: unknown) =>
   request(app).post("/api/intelligence/explore").send({ topic });
 
 /** Every model call answers with the same brief unless a test overrides it. */
 function modelAnswers(brief: unknown) {
-  create.mockImplementation(async () => modelText(JSON.stringify(brief)));
+  create.mockImplementation(async ({ model }) => modelText(JSON.stringify(model === ORIENTATION_MODEL ? orientation : brief)));
 }
 
 beforeEach(() => {
@@ -64,7 +67,7 @@ describe("POST /api/intelligence/explore — baseline", () => {
 describe("POST /api/intelligence/explore — trust contract", () => {
   it("makes one model call per brief (no simulated verification pass)", async () => {
     await explore("Sudan humanitarian access");
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(create.mock.calls.filter(([params]) => params.model !== ORIENTATION_MODEL)).toHaveLength(1);
   });
 
   it("never returns model-invented verification sources", async () => {
@@ -105,7 +108,7 @@ describe("POST /api/intelligence/explore — trust contract", () => {
     expect(res.body.inScope).toBe(false);
     expect(res.body.escalationRisk).toBe("Low");
     expect(res.body.relatedEvents).toEqual([]);
-    expect(create).toHaveBeenCalledTimes(1);
+    expect(create.mock.calls.filter(([params]) => params.model !== ORIENTATION_MODEL)).toHaveLength(1);
   });
 
   it("still rejects an incomplete brief for a topic that is in scope", async () => {
@@ -219,4 +222,23 @@ describe("POST /api/intelligence/explore — trust contract", () => {
     expect(res.body.location).toMatchObject({ lat: null, lng: null });
     expect(res.body.relatedEvents[0]).toMatchObject({ place: null, lat: null, lng: null });
   });
+});
+
+it("streams the server orientation before the finished brief and saves it", async () => {
+  modelAnswers({ ...modelBrief(), orientation: { ...orientation, where: "Writer invention" } });
+  const result = await request(app).post("/api/intelligence/stream").send({ topic: "Sudan humanitarian access" });
+  expect(result.text).toContain("event: orientation");
+  expect(result.text.indexOf("event: orientation")).toBeLessThan(result.text.indexOf("event: brief"));
+  const brief = JSON.parse(result.text.split("event: brief\ndata: ")[1]!.trim());
+  expect(brief.orientation).toEqual(orientation);
+  expect((await request(app).get(`/api/briefs/${brief.id}`)).body.orientation).toEqual(orientation);
+});
+
+it("finishes the brief when the orientation provider refuses", async () => {
+  create.mockImplementation(async ({ model }) => model === ORIENTATION_MODEL
+    ? { ...modelText(JSON.stringify(orientation)), stop_reason: "refusal" }
+    : modelText(JSON.stringify(modelBrief())));
+  const result = await explore("Sudan humanitarian access");
+  expect(result.status).toBe(200);
+  expect(result.body.orientation).toBeNull();
 });

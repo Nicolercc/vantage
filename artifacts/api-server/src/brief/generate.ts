@@ -8,6 +8,7 @@ import { logger } from "../lib/logger";
 import { NEVER, until } from "./abort";
 import { GEOCODER_BUDGET_MS, locateBrief } from "./geocode";
 import { extractJSON, normalizeLatLng, tryExtractJsonFallback, uniqueActors } from "./json";
+import { getOrientation, type Orientation } from "./orientation";
 import { buildUserMessage, SYSTEM_PROMPT } from "./prompt";
 import { RETRIEVAL_MAX_MS, searchCoverage, type Coverage } from "./retrieval";
 import { toPublicSource, type Candidate } from "./sources";
@@ -56,9 +57,7 @@ export type GenerationStats = {
 };
 
 /** One model call, parsed and checked against the evidence and the response contract. */
-async function generateOnce(coverage: Coverage, userMessage: string, onProgress: OnProgress, signal: AbortSignal) {
-  // The id exists before any model is called, so every call can be costed against its brief.
-  const briefId = newBriefId();
+async function generateOnce(coverage: Coverage, userMessage: string, onProgress: OnProgress, signal: AbortSignal, briefId: string) {
   const started = Date.now();
   let message;
   try {
@@ -209,6 +208,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
 /** What a brief is doing right now, for readers watching it being built. */
 export type BriefProgress =
   | { type: "stage"; stage: "retrieving" | "writing" | "checking" | "locating" }
+  | { type: "orientation"; orientation: Orientation }
   | { type: "sources"; sources: ReturnType<typeof toPublicSource>[]; retrieval: Coverage["retrieval"] };
 export type OnProgress = (event: BriefProgress) => void;
 
@@ -242,16 +242,26 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
   });
   const timer = setTimeout(() => stop.abort(), BRIEF_DEADLINE_MS);
   timer.unref?.();
+  const briefId = newBriefId();
+  const orientationStop = new AbortController();
+  const orientationSignal = AbortSignal.any([stop.signal, orientationStop.signal]);
+  let orientation: Orientation | null = null;
   const work = (async () => {
     onProgress({ type: "stage", stage: "retrieving" });
+    void getOrientation(input.article?.text.slice(0, 2000) ?? input.topic, briefId, orientationSignal).then((result) => {
+      if (!result || orientationSignal.aborted) return;
+      orientation = result;
+      onProgress({ type: "orientation", orientation: result });
+    });
     const coverage = await searchCoverage(input.topic, supplied, stop.signal);
     onProgress({ type: "sources", sources: coverage.sources.map(toPublicSource), retrieval: coverage.retrieval });
-    const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress, stop.signal);
-    return brief;
+    const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress, stop.signal, briefId);
+    return { ...brief, orientation };
   })();
   try {
     return await Promise.race([work, expired]);
   } finally {
+    orientationStop.abort();
     clearTimeout(timer);
   }
 }
@@ -265,6 +275,7 @@ export async function generateFromCoverage(
   request: { topic: string; hasArticle: boolean },
   onProgress: OnProgress = () => {},
   signal: AbortSignal = NEVER,
+  briefId = newBriefId(),
 ) {
   const userMessage = buildUserMessage(coverage.sources, request);
 
@@ -274,7 +285,7 @@ export async function generateFromCoverage(
     const attemptStarted = Date.now();
     try {
       onProgress({ type: "stage", stage: "writing" });
-      const { brief, stats } = await generateOnce(coverage, userMessage, onProgress, signal);
+      const { brief, stats } = await generateOnce(coverage, userMessage, onProgress, signal, briefId);
       onProgress({ type: "stage", stage: "locating" });
       logger.info({ sources: coverage.sources.length, attempt, ...stats.usage, claimsKept: stats.claimsKept }, "brief generated");
       // The model's coordinates are a guess; the map shows only looked-up places.

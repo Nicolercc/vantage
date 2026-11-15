@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "wouter";
 import type { IntelligenceBrief } from "@workspace/api-client-react";
+import { InThirtySeconds } from "./InThirtySeconds";
+import "./AnalysisLoader.css";
 import { Shell } from "./Notice";
 import { PerspectivesPanel } from "./PerspectivesPanel";
 import { EventTimeline } from "./EventTimeline";
@@ -278,6 +280,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 					<div className="ci-columns">
 						<div className="ci-main">
+							<InThirtySeconds orientation={briefData.orientation} />
 							<Section id="summary" title="What happened" kind="background" startOpen>
 								<p className="ci-summary">{analysis.summary}</p>
 							</Section>

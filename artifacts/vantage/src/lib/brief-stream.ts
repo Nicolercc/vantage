@@ -1,6 +1,7 @@
 import type {
 	ErrorResponse,
 	IntelligenceBrief,
+	Orientation,
 	RetrievalStatus,
 	Source,
 } from "@workspace/api-client-react";
@@ -10,6 +11,7 @@ export type BriefStage = "retrieving" | "writing" | "checking" | "locating";
 
 export type BriefStreamEvent =
 	| { type: "stage"; stage: BriefStage }
+	| { type: "orientation"; orientation: Orientation }
 	| { type: "sources"; sources: Source[]; retrieval: RetrievalStatus[] }
 	| { type: "brief"; brief: IntelligenceBrief };
 
@@ -61,6 +63,12 @@ function toEvent(event: string, data: string): BriefStreamEvent | BriefError | n
 		return null;
 	}
 	if (event === "stage") return { type: "stage", stage: parsed["stage"] as BriefStage };
+	if (event === "orientation") {
+		const orientation = parsed?.["orientation"] as Orientation | undefined;
+		if (!orientation || typeof orientation.inScope !== "boolean" ||
+			![orientation.what, orientation.where, orientation.who, orientation.whyItMatters].every((value) => typeof value === "string")) return null;
+		return { type: "orientation", orientation };
+	}
 	if (event === "sources") {
 		return {
 			type: "sources",

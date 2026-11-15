@@ -31,6 +31,14 @@ export const AnalyzeArticleBody = zod.object({
   "url": zod.string().max(analyzeArticleBodyUrlMax).optional().describe('Public http(s) URL of a conflict news article to fetch')
 }).describe('Provide exactly one of article or url. The server rejects both and neither.')
 
+export const analyzeArticleResponseOrientationOneWhatMax = 220;
+
+export const analyzeArticleResponseOrientationOneWhereMax = 220;
+
+export const analyzeArticleResponseOrientationOneWhoMax = 220;
+
+export const analyzeArticleResponseOrientationOneWhyItMattersMax = 220;
+
 
 
 
@@ -48,6 +56,13 @@ export const AnalyzeArticleResponse = zod.object({
   "lat": zod.number().nullable().describe('Set by geocoding the city and country, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable()
 }),
+  "orientation": zod.union([zod.object({
+  "inScope": zod.boolean(),
+  "what": zod.string().max(analyzeArticleResponseOrientationOneWhatMax),
+  "where": zod.string().max(analyzeArticleResponseOrientationOneWhereMax),
+  "who": zod.string().max(analyzeArticleResponseOrientationOneWhoMax),
+  "whyItMatters": zod.string().max(analyzeArticleResponseOrientationOneWhyItMattersMax)
+}),zod.null()]).optional(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({
@@ -146,6 +161,14 @@ export const GetBriefParams = zod.object({
   "id": zod.coerce.string().regex(getBriefPathIdRegExp)
 })
 
+export const getBriefResponseOrientationOneWhatMax = 220;
+
+export const getBriefResponseOrientationOneWhereMax = 220;
+
+export const getBriefResponseOrientationOneWhoMax = 220;
+
+export const getBriefResponseOrientationOneWhyItMattersMax = 220;
+
 
 
 
@@ -163,6 +186,13 @@ export const GetBriefResponse = zod.object({
   "lat": zod.number().nullable().describe('Set by geocoding the city and country, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable()
 }),
+  "orientation": zod.union([zod.object({
+  "inScope": zod.boolean(),
+  "what": zod.string().max(getBriefResponseOrientationOneWhatMax),
+  "where": zod.string().max(getBriefResponseOrientationOneWhereMax),
+  "who": zod.string().max(getBriefResponseOrientationOneWhoMax),
+  "whyItMatters": zod.string().max(getBriefResponseOrientationOneWhyItMattersMax)
+}),zod.null()]).optional(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({
@@ -252,10 +282,11 @@ export const GetBriefResponse = zod.object({
 
 /**
  * Takes a topic, an article URL or article text and answers with a
- * `text/event-stream`. Events, in order:
+ * `text/event-stream`. Events:
  *
  * - `stage` — `{ "stage": "retrieving" | "writing" | "checking" | "locating" }`
  * - `sources` — `{ "sources": Source[], "retrieval": RetrievalStatus[] }`, sent once retrieval finishes
+ * - `orientation` — optional Orientation model background, sent as soon as it is ready
  * - `brief` — the finished IntelligenceBrief (the last event on success)
  * - `error` — an ErrorResponse (the last event on failure after the stream has started)
  *
@@ -295,6 +326,14 @@ export const ExploreConflictBody = zod.object({
   "topic": zod.string().min(exploreConflictBodyTopicMin).max(exploreConflictBodyTopicMax).describe('Conflict topic to explore (e.g. \"Gaza conflict\", \"Sudan civil war\")')
 })
 
+export const exploreConflictResponseOrientationOneWhatMax = 220;
+
+export const exploreConflictResponseOrientationOneWhereMax = 220;
+
+export const exploreConflictResponseOrientationOneWhoMax = 220;
+
+export const exploreConflictResponseOrientationOneWhyItMattersMax = 220;
+
 
 
 
@@ -312,6 +351,13 @@ export const ExploreConflictResponse = zod.object({
   "lat": zod.number().nullable().describe('Set by geocoding the city and country, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable()
 }),
+  "orientation": zod.union([zod.object({
+  "inScope": zod.boolean(),
+  "what": zod.string().max(exploreConflictResponseOrientationOneWhatMax),
+  "where": zod.string().max(exploreConflictResponseOrientationOneWhereMax),
+  "who": zod.string().max(exploreConflictResponseOrientationOneWhoMax),
+  "whyItMatters": zod.string().max(exploreConflictResponseOrientationOneWhyItMattersMax)
+}),zod.null()]).optional(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
   "perspectives": zod.array(zod.object({

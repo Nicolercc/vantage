@@ -134,3 +134,6 @@ describe("GET /api/ops/costs", () => {
     expect(res.body.totalUsd).toBe(0);
   });
 });
+
+// These cases isolate the writer and verifier. Orientation has its own stream coverage.
+vi.mock("../brief/orientation", () => ({ getOrientation: async () => null }));

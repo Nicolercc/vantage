@@ -62,3 +62,6 @@ describe("whole-brief deadline", () => {
     expect(create).toHaveBeenCalledTimes(1);
   });
 });
+
+// These cases isolate the writer and verifier. Orientation has its own stream coverage.
+vi.mock("./orientation", () => ({ getOrientation: async () => null }));

@@ -11,6 +11,7 @@ import type { CoverageComparison } from './coverageComparison';
 import type { IntelligenceBriefEscalationRisk } from './intelligenceBriefEscalationRisk';
 import type { IntelligenceBriefLink } from './intelligenceBriefLink';
 import type { Location } from './location';
+import type { Orientation } from './orientation';
 import type { Perspective } from './perspective';
 import type { RelatedEvent } from './relatedEvent';
 import type { RetrievalStatus } from './retrievalStatus';
@@ -26,6 +27,7 @@ export interface IntelligenceBrief {
   inScope: boolean;
   headline: string;
   location: Location;
+  orientation?: Orientation | null;
   summary: string;
   actors: string[];
   perspectives: Perspective[];
