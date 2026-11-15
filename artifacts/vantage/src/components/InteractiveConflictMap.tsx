@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { inSentence, labelPoint, listNames } from "./map/countries";
-import { countryWideLabel, mapPlaces } from "./map/places";
+import { countryWideLabel, eventPoint, mapPlaces, onWaterLabel } from "./map/places";
 import { useCountries } from "./map/useCountries";
 import type {
 	IntelligenceBrief,
@@ -368,8 +368,19 @@ export function InteractiveConflictMap({
 			);
 		});
 		const located = data.relatedEvents.flatMap((evt) => {
-			const pos = toLatLng(evt);
-			return pos ? [{ evt, pos }] : [];
+			const point = eventPoint(evt);
+			return point ? [{ evt, pos: point.at as L.LatLngTuple }] : [];
+		});
+
+		// Seas and straits get their names in blue italic, the way atlases label water.
+		mapPlaces(data, countries).waters.forEach((water) => {
+			layersRef.current.markers.push(
+				L.marker(water.at, {
+					icon: L.divIcon({ className: "ci-map-water", html: `<span>${escapeHtml(water.name)}</span>`, iconSize: [0, 0] }),
+					interactive: false,
+					keyboard: false,
+				}).addTo(map),
+			);
 		});
 		const points = [...(hub ? [hub] : []), ...located.map((l) => l.pos)];
 		if (points.length === 0) {
@@ -477,7 +488,7 @@ export function InteractiveConflictMap({
 	}, [showEvent, mapReady, countries, data]);
 
 	const hasHub = toLatLng(data.location) !== null;
-	const locatedEvents = data.relatedEvents.filter((e) => toLatLng(e) !== null);
+	const locatedEvents = data.relatedEvents.filter((e) => eventPoint(e) !== null);
 	const unplotted = places.unknown;
 	const legend: LegendItem[] = [];
 	if (places.focus) {
@@ -505,9 +516,11 @@ export function InteractiveConflictMap({
 	legend.push(...eventLegend(locatedEvents));
 	const covered = countryWideLabel(places);
 	if (covered) legend.push({ key: "country-wide", label: covered });
+	const onWater = onWaterLabel(places);
+	if (onWater) legend.push({ key: "on-water", label: onWater });
 	const hubPoint = toLatLng(data.location);
 	const elsewhere = hubPoint
-		? locatedEvents.filter((e) => metresBetween(hubPoint, toLatLng(e)!) > NEARBY_METRES).length
+		? locatedEvents.filter((e) => metresBetween(hubPoint, eventPoint(e)!.at) > NEARBY_METRES).length
 		: 0;
 	if (elsewhere > 0) {
 		legend.push({

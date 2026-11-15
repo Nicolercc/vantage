@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Topology } from "topojson-specification";
 import world from "world-atlas/countries-110m.json";
 import { buildCountryIndex } from "./countries";
-import { countryWideLabel, mapPlaces } from "./places";
+import { countryWideLabel, eventPoint, mapPlaces, onWaterLabel } from "./places";
 
 const index = buildCountryIndex(world as unknown as Topology);
 
@@ -45,7 +45,24 @@ describe("mapPlaces", () => {
 			focus: null,
 			others: [],
 			countryWide: 0,
+			waters: [],
+			onWater: 0,
 			unknown: 2,
 		});
+	});
+});
+
+describe("seas and straits", () => {
+	it("pins an event on the water it names instead of calling it unknown", () => {
+		const places = mapPlaces(brief([event("Strait of Hormuz"), event("Red Sea, off Yemen"), event("Bab el-Mandeb")]), index);
+		expect(places).toMatchObject({ onWater: 3, unknown: 0, countryWide: 0 });
+		expect(places.waters.map((w) => w.name)).toEqual(["Strait of Hormuz", "Red Sea", "Bab al-Mandab"]);
+		expect(onWaterLabel(places)).toBe("3 timeline events are pinned on the sea or strait they name");
+	});
+
+	it("keeps a geocoder's confirmed point over the list of waters", () => {
+		expect(eventPoint(event("Red Sea", 15.6, 32.5))).toEqual({ at: [15.6, 32.5], water: null });
+		expect(eventPoint(event("Red Sea"))?.water?.name).toBe("Red Sea");
+		expect(eventPoint(event("Khartoum, Sudan"))).toBeNull();
 	});
 });
