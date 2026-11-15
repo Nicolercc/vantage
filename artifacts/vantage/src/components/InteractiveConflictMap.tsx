@@ -236,12 +236,16 @@ const TILE_ATTR =
 interface InteractiveConflictMapProps {
 	data: IntelligenceBrief;
 	active: boolean;
+	/** A timeline event to show; `at` changes on every request so the same event can be shown twice. */
+	showEvent?: { index: number; at: number } | null;
 }
 
 export function InteractiveConflictMap({
 	data,
 	active,
+	showEvent = null,
 }: InteractiveConflictMapProps) {
+	const eventMarkersRef = useRef(new Map<number, L.Marker>());
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<L.Map | null>(null);
 	const layersRef = useRef<{
@@ -270,6 +274,10 @@ export function InteractiveConflictMap({
 			maxZoom: 14,
 			worldCopyJump: true,
 		});
+
+		// A map with no view cannot draw shapes: a country outline added before the
+		// first view would crash Leaflet. Start on the world; the brief reframes it.
+		map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
 
 		if (map.zoomControl) {
 			map.zoomControl.setPosition("bottomright");
@@ -320,6 +328,7 @@ export function InteractiveConflictMap({
 			a.remove();
 		});
 		layersRef.current = { polylines: [], markers: [], areas: [] };
+		eventMarkersRef.current.clear();
 
 		// Countries first, so pins and lines draw over them.
 		const { focus, others } = mapPlaces(data, countries);
@@ -422,9 +431,12 @@ export function InteractiveConflictMap({
 
 			marker.on("click", () => {
 				map.flyTo(pos, Math.max(map.getZoom(), 7), { duration: 0.85 });
+				// A tap has no hover: open the event's card on click too.
+				marker.openTooltip();
 			});
 
 			layersRef.current.markers.push(marker);
+			eventMarkersRef.current.set(data.relatedEvents.indexOf(evt), marker);
 		});
 
 		// Frame the region the brief is about: the whole country, and the pins near
@@ -442,6 +454,27 @@ export function InteractiveConflictMap({
 
 		queueMicrotask(() => map.invalidateSize());
 	}, [data, active, mapReady, countries]);
+
+	// "Show on map" from the timeline: move to the event's pin and open its card,
+	// or, for an event that covers a whole country, frame that country.
+	useEffect(() => {
+		const map = mapRef.current;
+		if (!map || !mapReady || !showEvent) return;
+		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const marker = eventMarkersRef.current.get(showEvent.index);
+		if (marker) {
+			const zoom = Math.max(map.getZoom(), 7);
+			if (reduce) map.setView(marker.getLatLng(), zoom);
+			else map.flyTo(marker.getLatLng(), zoom, { duration: 0.85 });
+			marker.openTooltip();
+			return;
+		}
+		const country = countries?.find(data.relatedEvents[showEvent.index]?.place);
+		if (country) {
+			const bounds = L.geoJSON(country.shape).getBounds();
+			if (framable(bounds)) map.fitBounds(bounds, { padding: [24, 24], maxZoom: 7, animate: !reduce });
+		}
+	}, [showEvent, mapReady, countries, data]);
 
 	const hasHub = toLatLng(data.location) !== null;
 	const locatedEvents = data.relatedEvents.filter((e) => toLatLng(e) !== null);

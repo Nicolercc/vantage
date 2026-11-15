@@ -13,7 +13,7 @@ import { temporaryLinkNotice } from "@/lib/share-link";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
-import { describeWhere } from "./map/countries";
+import { describeWhere, type CountryIndex } from "./map/countries";
 import { useCountries } from "./map/useCountries";
 import "./ConflictAnalysisPageLayout.css";
 
@@ -124,8 +124,7 @@ const RISK_CLASS = { Low: "low", Medium: "medium", High: "high" } as const;
  * it: its region and its neighbours. The borders come from map data; nothing
  * is shown until the outlines load, or when the brief's country is not on the map.
  */
-function WhereThisIs({ brief }: { brief: IntelligenceBrief }) {
-	const countries = useCountries();
+function WhereThisIs({ brief, countries }: { brief: IntelligenceBrief; countries: CountryIndex | null }) {
 	const country = countries?.find(brief.location.country);
 	if (!countries || !country) return null;
 	const city = brief.location.city.trim();
@@ -162,6 +161,18 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 	// Decided once per page: background sections start folded on a phone.
 	const [wide] = useState(() => window.matchMedia("(min-width: 721px)").matches);
+
+	const countries = useCountries();
+	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
+	// Events the map can show: a confirmed pin, or a place that is a whole country it shades.
+	const showOnMap = briefData.relatedEvents.map((evt, index) =>
+		(typeof evt.lat === "number" && typeof evt.lng === "number") || countries?.find(evt.place)
+			? () => {
+					goToSection("map");
+					setShowEvent({ index, at: Date.now() });
+				}
+			: null,
+	);
 
 	const analysis = adaptBrief(briefData);
 	const regionBits = analysis.region.split("·").map((s) => s.trim());
@@ -272,9 +283,9 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 							{/* Right after the summary: a reader new to the story needs to know where it is before the details. */}
 							<Section id="map" title="Where this is" kind="background" startOpen>
-								<WhereThisIs brief={briefData} />
+								<WhereThisIs brief={briefData} countries={countries} />
 								<div className="ci-map-outer">
-									<InteractiveConflictMap data={briefData} active={true} />
+									<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
 								</div>
 								<p className="ci-section__note">
 									The shaded country and its borders come from Natural Earth map data.
@@ -333,7 +344,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 							</Section>
 
 							<Section id="timeline" title="Background timeline" kind="background" collapsible startOpen={wide}>
-								<EventTimeline events={briefData.relatedEvents} active={true} />
+								<EventTimeline events={briefData.relatedEvents} active={true} onShowOnMap={showOnMap} />
 							</Section>
 
 							<Section id="perspectives" title="Perspectives" kind="background" collapsible startOpen={wide}>
