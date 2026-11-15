@@ -22,7 +22,11 @@ export type SourceRecord = {
 };
 
 /** A record before it has been selected and given an id. */
-export type Candidate = Omit<SourceRecord, "id" | "retrievedAt" | "text"> & { text?: string };
+export type Candidate = Omit<SourceRecord, "id" | "retrievedAt" | "text"> & {
+  text?: string;
+  /** How much of the topic the headline names, 0 to 1. Fuller matches are selected first. */
+  relevance?: number;
+};
 
 export type ProviderResult = {
   provider: string;
@@ -80,7 +84,9 @@ export function selectNews(candidates: Candidate[], limit = 12, perPublisher = 2
   const seenTitle = new Set<string>();
   const perOutlet = new Map<string, number>();
   const unique: Candidate[] = [];
-  for (const c of candidates) {
+  // Full matches before partial ones; a stable sort keeps each group's original order.
+  const ranked = [...candidates].sort((a, b) => (b.relevance ?? 1) - (a.relevance ?? 1));
+  for (const c of ranked) {
     const url = c.url ? canonicalUrl(c.url) : null;
     if (!url || !c.title.trim()) continue;
     const tKey = titleKey(c.title);
@@ -118,7 +124,7 @@ export function selectNews(candidates: Candidate[], limit = 12, perPublisher = 2
 /** Give selected records their ids and server timestamps. */
 export function toRecords(candidates: Candidate[], now = new Date()): SourceRecord[] {
   const retrievedAt = now.toISOString();
-  return candidates.map((c, i) => ({
+  return candidates.map(({ relevance: _relevance, ...c }, i) => ({
     ...c,
     id: `S${i + 1}`,
     retrievedAt,
@@ -137,10 +143,13 @@ const GENERIC = new Set([
   "analysis", "situation", "coverage",
 ]);
 
-/** Search terms from a reader's topic: lowercased words of 3+ letters minus filler. */
+/** Abbreviations short enough to fall under the three-letter minimum that still name a topic. */
+const SHORT_TERMS = new Set<string>(["us", "uk", "eu", "un", "ai"]);
+
+/** Search terms from a reader's topic: lowercased words of 3+ letters (or a known abbreviation) minus filler. */
 export function topicTerms(topic: string): string[] {
-  const words = topic.toLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [];
-  return [...new Set(words.filter((w) => !GENERIC.has(w)))].slice(0, 8);
+  const words: string[] = topic.toLowerCase().replace(/\bu\.s\.(a\.)?/g, "us ").match(/[\p{L}\p{N}]+/gu) ?? [];
+  return [...new Set(words.filter((w) => (w.length >= 3 || SHORT_TERMS.has(w)) && !GENERIC.has(w)))].slice(0, 8);
 }
 
 /**
@@ -177,30 +186,131 @@ const normalise = (s: string) =>
   ` ${(s.toLowerCase().match(/[\p{L}\p{N}']+/gu) ?? []).join(" ").replace(/'s\b/g, "")} `;
 
 /**
- * Decide whether a headline is about the topic. Whole words only ("red" must
- * not match "secured"), and the topic's distinctive words — usually its place
- * or actor names — must all be present. A topic with no distinctive words has
- * to match in full. A longer place name that merely contains the topic's
- * ("South Sudan" for "Sudan") does not count, and neither does a mention in a
- * multi-story digest.
+ * Abbreviations headlines write in capitals. A headline's "US" is the country
+ * and its "us" a pronoun, so headlines are matched case-sensitively; a
+ * reader's topic is not ("us airlines" means the country).
  */
-export function topicMatcher(topic: string): (text: string) => boolean {
-  const terms = topicTerms(topic);
-  if (terms.length === 0) return () => false;
-  const anchors = terms.filter((t) => !CONFLICT_VOCABULARY.has(t));
-  const required = anchors.length > 0 ? anchors.slice(0, 3) : terms;
+const ABBREVIATIONS: Array<[RegExp, string]> = [
+  [/\bU\.?S\.?A?\b\.?/g, " unitedstates "],
+  [/\bU\.?K\.?\b/g, " unitedkingdom "],
+  [/\bE\.?U\.?\b/g, " europeanunion "],
+  [/\bU\.?N\.?\b/g, " unitednations "],
+  [/\bA\.?I\.?\b/g, " artificialintelligence "],
+];
+
+/** Names written several ways, made one word so any spelling matches. Applied to normalised text. */
+const PHRASES: Array<[RegExp, string]> = [
+  [/ united states(?: of america)? | (?<!(?:south|latin|north|central) )america /g, " unitedstates "],
+  [/ united kingdom | (?:great )?britain /g, " unitedkingdom "],
+  [/ european union /g, " europeanunion "],
+  [/ united nations /g, " unitednations "],
+  [/ artificial intelligence /g, " artificialintelligence "],
+];
+
+/** Words headlines use for each other, mapped to one of them. */
+const SYNONYMS: Record<string, string> = {
+  carrier: "airline",
+  carriers: "airline",
+  blackout: "outage",
+  glitch: "outage",
+};
+
+/**
+ * Compound place names written as one word ("south sudan" becomes
+ * "southsudan"), so a topic that names one needs that place, not its two
+ * words apart. The Congo's long names are left as words: headlines shorten
+ * them to "Congo".
+ */
+const JOINED_PLACES = COMPOUND_PLACES.filter((p) => !p.includes("congo")).map((p) => [` ${p} `, ` ${p.replace(/ /g, "")} `] as const);
+
+/** Normalised text with abbreviations, alternative names and compound places reduced to one spelling. */
+function canonical(text: string, anyCase: boolean): string {
+  let s = text;
+  for (const [pattern, word] of ABBREVIATIONS) {
+    s = s.replace(anyCase ? new RegExp(pattern.source, "gi") : pattern, word);
+  }
+  s = normalise(s);
+  // Each pattern consumes its surrounding spaces; run twice so neighbours both match.
+  for (const [pattern, word] of PHRASES) s = s.replace(pattern, word).replace(pattern, word);
+  for (const [place, joined] of JOINED_PLACES) s = s.replaceAll(place, joined).replaceAll(place, joined);
+  return s;
+}
+
+/**
+ * Light stemming, the same on both sides of a match, for words of five
+ * letters or more: plurals, -ing and -ed, then a final e, so "airlines" meets
+ * "airline" and "grounded" meets "ground". Short words are left alone ("red"
+ * is not "r").
+ */
+export function stem(word: string): string {
+  let w = SYNONYMS[word] ?? word;
+  if (w.length < 5) return w;
+  if (w.endsWith("ies")) w = `${w.slice(0, -3)}y`;
+  else if (/(ss|x|ch|sh)es$/.test(w)) w = w.slice(0, -2);
+  else if (w.endsWith("s") && !/(ss|us|is)$/.test(w)) w = w.slice(0, -1);
+  if (w.length > 5 && w.endsWith("ing")) w = w.slice(0, -3);
+  else if (w.length > 4 && w.endsWith("ed")) w = w.slice(0, -2);
+  if (w.length > 4 && w.endsWith("e")) w = w.slice(0, -1);
+  return w;
+}
+
+/**
+ * The words a headline has to name. The topic's distinctive words (usually
+ * place, actor or subject names) count; words for conflict in general do not,
+ * judged before stemming. A topic with no distinctive word counts all of them.
+ */
+function topicAnchors(topic: string): string[] {
+  const words = [...new Set(canonical(topic, true).trim().split(" "))]
+    .filter((w) => (w.length >= 3 || SHORT_TERMS.has(w)) && !GENERIC.has(w))
+    .slice(0, 8);
+  const anchors = words.filter((w) => !CONFLICT_VOCABULARY.has(w));
+  return [...new Set((anchors.length > 0 ? anchors.slice(0, 4) : words).map(stem))];
+}
+
+/**
+ * How much of the topic a headline names, from 0 to 1. Whole words only ("red"
+ * must not match "secured"). A longer place name that merely contains the
+ * topic's ("South Sudan" for "Sudan") does not count, and neither does a
+ * mention in a multi-story digest.
+ */
+export function topicScorer(topic: string): (text: string) => number {
+  const required = topicAnchors(topic);
+  if (required.length === 0) return () => 0;
   const topicText = normalise(topic);
   const otherPlaces = COMPOUND_PLACES.filter((p) => !topicText.includes(` ${p} `));
-  // A compound name the reader did ask for has to appear as that phrase:
-  // "Sudan … South Kordofan" is not about South Sudan.
-  // (Headlines shorten the Congo's long names to "Congo", so those are exempt.)
-  const askedPlaces = COMPOUND_PLACES.filter((p) => !p.includes("congo") && topicText.includes(` ${p} `));
+  // A compound name the reader asked for must be there whatever else matches.
+  const askedPlaces = JOINED_PLACES.filter(([place]) => topicText.includes(place)).map(([, joined]) => joined);
   return (text) => {
-    if (ROUNDUP.test(text)) return false;
-    let haystack = normalise(text);
-    if (!askedPlaces.every((p) => haystack.includes(` ${p} `))) return false;
-    for (const place of otherPlaces) haystack = haystack.replace(new RegExp(`(?<= )${place}(?= )`, "g"), "|");
-    const words = new Set(haystack.split(" "));
-    return required.every((t) => words.has(t) || words.has(`${t}s`));
+    if (ROUNDUP.test(text)) return 0;
+    let haystack = canonical(text, false);
+    if (!askedPlaces.every((p) => haystack.includes(p))) return 0;
+    for (const place of otherPlaces) {
+      haystack = haystack
+        .replace(new RegExp(`(?<= )${place.replace(/ /g, "")}(?= )`, "g"), "|")
+        .replace(new RegExp(`(?<= )${place}(?= )`, "g"), "|");
+    }
+    const present = new Set(haystack.split(" ").map(stem));
+    return required.filter((t) => present.has(t)).length / required.length;
+  };
+}
+
+/**
+ * The share of a topic's distinctive words a headline must name. One or two
+ * must all be there, so a place-name topic ("Sudan", "Lebanon Israel border")
+ * matches exactly as before. From three up, most will do, and fuller matches
+ * are selected first.
+ */
+export function enoughOfTopic(topic: string): number {
+  const n = topicAnchors(topic).length;
+  return n <= 2 ? 1 : Math.ceil(0.6 * n) / n;
+}
+
+/** Whether a headline is about the topic: it names enough of the topic's distinctive words. */
+export function topicMatcher(topic: string): (text: string) => boolean {
+  const score = topicScorer(topic);
+  const needed = enoughOfTopic(topic);
+  return (text) => {
+    const s = score(text);
+    return s > 0 && s >= needed - 1e-9;
   };
 }

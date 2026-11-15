@@ -1,14 +1,18 @@
 import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
-import { cleanText, topicMatcher, truncate, type Candidate, type ProviderResult } from "../sources";
+import { cleanText, enoughOfTopic, topicScorer, truncate, type Candidate, type ProviderResult } from "../sources";
 
-type Feed = { provider: string; publisher: string; country: string | null; url: string };
+/** The kind of news a feed carries. World feeds cover conflicts and foreign news; the others widen general news. */
+export type Desk = "world" | "business" | "technology" | "science" | "national" | "sport";
 
-const feed = (publisher: string, country: string | null, url: string, section = ""): Feed => ({
+type Feed = { provider: string; publisher: string; country: string | null; url: string; desk: Desk };
+
+const feed = (publisher: string, country: string | null, url: string, section = "", desk: Desk = "world"): Feed => ({
   provider: `${publisher} RSS${section ? ` (${section})` : ""}`,
   publisher,
   country,
   url,
+  desk,
 });
 
 /**
@@ -46,7 +50,8 @@ const text = (v: unknown): string =>
 
 export function parseFeed(xml: string, feed: Feed, topic: string): Candidate[] {
   // A feed is everything the outlet published lately; keep only items about the topic.
-  const isAboutTopic = topicMatcher(topic);
+  const relevance = topicScorer(topic);
+  const needed = enoughOfTopic(topic) - 1e-9;
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const raw = doc.rss?.channel?.item;
   const items = (Array.isArray(raw) ? raw : raw ? [raw] : []) as Array<Record<string, unknown>>;
@@ -58,7 +63,8 @@ export function parseFeed(xml: string, feed: Feed, topic: string): Candidate[] {
     const link = text(item["link"]).trim();
     if (!title || !/^https?:\/\//i.test(link)) continue;
     // Headline only: summaries mention places in passing ("…after the Sudan game").
-    if (!isAboutTopic(title)) continue;
+    const score = relevance(title);
+    if (score === 0 || score < needed) continue;
     const date = new Date(text(item["pubDate"]));
     out.push({
       kind: "news",
@@ -70,6 +76,7 @@ export function parseFeed(xml: string, feed: Feed, topic: string): Candidate[] {
       language: "English",
       country: feed.country,
       excerpt: excerpt || null,
+      relevance: score,
     });
   }
   return out;
