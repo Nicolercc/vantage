@@ -15,6 +15,7 @@ import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
 import { describeWhere, type CountryIndex } from "./map/countries";
 import { useCountries } from "./map/useCountries";
+import { eventPoint } from "./map/places";
 import "./ConflictAnalysisPageLayout.css";
 
 function formatPublishedAt(iso: string) {
@@ -166,7 +167,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
 	// Events the map can show: a confirmed pin, or a place that is a whole country it shades.
 	const showOnMap = briefData.relatedEvents.map((evt, index) =>
-		(typeof evt.lat === "number" && typeof evt.lng === "number") || countries?.find(evt.place)
+		eventPoint(evt) || countries?.find(evt.place)
 			? () => {
 					goToSection("map");
 					setShowEvent({ index, at: Date.now() });
@@ -290,7 +291,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								<p className="ci-section__note">
 									The shaded country and its borders come from Natural Earth map data.
 									Pins mark places the model named, drawn only where a map lookup
-									confirms them.
+									confirms them or on the sea or strait they name.
 								</p>
 							</Section>
 

@@ -213,6 +213,19 @@
 	pointer-events: none;
 }
 
+/* Below its point: an event pinned on the same water sits on the point itself. */
+.ci-map-water span {
+	position: absolute;
+	transform: translate(-50%, 16px);
+	white-space: nowrap;
+	font-family: "Newsreader", Georgia, serif;
+	font-style: italic;
+	font-size: 13px;
+	color: #2b5f8a;
+	text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+	pointer-events: none;
+}
+
 .ci-map-country--focus span {
 	font-size: 13px;
 	font-weight: 600;
