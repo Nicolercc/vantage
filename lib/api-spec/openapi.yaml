@@ -274,7 +274,8 @@ components:
           type: string
         type:
           type: string
-          enum: [strike, escalation, negotiation, humanitarian, political]
+          enum: [strike, escalation, negotiation, humanitarian, political, incident, announcement, decision, other]
+          description: The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).
         place:
           type: [string, "null"]
           description: Where the event happened, as a place name (e.g. "Jeddah, Saudi Arabia"). Null when it has no single location.
@@ -403,9 +404,75 @@ components:
         count:
           type: integer
       required: [provider, status, count]
+    TopicType:
+      type: string
+      enum: [conflict, politics, business, technology, science_health, disaster, society, not_news]
+      description: What kind of story a brief is about. society covers culture and sport. not_news is anything that is not a news story (a recipe, homework, a product question), which Vantage declines.
+    Stakeholder:
+      type: object
+      description: A person, group or organisation involved in the story, from the model's background knowledge.
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          description: Their part in the story (1 sentence)
+        stance:
+          type: string
+          description: What they want or say about it (1 sentence)
+      required: [name, role, stance]
+    BriefModules:
+      type: object
+      description: Extra sections for some kinds of story. Each is null when it does not apply. Lists of names are model background; the time-sensitive parts are claims checked against the sources like key facts.
+      properties:
+        business:
+          anyOf:
+            - type: object
+              properties:
+                companies:
+                  type: array
+                  items:
+                    type: string
+                marketEffect:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Claim"
+              required: [companies, marketEffect]
+            - type: "null"
+        disaster:
+          anyOf:
+            - type: object
+              properties:
+                affectedAreas:
+                  type: array
+                  items:
+                    type: string
+                officialGuidance:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Claim"
+              required: [affectedAreas, officialGuidance]
+            - type: "null"
+        outage:
+          anyOf:
+            - type: object
+              properties:
+                servicesAffected:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Claim"
+              required: [servicesAffected, status]
+            - type: "null"
+      required: [business, disaster, outage]
     Orientation:
       type: object
       properties:
+        topicType:
+          $ref: "#/components/schemas/TopicType"
         inScope:
           type: boolean
         what:
@@ -432,7 +499,10 @@ components:
           description: ISO 8601 time the server generated this brief. Set once; unchanged when served from cache.
         inScope:
           type: boolean
-          description: False when the input is not a conflict, crisis or geopolitical tension.
+          description: False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict.
+        topicType:
+          $ref: "#/components/schemas/TopicType"
+          description: Absent on briefs saved before general news was supported; those with inScope true are conflict briefs.
         headline:
           type: string
         location:
@@ -460,7 +530,17 @@ components:
           type: array
           items:
             type: string
+        stakeholders:
+          type: array
+          description: Who is involved and what they want, for briefs that are not about a conflict. Model background.
+          items:
+            $ref: "#/components/schemas/Stakeholder"
+        modules:
+          anyOf:
+            - $ref: "#/components/schemas/BriefModules"
+            - type: "null"
         perspectives:
+          description: Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData.
           type: array
           items:
             $ref: "#/components/schemas/Perspective"
@@ -514,14 +594,9 @@ components:
         - location
         - summary
         - actors
-        - perspectives
         - relatedEvents
-        - escalationRisk
-        - escalationReason
         - historicalContext
-        - affectedPopulation
         - keyQuestion
-        - casualtyData
         - sources
         - keyFacts
         - coverage

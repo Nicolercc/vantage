@@ -351,27 +351,35 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								Go deeper
 							</h2>
 							<p className="ci-layer__lede">Background from the model&apos;s general knowledge. Tap a heading to open it.</p>
-							<Section id="assessment" title="Where this could go" kind="background" collapsible startOpen={false}>
-								<p className="ci-assessment">
-									<span className="ci-assessment__label">Escalation risk</span>{" "}
-									<strong className={`ci-risk ci-risk--${RISK_CLASS[briefData.escalationRisk]}`}>
-										{briefData.escalationRisk}
-									</strong>
-									<span className="ci-assessment__reason"> — {analysis.escalationTag}</span>
-								</p>
-								{analysis.keyQuestion ? (
-									<p className="ci-assessment">
-										<span className="ci-assessment__label">Open question</span>{" "}
-										<span className="ci-assessment__reason">{analysis.keyQuestion}</span>
-									</p>
-								) : null}
-							</Section>
+							{briefData.escalationRisk || analysis.keyQuestion ? (
+								<Section id="assessment" title="Where this could go" kind="background" collapsible startOpen={false}>
+									{briefData.escalationRisk ? (
+										<p className="ci-assessment">
+											<span className="ci-assessment__label">Escalation risk</span>{" "}
+											<strong className={`ci-risk ci-risk--${RISK_CLASS[briefData.escalationRisk]}`}>
+												{briefData.escalationRisk}
+											</strong>
+											{analysis.escalationTag ? (
+												<span className="ci-assessment__reason"> — {analysis.escalationTag}</span>
+											) : null}
+										</p>
+									) : null}
+									{analysis.keyQuestion ? (
+										<p className="ci-assessment">
+											<span className="ci-assessment__label">Open question</span>{" "}
+											<span className="ci-assessment__reason">{analysis.keyQuestion}</span>
+										</p>
+									) : null}
+								</Section>
+							) : null}
 							<Section id="timeline" title="How we got here" kind="background" collapsible startOpen={false}>
 								<EventTimeline events={briefData.relatedEvents} active={true} onShowOnMap={showOnMap} />
 							</Section>
-							<Section id="perspectives" title="How each side sees it" kind="background" collapsible startOpen={false}>
-								<PerspectivesPanel perspectives={briefData.perspectives} active={true} />
-							</Section>
+							{briefData.perspectives?.length ? (
+								<Section id="perspectives" title="How each side sees it" kind="background" collapsible startOpen={false}>
+									<PerspectivesPanel perspectives={briefData.perspectives} active={true} />
+								</Section>
+							) : null}
 							{briefData.casualtyData && (
 								<Section id="population" title="People affected" kind="background" collapsible startOpen={false}>
 									<CasualtyPanel data={briefData.casualtyData} active={true} />

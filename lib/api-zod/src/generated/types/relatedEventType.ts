@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).
+ */
 export type RelatedEventType = typeof RelatedEventType[keyof typeof RelatedEventType];
 
 
@@ -15,4 +18,8 @@ export const RelatedEventType = {
   negotiation: 'negotiation',
   humanitarian: 'humanitarian',
   political: 'political',
+  incident: 'incident',
+  announcement: 'announcement',
+  decision: 'decision',
+  other: 'other',
 } as const;

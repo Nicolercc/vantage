@@ -5,8 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { TopicType } from './topicType';
 
 export interface Orientation {
+  topicType?: TopicType;
   inScope: boolean;
   /** @maxLength 220 */
   what: string;

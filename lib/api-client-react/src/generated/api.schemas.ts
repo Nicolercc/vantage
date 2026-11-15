@@ -70,6 +70,9 @@ export interface Perspective {
   interests: string;
 }
 
+/**
+ * The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).
+ */
 export type RelatedEventType = typeof RelatedEventType[keyof typeof RelatedEventType];
 
 
@@ -79,12 +82,17 @@ export const RelatedEventType = {
   negotiation: 'negotiation',
   humanitarian: 'humanitarian',
   political: 'political',
+  incident: 'incident',
+  announcement: 'announcement',
+  decision: 'decision',
+  other: 'other',
 } as const;
 
 export interface RelatedEvent {
   date: string;
   title: string;
   description: string;
+  /** The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else). */
   type: RelatedEventType;
   /**
      * Where the event happened, as a place name (e.g. "Jeddah, Saudi Arabia"). Null when it has no single location.
@@ -234,7 +242,60 @@ export interface RetrievalStatus {
   count: number;
 }
 
+/**
+ * What kind of story a brief is about. society covers culture and sport. not_news is anything that is not a news story (a recipe, homework, a product question), which Vantage declines.
+ */
+export type TopicType = typeof TopicType[keyof typeof TopicType];
+
+
+export const TopicType = {
+  conflict: 'conflict',
+  politics: 'politics',
+  business: 'business',
+  technology: 'technology',
+  science_health: 'science_health',
+  disaster: 'disaster',
+  society: 'society',
+  not_news: 'not_news',
+} as const;
+
+/**
+ * A person, group or organisation involved in the story, from the model's background knowledge.
+ */
+export interface Stakeholder {
+  name: string;
+  /** Their part in the story (1 sentence) */
+  role: string;
+  /** What they want or say about it (1 sentence) */
+  stance: string;
+}
+
+export type BriefModulesBusiness = {
+  companies: string[];
+  marketEffect: Claim[];
+} | null;
+
+export type BriefModulesDisaster = {
+  affectedAreas: string[];
+  officialGuidance: Claim[];
+} | null;
+
+export type BriefModulesOutage = {
+  servicesAffected: string[];
+  status: Claim[];
+} | null;
+
+/**
+ * Extra sections for some kinds of story. Each is null when it does not apply. Lists of names are model background; the time-sensitive parts are claims checked against the sources like key facts.
+ */
+export interface BriefModules {
+  business: BriefModulesBusiness;
+  disaster: BriefModulesDisaster;
+  outage: BriefModulesOutage;
+}
+
 export interface Orientation {
+  topicType?: TopicType;
   inScope: boolean;
   /** @maxLength 220 */
   what: string;
@@ -275,8 +336,10 @@ export interface IntelligenceBrief {
   id: string;
   /** ISO 8601 time the server generated this brief. Set once; unchanged when served from cache. */
   generatedAt: string;
-  /** False when the input is not a conflict, crisis or geopolitical tension. */
+  /** False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict. */
   inScope: boolean;
+  /** Absent on briefs saved before general news was supported; those with inScope true are conflict briefs. */
+  topicType?: TopicType;
   headline: string;
   location: Location;
   orientation?: Orientation | null;
@@ -287,14 +350,18 @@ export interface IntelligenceBrief {
   glossary?: IntelligenceBriefGlossaryItem[] | null;
   summary: string;
   actors: string[];
-  perspectives: Perspective[];
+  /** Who is involved and what they want, for briefs that are not about a conflict. Model background. */
+  stakeholders?: Stakeholder[];
+  modules?: BriefModules | null;
+  /** Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData. */
+  perspectives?: Perspective[];
   relatedEvents: RelatedEvent[];
-  escalationRisk: IntelligenceBriefEscalationRisk;
-  escalationReason: string;
+  escalationRisk?: IntelligenceBriefEscalationRisk;
+  escalationReason?: string;
   historicalContext: string;
-  affectedPopulation: string;
+  affectedPopulation?: string;
   keyQuestion: string;
-  casualtyData: CasualtyData;
+  casualtyData?: CasualtyData;
   sources: Source[];
   /** Statements supported by the cited sources. Empty when nothing retrieved supports a claim. */
   keyFacts: Claim[];

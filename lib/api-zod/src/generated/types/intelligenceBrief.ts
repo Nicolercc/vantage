@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { BriefModules } from './briefModules';
 import type { CasualtyData } from './casualtyData';
 import type { Claim } from './claim';
 import type { CoverageComparison } from './coverageComparison';
@@ -17,6 +18,8 @@ import type { Perspective } from './perspective';
 import type { RelatedEvent } from './relatedEvent';
 import type { RetrievalStatus } from './retrievalStatus';
 import type { Source } from './source';
+import type { Stakeholder } from './stakeholder';
+import type { TopicType } from './topicType';
 import type { Verification } from './verification';
 
 export interface IntelligenceBrief {
@@ -24,8 +27,10 @@ export interface IntelligenceBrief {
   id: string;
   /** ISO 8601 time the server generated this brief. Set once; unchanged when served from cache. */
   generatedAt: string;
-  /** False when the input is not a conflict, crisis or geopolitical tension. */
+  /** False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict. */
   inScope: boolean;
+  /** Absent on briefs saved before general news was supported; those with inScope true are conflict briefs. */
+  topicType?: TopicType;
   headline: string;
   location: Location;
   orientation?: Orientation | null;
@@ -36,14 +41,18 @@ export interface IntelligenceBrief {
   glossary?: IntelligenceBriefGlossaryItem[] | null;
   summary: string;
   actors: string[];
-  perspectives: Perspective[];
+  /** Who is involved and what they want, for briefs that are not about a conflict. Model background. */
+  stakeholders?: Stakeholder[];
+  modules?: BriefModules | null;
+  /** Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData. */
+  perspectives?: Perspective[];
   relatedEvents: RelatedEvent[];
-  escalationRisk: IntelligenceBriefEscalationRisk;
-  escalationReason: string;
+  escalationRisk?: IntelligenceBriefEscalationRisk;
+  escalationReason?: string;
   historicalContext: string;
-  affectedPopulation: string;
+  affectedPopulation?: string;
   keyQuestion: string;
-  casualtyData: CasualtyData;
+  casualtyData?: CasualtyData;
   sources: Source[];
   /** Statements supported by the cited sources. Empty when nothing retrieved supports a claim. */
   keyFacts: Claim[];

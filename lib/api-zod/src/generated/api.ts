@@ -50,10 +50,14 @@ export const analyzeArticleResponseGlossaryMax = 8;
 
 
 
+
+
+
 export const AnalyzeArticleResponse = zod.object({
   "id": zod.string().describe('Unguessable identifier assigned by the server. GET \/briefs\/{id} returns this same brief for as long as it is stored.'),
   "generatedAt": zod.string().describe('ISO 8601 time the server generated this brief. Set once; unchanged when served from cache.'),
-  "inScope": zod.boolean().describe('False when the input is not a conflict, crisis or geopolitical tension.'),
+  "inScope": zod.boolean().describe('False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict.'),
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('Absent on briefs saved before general news was supported; those with inScope true are conflict briefs.'),
   "headline": zod.string(),
   "location": zod.object({
   "city": zod.string(),
@@ -63,6 +67,7 @@ export const AnalyzeArticleResponse = zod.object({
   "lng": zod.number().nullable()
 }),
   "orientation": zod.union([zod.object({
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('What kind of story a brief is about. society covers culture and sport. not_news is anything that is not a news story (a recipe, homework, a product question), which Vantage declines.'),
   "inScope": zod.boolean(),
   "what": zod.string().max(analyzeArticleResponseOrientationOneWhatMax),
   "where": zod.string().max(analyzeArticleResponseOrientationOneWhereMax),
@@ -75,32 +80,75 @@ export const AnalyzeArticleResponse = zod.object({
 })).max(analyzeArticleResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
+  "stakeholders": zod.array(zod.object({
+  "name": zod.string(),
+  "role": zod.string().describe('Their part in the story (1 sentence)'),
+  "stance": zod.string().describe('What they want or say about it (1 sentence)')
+}).describe('A person, group or organisation involved in the story, from the model\'s background knowledge.')).optional().describe('Who is involved and what they want, for briefs that are not about a conflict. Model background.'),
+  "modules": zod.union([zod.object({
+  "business": zod.union([zod.object({
+  "companies": zod.array(zod.string()),
+  "marketEffect": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "disaster": zod.union([zod.object({
+  "affectedAreas": zod.array(zod.string()),
+  "officialGuidance": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "outage": zod.union([zod.object({
+  "servicesAffected": zod.array(zod.string()),
+  "status": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()])
+}).describe('Extra sections for some kinds of story. Each is null when it does not apply. Lists of names are model background; the time-sensitive parts are claims checked against the sources like key facts.'),zod.null()]).optional(),
   "perspectives": zod.array(zod.object({
   "actor": zod.string().describe('Name of the actor or group holding this perspective'),
   "alignment": zod.enum(['Western', 'Regional', 'State Media', 'Civil Society', 'Affected Population']),
   "framing": zod.string().describe('How this actor frames the event (1-2 sentences)'),
   "interests": zod.string().describe('Underlying interest shaping this framing (1 sentence)')
-})),
+})).optional().describe('Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData.'),
   "relatedEvents": zod.array(zod.object({
   "date": zod.string(),
   "title": zod.string(),
   "description": zod.string(),
-  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political']),
+  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political', 'incident', 'announcement', 'decision', 'other']).describe('The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).'),
   "place": zod.string().nullable().describe('Where the event happened, as a place name (e.g. \"Jeddah, Saudi Arabia\"). Null when it has no single location.'),
   "lat": zod.number().nullable().describe('Set by geocoding the place, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable(),
   "searchQuery": zod.string().describe('Google News search query to verify this event')
 })),
-  "escalationRisk": zod.enum(['Low', 'Medium', 'High']),
-  "escalationReason": zod.string(),
+  "escalationRisk": zod.enum(['Low', 'Medium', 'High']).optional(),
+  "escalationReason": zod.string().optional(),
   "historicalContext": zod.string(),
-  "affectedPopulation": zod.string(),
+  "affectedPopulation": zod.string().optional(),
   "keyQuestion": zod.string(),
   "casualtyData": zod.object({
   "description": zod.string(),
   "civilianImpact": zod.string(),
   "allSides": zod.string()
-}),
+}).optional(),
   "sources": zod.array(zod.object({
   "id": zod.string().describe('Stable within one brief, e.g. \"S1\". Claims refer to sources by this id.'),
   "kind": zod.enum(['news', 'reference', 'article']).describe('news is retrieved reporting, reference is background (Wikipedia), article is the text or link the reader supplied.'),
@@ -190,10 +238,14 @@ export const getBriefResponseGlossaryMax = 8;
 
 
 
+
+
+
 export const GetBriefResponse = zod.object({
   "id": zod.string().describe('Unguessable identifier assigned by the server. GET \/briefs\/{id} returns this same brief for as long as it is stored.'),
   "generatedAt": zod.string().describe('ISO 8601 time the server generated this brief. Set once; unchanged when served from cache.'),
-  "inScope": zod.boolean().describe('False when the input is not a conflict, crisis or geopolitical tension.'),
+  "inScope": zod.boolean().describe('False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict.'),
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('Absent on briefs saved before general news was supported; those with inScope true are conflict briefs.'),
   "headline": zod.string(),
   "location": zod.object({
   "city": zod.string(),
@@ -203,6 +255,7 @@ export const GetBriefResponse = zod.object({
   "lng": zod.number().nullable()
 }),
   "orientation": zod.union([zod.object({
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('What kind of story a brief is about. society covers culture and sport. not_news is anything that is not a news story (a recipe, homework, a product question), which Vantage declines.'),
   "inScope": zod.boolean(),
   "what": zod.string().max(getBriefResponseOrientationOneWhatMax),
   "where": zod.string().max(getBriefResponseOrientationOneWhereMax),
@@ -215,32 +268,75 @@ export const GetBriefResponse = zod.object({
 })).max(getBriefResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
+  "stakeholders": zod.array(zod.object({
+  "name": zod.string(),
+  "role": zod.string().describe('Their part in the story (1 sentence)'),
+  "stance": zod.string().describe('What they want or say about it (1 sentence)')
+}).describe('A person, group or organisation involved in the story, from the model\'s background knowledge.')).optional().describe('Who is involved and what they want, for briefs that are not about a conflict. Model background.'),
+  "modules": zod.union([zod.object({
+  "business": zod.union([zod.object({
+  "companies": zod.array(zod.string()),
+  "marketEffect": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "disaster": zod.union([zod.object({
+  "affectedAreas": zod.array(zod.string()),
+  "officialGuidance": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "outage": zod.union([zod.object({
+  "servicesAffected": zod.array(zod.string()),
+  "status": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()])
+}).describe('Extra sections for some kinds of story. Each is null when it does not apply. Lists of names are model background; the time-sensitive parts are claims checked against the sources like key facts.'),zod.null()]).optional(),
   "perspectives": zod.array(zod.object({
   "actor": zod.string().describe('Name of the actor or group holding this perspective'),
   "alignment": zod.enum(['Western', 'Regional', 'State Media', 'Civil Society', 'Affected Population']),
   "framing": zod.string().describe('How this actor frames the event (1-2 sentences)'),
   "interests": zod.string().describe('Underlying interest shaping this framing (1 sentence)')
-})),
+})).optional().describe('Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData.'),
   "relatedEvents": zod.array(zod.object({
   "date": zod.string(),
   "title": zod.string(),
   "description": zod.string(),
-  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political']),
+  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political', 'incident', 'announcement', 'decision', 'other']).describe('The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).'),
   "place": zod.string().nullable().describe('Where the event happened, as a place name (e.g. \"Jeddah, Saudi Arabia\"). Null when it has no single location.'),
   "lat": zod.number().nullable().describe('Set by geocoding the place, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable(),
   "searchQuery": zod.string().describe('Google News search query to verify this event')
 })),
-  "escalationRisk": zod.enum(['Low', 'Medium', 'High']),
-  "escalationReason": zod.string(),
+  "escalationRisk": zod.enum(['Low', 'Medium', 'High']).optional(),
+  "escalationReason": zod.string().optional(),
   "historicalContext": zod.string(),
-  "affectedPopulation": zod.string(),
+  "affectedPopulation": zod.string().optional(),
   "keyQuestion": zod.string(),
   "casualtyData": zod.object({
   "description": zod.string(),
   "civilianImpact": zod.string(),
   "allSides": zod.string()
-}),
+}).optional(),
   "sources": zod.array(zod.object({
   "id": zod.string().describe('Stable within one brief, e.g. \"S1\". Claims refer to sources by this id.'),
   "kind": zod.enum(['news', 'reference', 'article']).describe('news is retrieved reporting, reference is background (Wikipedia), article is the text or link the reader supplied.'),
@@ -365,10 +461,14 @@ export const exploreConflictResponseGlossaryMax = 8;
 
 
 
+
+
+
 export const ExploreConflictResponse = zod.object({
   "id": zod.string().describe('Unguessable identifier assigned by the server. GET \/briefs\/{id} returns this same brief for as long as it is stored.'),
   "generatedAt": zod.string().describe('ISO 8601 time the server generated this brief. Set once; unchanged when served from cache.'),
-  "inScope": zod.boolean().describe('False when the input is not a conflict, crisis or geopolitical tension.'),
+  "inScope": zod.boolean().describe('False when the input is not a news story. Briefs saved before general news was supported are also false for news that is not a conflict.'),
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('Absent on briefs saved before general news was supported; those with inScope true are conflict briefs.'),
   "headline": zod.string(),
   "location": zod.object({
   "city": zod.string(),
@@ -378,6 +478,7 @@ export const ExploreConflictResponse = zod.object({
   "lng": zod.number().nullable()
 }),
   "orientation": zod.union([zod.object({
+  "topicType": zod.enum(['conflict', 'politics', 'business', 'technology', 'science_health', 'disaster', 'society', 'not_news']).optional().describe('What kind of story a brief is about. society covers culture and sport. not_news is anything that is not a news story (a recipe, homework, a product question), which Vantage declines.'),
   "inScope": zod.boolean(),
   "what": zod.string().max(exploreConflictResponseOrientationOneWhatMax),
   "where": zod.string().max(exploreConflictResponseOrientationOneWhereMax),
@@ -390,32 +491,75 @@ export const ExploreConflictResponse = zod.object({
 })).max(exploreConflictResponseGlossaryMax).nullish(),
   "summary": zod.string(),
   "actors": zod.array(zod.string()),
+  "stakeholders": zod.array(zod.object({
+  "name": zod.string(),
+  "role": zod.string().describe('Their part in the story (1 sentence)'),
+  "stance": zod.string().describe('What they want or say about it (1 sentence)')
+}).describe('A person, group or organisation involved in the story, from the model\'s background knowledge.')).optional().describe('Who is involved and what they want, for briefs that are not about a conflict. Model background.'),
+  "modules": zod.union([zod.object({
+  "business": zod.union([zod.object({
+  "companies": zod.array(zod.string()),
+  "marketEffect": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "disaster": zod.union([zod.object({
+  "affectedAreas": zod.array(zod.string()),
+  "officialGuidance": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()]),
+  "outage": zod.union([zod.object({
+  "servicesAffected": zod.array(zod.string()),
+  "status": zod.array(zod.object({
+  "text": zod.string(),
+  "sourceIds": zod.array(zod.string()).min(1).describe('The sources quoted in evidence, in the same order.'),
+  "evidence": zod.array(zod.object({
+  "sourceId": zod.string(),
+  "quote": zod.string()
+}).describe('Words copied from one source. The server has checked that they appear in that source exactly.')),
+  "support": zod.enum(['verified', 'unverified']).describe('verified when a second model found the claim fully supported by its quotes; unverified when that check did not run for this brief.')
+}).describe('A statement tied to quoted source text. The server drops any claim whose quotes are not found in the sources they name, whose figures are absent from its quotes, or which the verifier does not find fully supported.'))
+}),zod.null()])
+}).describe('Extra sections for some kinds of story. Each is null when it does not apply. Lists of names are model background; the time-sensitive parts are claims checked against the sources like key facts.'),zod.null()]).optional(),
   "perspectives": zod.array(zod.object({
   "actor": zod.string().describe('Name of the actor or group holding this perspective'),
   "alignment": zod.enum(['Western', 'Regional', 'State Media', 'Civil Society', 'Affected Population']),
   "framing": zod.string().describe('How this actor frames the event (1-2 sentences)'),
   "interests": zod.string().describe('Underlying interest shaping this framing (1 sentence)')
-})),
+})).optional().describe('Conflict briefs only, like escalationRisk, escalationReason, affectedPopulation and casualtyData.'),
   "relatedEvents": zod.array(zod.object({
   "date": zod.string(),
   "title": zod.string(),
   "description": zod.string(),
-  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political']),
+  "type": zod.enum(['strike', 'escalation', 'negotiation', 'humanitarian', 'political', 'incident', 'announcement', 'decision', 'other']).describe('The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else).'),
   "place": zod.string().nullable().describe('Where the event happened, as a place name (e.g. \"Jeddah, Saudi Arabia\"). Null when it has no single location.'),
   "lat": zod.number().nullable().describe('Set by geocoding the place, never by the model. Null when the place could not be confirmed. Lat and lng are null together.'),
   "lng": zod.number().nullable(),
   "searchQuery": zod.string().describe('Google News search query to verify this event')
 })),
-  "escalationRisk": zod.enum(['Low', 'Medium', 'High']),
-  "escalationReason": zod.string(),
+  "escalationRisk": zod.enum(['Low', 'Medium', 'High']).optional(),
+  "escalationReason": zod.string().optional(),
   "historicalContext": zod.string(),
-  "affectedPopulation": zod.string(),
+  "affectedPopulation": zod.string().optional(),
   "keyQuestion": zod.string(),
   "casualtyData": zod.object({
   "description": zod.string(),
   "civilianImpact": zod.string(),
   "allSides": zod.string()
-}),
+}).optional(),
   "sources": zod.array(zod.object({
   "id": zod.string().describe('Stable within one brief, e.g. \"S1\". Claims refer to sources by this id.'),
   "kind": zod.enum(['news', 'reference', 'article']).describe('news is retrieved reporting, reference is background (Wikipedia), article is the text or link the reader supplied.'),

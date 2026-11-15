@@ -11,6 +11,7 @@ export interface RelatedEvent {
   date: string;
   title: string;
   description: string;
+  /** The first five are for conflicts; the last four for any other news (an incident such as an outage or accident, an announcement, a decision by a court or official body, anything else). */
   type: RelatedEventType;
   /**
      * Where the event happened, as a place name (e.g. "Jeddah, Saudi Arabia"). Null when it has no single location.

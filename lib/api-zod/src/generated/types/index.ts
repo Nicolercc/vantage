@@ -7,6 +7,10 @@
  */
 
 export * from './analyzeArticleBody';
+export * from './briefModules';
+export * from './briefModulesBusiness';
+export * from './briefModulesDisaster';
+export * from './briefModulesOutage';
 export * from './casualtyData';
 export * from './claim';
 export * from './claimSupport';
@@ -29,6 +33,8 @@ export * from './retrievalStatus';
 export * from './retrievalStatusStatus';
 export * from './source';
 export * from './sourceKind';
+export * from './stakeholder';
 export * from './streamBriefBody';
+export * from './topicType';
 export * from './verification';
 export * from './verificationStatus';
