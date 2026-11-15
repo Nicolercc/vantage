@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Topology } from "topojson-specification";
 import world from "world-atlas/countries-110m.json";
-import { buildCountryIndex, describeWhere, labelPoint, listNames, normalise } from "./countries";
+import { buildCountryIndex, describeWhere, labelPoint, listNames, normalise, regionInSentence } from "./countries";
 
 const index = buildCountryIndex(world as unknown as Topology);
 
@@ -91,5 +91,22 @@ describe("labelPoint", () => {
 		expect(lat).toBeLessThan(45);
 		expect(lng).toBeGreaterThan(-110);
 		expect(lng).toBeLessThan(-85);
+	});
+});
+
+describe("regionInSentence", () => {
+	it("adds 'the' where English needs it, and only there", () => {
+		expect(regionInSentence("Middle East")).toBe("the Middle East");
+		expect(regionInSentence("Horn of Africa")).toBe("the Horn of Africa");
+		expect(regionInSentence("The Sahel")).toBe("the Sahel");
+		expect(regionInSentence("East Africa")).toBe("East Africa");
+		expect(regionInSentence("Southeast Asia")).toBe("Southeast Asia");
+	});
+
+	it("reads correctly in the sentence above the map", () => {
+		const yemen = index.find("Yemen")!;
+		expect(describeWhere(yemen, "Middle East", index.neighbours(yemen))).toBe(
+			"Yemen is in the Middle East. It shares land borders with Oman and Saudi Arabia.",
+		);
 	});
 });

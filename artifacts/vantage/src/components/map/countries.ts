@@ -179,6 +179,17 @@ export function inSentence(country: Country): string {
 	return country.the ? `the ${country.name}` : country.name;
 }
 
+/** Regions English names with "the": "the Middle East", "the Horn of Africa", "the Sahel". */
+const REGION_WITH_THE =
+	/^(middle east|near east|far east|horn of africa|sahel|maghreb|levant|balkans|caucasus|south caucasus|caribbean|gulf|persian gulf|arabian peninsula|indian subcontinent|great lakes|great lakes region|korean peninsula|americas|pacific|south pacific|arctic|red sea region|african great lakes)$/;
+
+/** "the Middle East", "East Africa": the region as it reads after "is in". */
+export function regionInSentence(region: string): string {
+	const r = region.trim();
+	if (/^the /i.test(r)) return `the ${r.slice(4)}`;
+	return REGION_WITH_THE.test(normalise(r)) ? `the ${r}` : r;
+}
+
 /** "Egypt", "Egypt and Libya", "Egypt, Libya and Chad". */
 export function listNames(names: string[]): string {
 	if (names.length <= 1) return names.join("");
@@ -196,7 +207,7 @@ export function describeWhere(country: Country, region: string | null | undefine
 		neighbours.length > 0
 			? `shares land borders with ${listNames(neighbours.map(inSentence))}.`
 			: "has no land borders with another country.";
-	return place ? `${subject} is in ${place}. It ${borders}` : `${subject} ${borders}`;
+	return place ? `${subject} is in ${regionInSentence(place)}. It ${borders}` : `${subject} ${borders}`;
 }
 
 let loading: Promise<CountryIndex> | null = null;
