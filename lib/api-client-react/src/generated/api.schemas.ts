@@ -5,6 +5,49 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+/**
+ * The newest headline counted for a topic, so a reader can see what the coverage is about.
+ */
+export interface TrendingHeadline {
+  title: string;
+  publisher: string;
+  url: string;
+}
+
+export interface TrendingTopic {
+  /** Short plain name of the place, also the topic a brief on it is requested with. */
+  label: string;
+  /** The country the place is in, or the closest honest description (e.g. "Palestinian territories"). */
+  country: string;
+  /**
+     * Distinct outlets that named the place in a conflict or crisis headline in the window.
+     * @minimum 2
+     */
+  outletCount: number;
+  /** ISO 8601 time of the newest such headline. */
+  newestAt: string;
+  headline: TrendingHeadline;
+  /**
+     * Id of a brief on this topic that opens without waiting, or null when one would have to be generated.
+     * @nullable
+     */
+  briefId: string | null;
+}
+
+export interface TrendingResponse {
+  /**
+     * ISO 8601 time of the ranking, or null when there is none yet.
+     * @nullable
+     */
+  updatedAt: string | null;
+  /** How far back headlines are counted. */
+  windowHours: number;
+  /** Distinct outlets with any headline in the window, across every source read. */
+  outletCount: number;
+  /** @maxItems 8 */
+  topics: TrendingTopic[];
+}
+
 export interface HealthStatus {
   status: string;
 }
