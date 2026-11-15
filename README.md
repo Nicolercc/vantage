@@ -86,12 +86,14 @@ Measured on this branch (Node 22, pnpm 9.9.0):
 |---|---:|
 | API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 266 |
 | API: Postgres-backed store, limit, ledger and deadline and retention tests (run when `TEST_DATABASE_URL` is set; CI sets it) | 14 |
-| Client: input validation, streaming, brief adapter, map, country outlines, labelling, glossary, key numbers, layers, share-link notice, Today topics, dev proxy and stylesheet tests | 112 |
-| **Total** | **392** |
+| Client: input validation, streaming, brief adapter, map, country outlines, labelling, glossary, key numbers, layers, share-link notice, Today topics, dev proxy and stylesheet tests | 111 |
+| Browser (Playwright, built site, API mocked; 13 scenarios at phone and desktop size) | 26 |
+| **Total** | **417** |
 
 * Route tests run the real Express app with a fake model and fake retrieval: no network, no API key, no spend.
 * Fixture tests cover the guarantees directly: quotes that are not in their source, invented figures, unsupported verifier rewrites, malformed verifier output, prompt-injection text kept out of the system prompt, SSRF targets, geocoder disagreement and deadlines.
 * CI (`.github/workflows/ci.yml`) runs a frozen-lockfile install, a codegen drift check, lint, typecheck, build and all tests against Postgres 16.
+* A second CI job runs the browser tests (`pnpm --filter @workspace/vantage e2e`) on the built site at 375 and 1280 pixels wide, with the API mocked so no key or spend is needed. Each page must pass axe (WCAG 2.1 AA, serious and critical findings), have no sideways scroll, no control under 44 px (24 px for citations and defined words inside sentences), no text under 13 px, shared left edges and no console errors. Screenshots and axe findings are uploaded as the `browser-report` artifact.
 * `artifacts/api-server/eval` replays 16 recorded topics through the production generation path and grades them with a stronger model. Historical results are in [eval/REPORT.md](artifacts/api-server/eval/REPORT.md). A full run needs an API key; the workflow skips without one.
 
 ```bash

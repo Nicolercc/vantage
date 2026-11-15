@@ -131,9 +131,8 @@ export function EventTimeline({
 							</p>
 							<div className="tl-det">
 								{onShowOnMap?.[i] ? (
-									<button type="button" className="tl-map-btn" onClick={onShowOnMap[i]}>
+									<button type="button" className="tl-map-btn" onClick={onShowOnMap[i]} aria-label={`Show on map: ${evt.title}`}>
 										Show on map
-										<span className="sr-only">: {evt.title}</span>
 									</button>
 								) : null}
 								{searchUrl ? (

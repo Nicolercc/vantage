@@ -56,9 +56,3 @@ export function timeAgo(iso: string, now = Date.now()): string {
 	return `${Math.round(minutes / 60)} h ago`;
 }
 
-/** One sentence a screen reader reads for a card, with everything it shows. */
-export function cardLabel(topic: TrendingTopic, now = Date.now()): string {
-	const place = topic.country !== topic.label ? `${topic.label}, ${topic.country}` : topic.label;
-	const state = isReady(topic) ? "Brief ready" : "Brief takes about a minute";
-	return `${place}. ${topic.outletCount} outlets, newest ${timeAgo(topic.newestAt, now)}: ${topic.headline.title}. ${state}.`;
-}
