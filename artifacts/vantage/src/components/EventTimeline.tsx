@@ -54,7 +54,7 @@ export function EventTimeline({
 						<span
 							style={{
 								fontFamily: "'IBM Plex Mono', monospace",
-								fontSize: "11px",
+								fontSize: "13px",
 								color: "var(--text-muted)",
 								textAlign: "right",
 								paddingTop: "2px",
@@ -95,7 +95,7 @@ export function EventTimeline({
 							<div
 								style={{
 									fontFamily: "'IBM Plex Mono', monospace",
-									fontSize: "11px",
+									fontSize: "13px",
 									letterSpacing: "0.08em",
 									color,
 									marginBottom: "1px",
@@ -109,7 +109,7 @@ export function EventTimeline({
 							</div>
 							<div
 								style={{
-									fontSize: "14px",
+									fontSize: "15px",
 									fontWeight: 500,
 									color: "var(--text-primary)",
 									marginBottom: "1px",
@@ -143,7 +143,7 @@ export function EventTimeline({
 										rel="noopener noreferrer"
 										style={{
 											fontFamily: "'IBM Plex Mono', monospace",
-											fontSize: "11px",
+											fontSize: "13px",
 											color: "var(--accent-navy)",
 											textDecoration: "underline",
 											textUnderlineOffset: "3px",

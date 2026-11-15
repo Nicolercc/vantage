@@ -8,7 +8,7 @@ export function ConflictBackground({ text, active }: { text: string; active: boo
         transition: "opacity 0.6s ease",
       }}
     >
-      <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontStyle: "italic", fontSize: "14px", color: "var(--text-secondary)", lineHeight: "1.7" }}>
+      <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: "17px", color: "var(--text-secondary)", lineHeight: "1.65" }}>
         {text}
       </p>
     </div>
