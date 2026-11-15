@@ -13,6 +13,8 @@ import { temporaryLinkNotice } from "@/lib/share-link";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
+import { describeWhere, type CountryIndex } from "./map/countries";
+import { useCountries } from "./map/useCountries";
 import "./ConflictAnalysisPageLayout.css";
 
 function formatPublishedAt(iso: string) {
@@ -117,6 +119,26 @@ function checkNote(brief: IntelligenceBrief): string {
 
 const RISK_CLASS = { Low: "low", Medium: "medium", High: "high" } as const;
 
+/**
+ * One or two sentences that place the country for a reader who may not know
+ * it: its region and its neighbours. The borders come from map data; nothing
+ * is shown until the outlines load, or when the brief's country is not on the map.
+ */
+function WhereThisIs({ brief, countries }: { brief: IntelligenceBrief; countries: CountryIndex | null }) {
+	const country = countries?.find(brief.location.country);
+	if (!countries || !country) return null;
+	const city = brief.location.city.trim();
+	const pinned = typeof brief.location.lat === "number" && typeof brief.location.lng === "number";
+	return (
+		<p className="ci-where">
+			{describeWhere(country, brief.location.region, countries.neighbours(country))}
+			{pinned && city && city.toLowerCase() !== country.name.toLowerCase()
+				? ` The pin marks ${city}, the main place in this brief.`
+				: ""}
+		</p>
+	);
+}
+
 /** A finished brief. The page address is its permanent link. */
 export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 	const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
@@ -140,6 +162,18 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 	// Decided once per page: background sections start folded on a phone.
 	const [wide] = useState(() => window.matchMedia("(min-width: 721px)").matches);
 
+	const countries = useCountries();
+	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
+	// Events the map can show: a confirmed pin, or a place that is a whole country it shades.
+	const showOnMap = briefData.relatedEvents.map((evt, index) =>
+		(typeof evt.lat === "number" && typeof evt.lng === "number") || countries?.find(evt.place)
+			? () => {
+					goToSection("map");
+					setShowEvent({ index, at: Date.now() });
+				}
+			: null,
+	);
+
 	const analysis = adaptBrief(briefData);
 	const regionBits = analysis.region.split("·").map((s) => s.trim());
 	const regionBadge = regionBits[0]?.toUpperCase() ?? "";
@@ -150,9 +184,9 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 	const nav: { id: string; label: string }[] = [
 		{ id: "summary", label: "Summary" },
+		{ id: "map", label: "Map" },
 		{ id: "key-facts", label: "Key facts" },
 		...(hasComparison ? [{ id: "coverage", label: "Coverage" }] : []),
-		{ id: "map", label: "Map" },
 		{ id: "assessment", label: "Assessment" },
 		{ id: "timeline", label: "Timeline" },
 		{ id: "perspectives", label: "Perspectives" },
@@ -247,6 +281,19 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								<p className="ci-summary">{analysis.summary}</p>
 							</Section>
 
+							{/* Right after the summary: a reader new to the story needs to know where it is before the details. */}
+							<Section id="map" title="Where this is" kind="background" startOpen>
+								<WhereThisIs brief={briefData} countries={countries} />
+								<div className="ci-map-outer">
+									<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
+								</div>
+								<p className="ci-section__note">
+									The shaded country and its borders come from Natural Earth map data.
+									Pins mark places the model named, drawn only where a map lookup
+									confirms them.
+								</p>
+							</Section>
+
 							<Section id="key-facts" title="Key facts" kind="sourced" startOpen>
 								<p className="ci-section__note">{checkNote(briefData)}</p>
 								<ClaimList
@@ -279,15 +326,6 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								</Section>
 							)}
 
-							<Section id="map" title="Where" kind="background" startOpen>
-								<p className="ci-section__note">
-									Places are named by the model and drawn only where a map lookup
-									confirms them.
-								</p>
-								<div className="ci-map-outer">
-									<InteractiveConflictMap data={briefData} active={true} />
-								</div>
-							</Section>
 
 							<Section id="assessment" title="Assessment" kind="background" startOpen>
 								<p className="ci-assessment">
@@ -306,7 +344,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 							</Section>
 
 							<Section id="timeline" title="Background timeline" kind="background" collapsible startOpen={wide}>
-								<EventTimeline events={briefData.relatedEvents} active={true} />
+								<EventTimeline events={briefData.relatedEvents} active={true} onShowOnMap={showOnMap} />
 							</Section>
 
 							<Section id="perspectives" title="Perspectives" kind="background" collapsible startOpen={wide}>

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { adaptBrief } from "./adapter";
+import { adaptBrief, uniqueParties } from "./adapter";
 
 type Brief = Parameters<typeof adaptBrief>[0];
 
@@ -83,4 +83,18 @@ describe("adaptBrief — trust contract", () => {
     expect(a.mapEvents).toHaveLength(1);
     expect(a.mapEvents[0]).toMatchObject({ lat: 15.5, lng: 32.56 });
   });
+});
+
+describe("uniqueParties", () => {
+	it("shows each party once and at most six, for briefs saved with a repeating list", () => {
+		const loop = Array.from({ length: 40 }, (_, i) => (i % 2 ? "European Union / Italy" : "Shipping companies"));
+		expect(uniqueParties(["Houthis", "United States", ...loop, "united states", "Israel", "Iran", "Egypt"])).toEqual([
+			"Houthis",
+			"United States",
+			"Shipping companies",
+			"European Union / Italy",
+			"Israel",
+			"Iran",
+		]);
+	});
 });

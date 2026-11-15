@@ -19,9 +19,12 @@ const TYPE_LABELS: Record<string, string> = {
 export function EventTimeline({
 	events,
 	active,
+	onShowOnMap,
 }: {
 	events: RelatedEvent[];
 	active: boolean;
+	/** Set for events the map can show (a pin or a shaded country); moves the map to that event. */
+	onShowOnMap?: Array<(() => void) | null>;
 }) {
 	return (
 		<div style={{ display: "flex", flexDirection: "column" as const, gap: "1px" }}>
@@ -127,6 +130,12 @@ export function EventTimeline({
 								{evt.description}
 							</p>
 							<div className="tl-det">
+								{onShowOnMap?.[i] ? (
+									<button type="button" className="tl-map-btn" onClick={onShowOnMap[i]}>
+										Show on map
+										<span className="sr-only">: {evt.title}</span>
+									</button>
+								) : null}
 								{searchUrl ? (
 									<a
 										href={searchUrl}

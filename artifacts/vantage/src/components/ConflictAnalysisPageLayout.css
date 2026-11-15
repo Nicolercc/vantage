@@ -125,6 +125,32 @@
 
 .tl-det {
 	margin-top: 6px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 16px;
+}
+
+/* Moves the map to a timeline event: a real button, so it works by keyboard and by tap. */
+.tl-map-btn {
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 11px;
+	color: var(--accent-navy);
+	background: none;
+	border: 1px solid var(--border-light);
+	border-radius: 4px;
+	padding: 6px 10px;
+	min-height: 32px;
+	cursor: pointer;
+}
+
+.tl-map-btn:hover {
+	border-color: var(--accent-navy);
+}
+
+.tl-map-btn:focus-visible {
+	outline: 2px solid var(--accent-navy);
+	outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -172,6 +198,27 @@
 	border-right: none;
 }
 
+/* English country names drawn over the tiles, centred on their point */
+.ci-map-country span {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	white-space: nowrap;
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 11px;
+	font-weight: 500;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: #3d4a57;
+	text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff;
+	pointer-events: none;
+}
+
+.ci-map-country--focus span {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1a3a52;
+}
+
 /* Map key, under the map */
 .ci-map-legend {
 	display: flex;
@@ -205,6 +252,13 @@
 
 .ci-map-legend__swatch--diamond {
 	transform: rotate(45deg);
+}
+
+.ci-map-legend__swatch--area {
+	width: 14px;
+	height: 10px;
+	border: 1.5px solid;
+	border-radius: 2px;
 }
 
 /* Actions under the brief title */
@@ -361,7 +415,10 @@
 	border-radius: 10px !important;
 	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18) !important;
 	padding: 0 !important;
-	max-width: min(92vw, 360px);
+	/* Leaflet tooltips never wrap by default: a long title would run off a phone screen. */
+	white-space: normal;
+	width: min(78vw, 320px);
+	max-width: min(78vw, 320px);
 }
 
 .ci-interactive-map .leaflet-tooltip.ci-leaflet-tooltip::before {
@@ -369,7 +426,7 @@
 }
 
 .ci-interactive-map .ci-leaflet-tip {
-	min-width: 220px;
+	min-width: 0;
 	max-width: 100%;
 	padding: 12px 14px;
 	background: transparent;
@@ -464,6 +521,16 @@
 	line-height: 1.65;
 	color: var(--text-primary);
 	margin: 0;
+}
+
+/* Where this is: the one or two sentences above the map */
+.ci-where {
+	font-family: "Newsreader", Georgia, serif;
+	font-size: 17px;
+	line-height: 1.6;
+	color: var(--text-primary);
+	margin: 0 0 14px;
+	max-width: 68ch;
 }
 
 /* Perspectives: every framing is on the page, nothing behind hover */

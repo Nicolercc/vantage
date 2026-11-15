@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { inSentence, labelPoint, listNames } from "./map/countries";
+import { countryWideLabel, mapPlaces } from "./map/places";
+import { useCountries } from "./map/useCountries";
 import type {
 	IntelligenceBrief,
 	RelatedEvent,
@@ -176,6 +179,49 @@ function hubTooltipHtml(brief: IntelligenceBrief) {
 </div>`;
 }
 
+type LegendItem = { key: string; label: string; swatch?: { shape: "dot" | "diamond" | "area"; color: string } };
+
+const OTHER_AREA_COLOR = "#6b7c8c";
+/** Closer than this to the main pin, the country's own name would sit under the pin's label. */
+const LABEL_CLEARANCE_METRES = 350_000;
+const FOCUS_AREA_STYLE: L.PathOptions = { color: HUB_COLOR, weight: 1.5, opacity: 0.8, fillColor: HUB_COLOR, fillOpacity: 0.1 };
+const OTHER_AREA_STYLE: L.PathOptions = {
+	color: OTHER_AREA_COLOR,
+	weight: 1,
+	opacity: 0.7,
+	dashArray: "4 4",
+	fillColor: OTHER_AREA_COLOR,
+	fillOpacity: 0.06,
+};
+
+/**
+ * A country is framed only when it fits a sensible view. Russia, the United
+ * States (with Alaska) or a country crossing the date line would zoom the map
+ * out to the whole world.
+ */
+function framable(bounds: L.LatLngBounds) {
+	return bounds.isValid() && bounds.getEast() - bounds.getWest() <= 100;
+}
+
+/**
+ * One key entry per kind of event on the map, in the colour and shape its
+ * marker is drawn with, so every pin can be matched to its label.
+ */
+export function eventLegend(events: Pick<RelatedEvent, "type">[]): LegendItem[] {
+	const present = new Set(events.map((e) => e.type));
+	return (Object.keys(TYPE_META) as RelatedEventType[])
+		.filter((type) => present.has(type))
+		.map((type) => ({
+			key: type,
+			label: TYPE_META[type].label,
+			swatch: { shape: type === "strike" ? "diamond" : "dot", color: TYPE_META[type].color },
+		}));
+}
+
+/** The view when nothing in the brief can be placed. Never below the map's own minimum zoom. */
+const MIN_ZOOM = 3;
+const WORLD_VIEW: { center: L.LatLngTuple; zoom: number } = { center: [20, 0], zoom: MIN_ZOOM };
+
 const TOOLTIP_OPTS: L.TooltipOptions = {
 	sticky: true,
 	direction: "top",
@@ -190,19 +236,26 @@ const TILE_ATTR =
 interface InteractiveConflictMapProps {
 	data: IntelligenceBrief;
 	active: boolean;
+	/** A timeline event to show; `at` changes on every request so the same event can be shown twice. */
+	showEvent?: { index: number; at: number } | null;
 }
 
 export function InteractiveConflictMap({
 	data,
 	active,
+	showEvent = null,
 }: InteractiveConflictMapProps) {
+	const eventMarkersRef = useRef(new Map<number, L.Marker>());
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<L.Map | null>(null);
 	const layersRef = useRef<{
 		polylines: L.Polyline[];
 		markers: L.Marker[];
-	}>({ polylines: [], markers: [] });
+		areas: L.GeoJSON[];
+	}>({ polylines: [], markers: [], areas: [] });
 	const [mapReady, setMapReady] = useState(false);
+	const countries = useCountries();
+	const places = mapPlaces(data, countries);
 
 	useEffect(() => {
 		if (!active) {
@@ -217,10 +270,14 @@ export function InteractiveConflictMap({
 			scrollWheelZoom: true,
 			zoomControl: true,
 			attributionControl: true,
-			minZoom: 3,
+			minZoom: MIN_ZOOM,
 			maxZoom: 14,
 			worldCopyJump: true,
 		});
+
+		// A map with no view cannot draw shapes: a country outline added before the
+		// first view would crash Leaflet. Start on the world; the brief reframes it.
+		map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
 
 		if (map.zoomControl) {
 			map.zoomControl.setPosition("bottomright");
@@ -267,16 +324,58 @@ export function InteractiveConflictMap({
 		layersRef.current.markers.forEach((m) => {
 			m.remove();
 		});
-		layersRef.current = { polylines: [], markers: [] };
+		layersRef.current.areas.forEach((a) => {
+			a.remove();
+		});
+		layersRef.current = { polylines: [], markers: [], areas: [] };
+		eventMarkersRef.current.clear();
+
+		// Countries first, so pins and lines draw over them.
+		const { focus, others } = mapPlaces(data, countries);
+		others.forEach((country) => {
+			layersRef.current.areas.push(L.geoJSON(country.shape, { style: OTHER_AREA_STYLE, interactive: false }).addTo(map));
+		});
+		const focusArea = focus ? L.geoJSON(focus.shape, { style: FOCUS_AREA_STYLE, interactive: false }).addTo(map) : null;
+		if (focusArea) layersRef.current.areas.push(focusArea);
+		const focusBounds = focusArea && framable(focusArea.getBounds()) ? focusArea.getBounds() : null;
 
 		const hub = toLatLng(data.location);
+
+		// Country names in English, from the map data. The tiles name places in
+		// their local languages, which a reader may not be able to read.
+		const labelled = focus && countries ? [focus, ...countries.neighbours(focus)] : [];
+		others.forEach((c) => {
+			if (!labelled.includes(c)) labelled.push(c);
+		});
+		labelled.forEach((country) => {
+			let at = labelPoint(country.shape);
+			const isFocus = country === focus;
+			// The main pin carries its own label: move the country's name halfway
+			// towards its southern edge so the two do not sit on each other.
+			if (isFocus && hub && focusArea && map.distance(hub, at) < LABEL_CLEARANCE_METRES) {
+				at = [(at[0] + focusArea.getBounds().getSouth()) / 2, at[1]];
+			}
+			layersRef.current.markers.push(
+				L.marker(at, {
+					icon: L.divIcon({
+						className: `ci-map-country${isFocus ? " ci-map-country--focus" : ""}`,
+						html: `<span>${escapeHtml(country.name)}</span>`,
+						iconSize: [0, 0],
+					}),
+					interactive: false,
+					keyboard: false,
+				}).addTo(map),
+			);
+		});
 		const located = data.relatedEvents.flatMap((evt) => {
 			const pos = toLatLng(evt);
 			return pos ? [{ evt, pos }] : [];
 		});
 		const points = [...(hub ? [hub] : []), ...located.map((l) => l.pos)];
 		if (points.length === 0) {
-			map.setView([20, 0], 2);
+			if (focusBounds) map.fitBounds(focusBounds, { padding: [24, 24], maxZoom: 7, animate: false });
+			else if (focusArea) map.setView(focusArea.getBounds().getCenter(), MIN_ZOOM);
+			else map.setView(WORLD_VIEW.center, WORLD_VIEW.zoom);
 			return;
 		}
 
@@ -332,44 +431,80 @@ export function InteractiveConflictMap({
 
 			marker.on("click", () => {
 				map.flyTo(pos, Math.max(map.getZoom(), 7), { duration: 0.85 });
+				// A tap has no hover: open the event's card on click too.
+				marker.openTooltip();
 			});
 
 			layersRef.current.markers.push(marker);
+			eventMarkersRef.current.set(data.relatedEvents.indexOf(evt), marker);
 		});
 
-		// Frame the region the brief is about. An event far away (talks in Geneva,
-		// a vote in New York) stays on the map but does not shrink the view to a
-		// whole hemisphere; the key says it is there.
+		// Frame the region the brief is about: the whole country, and the pins near
+		// it. An event far away (talks in Geneva, a vote in New York) stays on the
+		// map but does not shrink the view to a whole hemisphere; the key says it is there.
 		const near = hub ? points.filter((p) => map.distance(hub, p) <= NEARBY_METRES) : points;
-		if (near.length <= 1) {
+		const frame = L.latLngBounds(near);
+		if (focusBounds) frame.extend(focusBounds);
+		if (!focusBounds && near.length <= 1) {
 			map.setView(near[0] ?? points[0], 6);
 		} else {
 			// Extra room at the top: the main pin and its label stand above their point.
-			map.fitBounds(L.latLngBounds(near), { paddingTopLeft: [36, 84], paddingBottomRight: [36, 36], maxZoom: 8, animate: false });
+			map.fitBounds(frame, { paddingTopLeft: [36, 84], paddingBottomRight: [36, 36], maxZoom: 8, animate: false });
 		}
 
 		queueMicrotask(() => map.invalidateSize());
-	}, [data, active, mapReady]);
+	}, [data, active, mapReady, countries]);
+
+	// "Show on map" from the timeline: move to the event's pin and open its card,
+	// or, for an event that covers a whole country, frame that country.
+	useEffect(() => {
+		const map = mapRef.current;
+		if (!map || !mapReady || !showEvent) return;
+		const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		const marker = eventMarkersRef.current.get(showEvent.index);
+		if (marker) {
+			const zoom = Math.max(map.getZoom(), 7);
+			if (reduce) map.setView(marker.getLatLng(), zoom);
+			else map.flyTo(marker.getLatLng(), zoom, { duration: 0.85 });
+			marker.openTooltip();
+			return;
+		}
+		const country = countries?.find(data.relatedEvents[showEvent.index]?.place);
+		if (country) {
+			const bounds = L.geoJSON(country.shape).getBounds();
+			if (framable(bounds)) map.fitBounds(bounds, { padding: [24, 24], maxZoom: 7, animate: !reduce });
+		}
+	}, [showEvent, mapReady, countries, data]);
 
 	const hasHub = toLatLng(data.location) !== null;
 	const locatedEvents = data.relatedEvents.filter((e) => toLatLng(e) !== null);
-	const unplotted =
-		(hasHub ? 0 : 1) + (data.relatedEvents.length - locatedEvents.length);
-	const presentKinds = [...new Set(locatedEvents.map((e) => markerKind(e)))];
-
-	const legend: { key: string; label: string; swatch?: { shape: "dot" | "diamond"; color: string } }[] = [];
+	const unplotted = places.unknown;
+	const legend: LegendItem[] = [];
+	if (places.focus) {
+		legend.push({
+			key: "focus-area",
+			label: `Shaded: ${places.focus.the ? "the " : ""}${places.focus.name}, the country this brief is about`,
+			swatch: { shape: "area", color: HUB_COLOR },
+		});
+	}
+	if (places.others.length > 0) {
+		legend.push({
+			key: "other-areas",
+			label: `Lightly shaded: ${listNames(places.others.map(inSentence))}, also named in the timeline`,
+			swatch: { shape: "area", color: OTHER_AREA_COLOR },
+		});
+	}
 	if (hasHub) {
-		legend.push({ key: "hub", label: "Primary focus", swatch: { shape: "dot", color: "var(--accent-navy, #1a3a52)" } });
+		const city = data.location.city.trim();
+		legend.push({
+			key: "hub",
+			label: city ? `${city}: the main place in this brief` : "The main place in this brief",
+			swatch: { shape: "dot", color: "var(--accent-navy, #1a3a52)" },
+		});
 	}
-	if (presentKinds.includes("strike")) {
-		legend.push({ key: "strike", label: "Strike", swatch: { shape: "diamond", color: "#C2536A" } });
-	}
-	if (presentKinds.includes("affected")) {
-		legend.push({ key: "affected", label: "Affected", swatch: { shape: "dot", color: "#E07B39" } });
-	}
-	if (presentKinds.includes("talks")) {
-		legend.push({ key: "talks", label: "Diplomacy", swatch: { shape: "dot", color: "#4A9B8B" } });
-	}
+	legend.push(...eventLegend(locatedEvents));
+	const covered = countryWideLabel(places);
+	if (covered) legend.push({ key: "country-wide", label: covered });
 	const hubPoint = toLatLng(data.location);
 	const elsewhere = hubPoint
 		? locatedEvents.filter((e) => metresBetween(hubPoint, toLatLng(e)!) > NEARBY_METRES).length
@@ -400,8 +535,8 @@ export function InteractiveConflictMap({
 				}}
 			>
 				<p className="sr-only">
-					Map of the primary briefing location and related events. Every mapped
-					event is also listed in the background timeline below.
+					Map of the country this brief is about, its main location and related
+					events. Every mapped event is also listed in the background timeline.
 				</p>
 
 				<div
@@ -428,7 +563,11 @@ export function InteractiveConflictMap({
 								<span
 									aria-hidden
 									className={`ci-map-legend__swatch ci-map-legend__swatch--${item.swatch.shape}`}
-									style={{ background: item.swatch.color }}
+									style={
+										item.swatch.shape === "area"
+											? { borderColor: item.swatch.color, background: `${item.swatch.color}26` }
+											: { background: item.swatch.color }
+									}
 								/>
 							) : null}
 							{item.label}

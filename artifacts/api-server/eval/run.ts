@@ -32,6 +32,8 @@ export type CaseResult = {
   pin: "correct" | "none" | "wrong" | "n/a";
   pinDetail?: string;
   eventPins: number;
+  /** Timeline events in the brief, pinned or not. */
+  events: number;
   claims: { proposed: number; kept: number; dropped: string[]; rejectedByVerifier: number };
   verification: "verified" | "skipped" | "n/a";
   judged: { supported: number; partly: number; unsupported: number };
@@ -73,6 +75,7 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
     topic: t.topic,
     sources: recorded.sources.length,
     eventPins: 0,
+    events: 0,
     claims: { proposed: 0, kept: 0, dropped: [] as string[], rejectedByVerifier: 0 },
     verification: "n/a" as CaseResult["verification"],
     judged: { supported: 0, partly: 0, unsupported: 0 },
@@ -102,6 +105,7 @@ async function runCase(t: EvalTopic): Promise<CaseResult> {
       scope: { expected: t.inScope, got: brief.inScope, correct: brief.inScope === t.inScope },
       ...pinVerdict(t, brief.location),
       eventPins: brief.relatedEvents.filter((e) => e.lat !== null).length,
+      events: brief.relatedEvents.length,
       claims: { proposed: stats.claimsProposed, kept: stats.claimsKept, dropped: stats.dropped, rejectedByVerifier: stats.rejected.length },
       verification: brief.verification.status,
       judged: { supported: count("supported"), partly: count("partly"), unsupported: count("unsupported") },
