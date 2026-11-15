@@ -117,7 +117,7 @@ function Citation({ source, number, quote }: { source: Source; number: number; q
 }
 
 /** The numbered sources behind one claim, each with the words quoted from it. */
-function Citations({ claim, sources }: { claim: Claim; sources: Source[] }) {
+export function Citations({ claim, sources }: { claim: Claim; sources: Source[] }) {
 	return (
 		<span className="ci-cites">
 			{claim.sourceIds.map((id) => {
