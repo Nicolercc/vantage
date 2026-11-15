@@ -96,7 +96,7 @@ export function ConflictAnalysisPageRoute() {
 			request && state.phase === "loading"
 				? "Generating brief · Vantage"
 				: state.phase === "out-of-scope"
-					? "Outside scope · Vantage"
+					? "Not briefed · Vantage"
 					: "Vantage";
 	}, [request, state.phase]);
 
@@ -149,21 +149,24 @@ export function ConflictAnalysisPageRoute() {
 		);
 	}
 
+	return <NotBriefed onTopic={(topic) => navigate(briefPath({ kind: "topic", topic }))} />;
+}
+
+/**
+ * What a reader sees for a search Vantage declined: a new search and a saved
+ * link to a declined brief show the same page.
+ */
+function NotBriefed({ onTopic }: { onTopic: (topic: string) => void }) {
 	return (
-		<Shell status="This is outside what Vantage briefs.">
-			<Notice eyebrow="Outside scope" title="We couldn't find a conflict to brief">
+		<Shell status="This search was not briefed.">
+			<Notice eyebrow="Not briefed" title="We couldn't brief this search">
 				<p className="ci-notice__text">
-					Vantage covers geopolitical conflicts, humanitarian crises and
-					regional tensions. Try one of these:
+					Vantage briefs news stories from the reporting it can find. This
+					search didn't turn up a story to brief. Try one of these:
 				</p>
 				<div className="ci-notice__actions">
 					{SUGGESTED_TOPICS.map((topic) => (
-						<button
-							key={topic}
-							type="button"
-							className="ci-notice__chip"
-							onClick={() => navigate(briefPath({ kind: "topic", topic }))}
-						>
+						<button key={topic} type="button" className="ci-notice__chip" onClick={() => onTopic(topic)}>
 							{topic}
 						</button>
 					))}
@@ -179,6 +182,7 @@ export function ConflictAnalysisPageRoute() {
 /** /brief/:id — a saved brief at its permanent address. Nothing is regenerated. */
 export function StoredBriefRoute() {
 	const { id = "" } = useParams<{ id: string }>();
+	const [, navigate] = useLocation();
 	const { data, isPending, error } = useGetBrief(id, {
 		query: {
 			queryKey: getGetBriefQueryKey(id),
@@ -191,8 +195,11 @@ export function StoredBriefRoute() {
 	useEffect(() => {
 		if (isPending) document.title = "Opening brief · Vantage";
 		else if (!data) document.title = "Brief not available · Vantage";
+		else if (data.inScope === false) document.title = "Not briefed · Vantage";
 	}, [isPending, data]);
 
+	// A saved decline has no analysis to show.
+	if (data?.inScope === false) return <NotBriefed onTopic={(topic) => navigate(briefPath({ kind: "topic", topic }))} />;
 	if (data) return <BriefView brief={data} />;
 
 	if (isPending) {
