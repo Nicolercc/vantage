@@ -148,7 +148,7 @@ export function topicTerms(topic: string): string[] {
  * cannot decide whether a headline is about the reader's topic: "humanitarian
  * access" appears in stories about every crisis.
  */
-const CONFLICT_VOCABULARY = new Set([
+export const CONFLICT_VOCABULARY = new Set([
   "war", "wars", "conflict", "conflicts", "crisis", "crises", "tension", "tensions", "ceasefire",
   "truce", "peace", "talks", "negotiation", "negotiations", "humanitarian", "access", "aid",
   "attack", "attacks", "strike", "strikes", "airstrike", "airstrikes", "offensive", "front",
@@ -171,9 +171,9 @@ const COMPOUND_PLACES = [
 ];
 
 /** Digests list several unrelated stories under one headline; none of them is the subject. */
-const ROUNDUP = /\b(news in brief|in brief:|round-?up|daily digest|weekly digest|newsletter|top stories|week in review|this week in|what to know today)/i;
+export const ROUNDUP = /\b(news in brief|in brief:|round-?up|daily digest|weekly digest|newsletter|top stories|week in review|this week in|what to know today)/i;
 
-const normalise = (s: string) =>
+export const normalise = (s: string) =>
   ` ${(s.toLowerCase().match(/[\p{L}\p{N}']+/gu) ?? []).join(" ").replace(/'s\b/g, "")} `;
 
 /**
