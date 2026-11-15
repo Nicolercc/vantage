@@ -80,7 +80,8 @@ function TodaySection({ offer }: { offer: Extract<HomeTopics, { kind: "loading" 
 							{t.country !== t.label && <span className="home-today__country">{t.country}</span>}
 							<span className="home-today__headline">{t.headline.title}</span>
 							<span className="home-today__meta">
-								{t.outletCount} outlets · newest <time dateTime={t.newestAt}>{timeAgo(t.newestAt, now)}</time>
+								{t.outletCount} outlets · <span className="home-today__newest">newest </span>
+								<time dateTime={t.newestAt}>{timeAgo(t.newestAt, now)}</time>
 							</span>
 						</Link>
 					</li>

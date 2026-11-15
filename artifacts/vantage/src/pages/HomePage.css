@@ -396,6 +396,31 @@ a.home-today__card:hover {
 	cursor: pointer;
 }
 
+/* On a phone the search box must stay near the top: cards drop the sample
+   headline (still read out in each card's label) and tighten up. */
+@media (max-width: 640px) {
+	.home-today {
+		margin-bottom: 1.25rem;
+	}
+
+	.home-today__headline,
+	.home-today__newest {
+		display: none;
+	}
+
+	.home-today__meta {
+		margin-top: 0.25rem;
+	}
+
+	.home-today__card {
+		padding: 0.625rem 0.75rem;
+	}
+
+	.home-today__card--placeholder {
+		min-height: 4.5rem;
+	}
+}
+
 @media (max-width: 340px) {
 	.home-today__list {
 		grid-template-columns: minmax(0, 1fr);

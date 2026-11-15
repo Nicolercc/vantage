@@ -44,9 +44,9 @@ describe("a Today card", () => {
 	});
 
 	it("says everything it shows to a screen reader", () => {
-		expect(cardLabel(topic(), NOW)).toBe("Sudan. 7 outlets, newest 3 h ago. Brief takes about a minute.");
+		expect(cardLabel(topic(), NOW)).toBe("Sudan. 7 outlets, newest 3 h ago: Sudan: aid trucks attacked. Brief takes about a minute.");
 		expect(cardLabel(topic({ label: "Gaza", country: "Palestinian territories", briefId: "abcdefghijkl" }), NOW)).toBe(
-			"Gaza, Palestinian territories. 7 outlets, newest 3 h ago. Brief ready.",
+			"Gaza, Palestinian territories. 7 outlets, newest 3 h ago: Sudan: aid trucks attacked. Brief ready.",
 		);
 	});
 });
