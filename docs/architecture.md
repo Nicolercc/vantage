@@ -36,6 +36,16 @@ On a hand-labelled set (`eval/claim-check-set.json`, run in CI by `claim-set.tes
 * **Headers.** The site sends a content-security policy limited to its own scripts, fonts, map tiles and the API; the API sends `default-src 'none'`, `nosniff` and HSTS.
 * **Bodies.** JSON request bodies are capped at 64 KB. A test sends a malformed gzip body to the server in a child process and checks it keeps answering.
 
+## Today: most covered topics
+
+The home page opens with the conflict and crisis places most covered in the last 24 hours, and briefs on the top few are written before anyone asks.
+
+* **Ranking, no model** (`src/brief/trending.ts`). Every item from the publisher feeds, plus a few broad 24-hour news searches (`src/brief/retrieval/headlines.ts`), is matched against a list of places where conflicts and crises are reported (with demonyms, capitals and key cities, longest name first, so "South Sudanese" is not "Sudan"). A headline counts only if it is dated within the window, carries a conflict word, names one or two places and is not a digest. Each outlet counts once per place, weighted from 1 (new) down to 0.25 (24 hours old); an outlet reporting on its own country counts half. A place needs two outlets, and two that use its own name, because the brief on it searches for that name. Up to 8 places are returned, with the outlet count, the newest headline and its time.
+* **Schedule** (`src/brief/trending-service.ts`). Ranks on start-up and every `TRENDING_INTERVAL_MINUTES`; a request that finds the ranking older than one interval starts a refresh, since a host that sleeps runs no timers. A refresh where most sources failed keeps the previous ranking. A ranking older than three hours (or two intervals) is not shown.
+* **Briefs in advance.** The top `TRENDING_PREGENERATE` topics without a ready brief are briefed one at a time through the same path as a reader's request (`src/brief/brief-for.ts`): same cache key, store, daily budget, cost ledger and progress events, so a reader who clicks during the warm-up watches it finish. Warming never takes the last free generation slot, is capped by `TRENDING_DAILY_MAX` within the daily budget, and stops at the first refusal. Without a database those counters reset on restart, so nothing is briefed on the first refresh after start-up: a host that restarts often cannot multiply the spend.
+* **Ready.** `GET /api/trending` gives a topic a brief id only when a reader asking for it now would be served from the cache or store without waiting, and that brief is in scope. Cards link to the ordinary topic page, which then opens at once; they never link to a stored brief that could have expired.
+* **Client.** A "Today" section above the search box: four cards (more on request) with the place, country, outlet count, newest headline time and a "Ready" or "About a minute" label in text. While loading it holds its space; when the ranking is empty or the request fails the fixed example topics return.
+
 ## API
 
 ```http
@@ -43,6 +53,7 @@ POST /api/intelligence/stream   { "topic": "…" } | { "url": "https://…" } | 
 POST /api/intelligence/explore  { "topic": "Sudan civil war" }
 POST /api/intelligence/analyze  { "article": "Article text…" } or { "url": "https://…" }
 GET  /api/briefs/{id}           a saved brief, exactly as first generated
+GET  /api/trending              the places most covered in the last 24 hours, and which briefs are ready
 GET  /api/healthz               the process is up
 GET  /api/readyz                ready to serve, and whether storage is durable
 GET  /api/ops/costs?days=7      model spend per day (needs the operations token)
