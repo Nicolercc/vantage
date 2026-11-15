@@ -10,7 +10,7 @@ How a brief is built, and why. The [README](../README.md) has the overview and a
 
 ## Retrieval
 
-`src/brief/retrieval` queries every provider concurrently: 19 publisher RSS feeds, Bing News search (its public RSS output), Wikipedia, and the reader's article if there is one. Each provider reports its own outcome (`ok`, `empty`, `failed`), so a failure is visible in the brief instead of looking like "no coverage". The providers are awaited together, so the slowest bounds retrieval; each fetch has a deadline.
+`src/brief/retrieval` queries every provider concurrently: 43 publisher RSS feeds (20 world-news feeds plus business, technology, science, national and sport desks), Bing News search (its public RSS output), Wikipedia, and the reader's article if there is one. Each provider reports its own outcome (`ok`, `empty`, `failed`), so a failure is visible in the brief instead of looking like "no coverage". The providers are awaited together, so the slowest bounds retrieval; each fetch has a deadline.
 
 `src/brief/sources.ts` then keeps items whose headline names the topic (every distinctive word for a one- or two-word topic, most of them for longer topics, compared after light stemming), puts fuller matches first, removes duplicates, caps each outlet, spreads the selection across countries and assigns ids (`S1`, `S2`…). Feed and search items supply a headline and a short summary, not a full article.
 
