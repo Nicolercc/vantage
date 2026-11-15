@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import type { RetrievalStatus, Source } from "@workspace/api-client-react";
+import type { Orientation, RetrievalStatus, Source } from "@workspace/api-client-react";
 import type { BriefRequest } from "@/lib/brief-request";
 import { PlaceMap } from "./map/PlaceMap";
 import { describeTextPlace, placeFromText } from "./map/orient";
 import { useCountries } from "./map/useCountries";
 import { freshness, requestLabel } from "./analysis-loader-format";
+import { InThirtySeconds } from "./InThirtySeconds";
 import "./AnalysisLoader.css";
 
 type Stage = "retrieving" | "writing" | "checking" | "locating";
@@ -58,6 +59,7 @@ export function AnalysisLoader({
 	sources,
 	retrieval,
 	extra,
+	orientation,
 }: {
 	request: BriefRequest;
 	/** The step the server says it is on; null until it reports one. */
@@ -67,10 +69,11 @@ export function AnalysisLoader({
 	retrieval: RetrievalStatus[];
 	/** Anything that arrives before the brief, shown at the top. */
 	extra?: ReactNode;
+	orientation?: Orientation | null;
 }) {
 	const reduce = useReducedMotion();
 	const countries = useCountries();
-	const text = request.kind === "topic" ? request.topic : "";
+	const text = request.kind === "topic" ? request.topic : orientation?.inScope ? orientation.where : "";
 	const place = useMemo(() => placeFromText(text, countries), [text, countries]);
 	const where = countries ? describeTextPlace(place, countries) : null;
 	const stageIndex = Math.max(0, STEPS.findIndex((s) => s.stage === stage));
@@ -126,6 +129,19 @@ export function AnalysisLoader({
 				<div className="al__grid">
 					<div className="al__col">
 						{extra}
+						<AnimatePresence>
+							{orientation?.inScope && (
+								<motion.div key="orientation" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }}>
+									<InThirtySeconds orientation={orientation} />
+								</motion.div>
+							)}
+						</AnimatePresence>
+						{!orientation && (sources === null || elapsedSec < 10) && (
+							<div className="al-card" aria-hidden="true">
+								<p className="al-card__title">In 30 seconds</p>
+								<div className="al-skeleton"><span /></div>
+							</div>
+						)}
 						{where && countries ? (
 							<Card title="Where this is">
 								<PlaceMap country={place.country} water={place.water} countries={countries} />

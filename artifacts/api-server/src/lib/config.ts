@@ -29,6 +29,7 @@ export type Config = {
 type Env = Record<string, string | undefined>;
 
 const DEFAULT_PRICES: Config["modelPrices"] = {
+  "claude-haiku-5-5": { input: 0.1, output: 0.5 },
   "claude-haiku-4-5-20251001": { input: 1, output: 5 },
 };
 
@@ -66,6 +67,11 @@ export function loadConfig(env: Env = process.env): { config: Config; problems: 
   // Settings the brief pipeline reads where it is used (generate, verify,
   // geocode). They are checked here, by the same rules those modules apply,
   // so a bad value stops start-up instead of failing every brief.
+  positive("ORIENTATION_TIMEOUT_MS", 8000);
+  const orientationModel = env["ORIENTATION_MODEL"]?.trim();
+  if (orientationModel && !/^[a-zA-Z0-9._:-]+$/.test(orientationModel)) {
+    problems.push("ORIENTATION_MODEL must be a model ID");
+  }
   positive("BRIEF_MODEL_TIMEOUT_MS", 60_000);
   positive("BRIEF_VERIFIER_TIMEOUT_MS", 25_000);
   positive("GEOCODER_BUDGET_MS", 9_000);

@@ -111,10 +111,11 @@ paths:
       summary: Generate a brief and report progress as it is built
       description: |
         Takes a topic, an article URL or article text and answers with a
-        `text/event-stream`. Events, in order:
+        `text/event-stream`. Events:
 
         - `stage` — `{ "stage": "retrieving" | "writing" | "checking" | "locating" }`
         - `sources` — `{ "sources": Source[], "retrieval": RetrievalStatus[] }`, sent once retrieval finishes
+        - `orientation` — optional Orientation model background, sent as soon as it is ready
         - `brief` — the finished IntelligenceBrief (the last event on success)
         - `error` — an ErrorResponse (the last event on failure after the stream has started)
 
@@ -402,6 +403,24 @@ components:
         count:
           type: integer
       required: [provider, status, count]
+    Orientation:
+      type: object
+      properties:
+        inScope:
+          type: boolean
+        what:
+          type: string
+          maxLength: 220
+        where:
+          type: string
+          maxLength: 220
+        who:
+          type: string
+          maxLength: 220
+        whyItMatters:
+          type: string
+          maxLength: 220
+      required: [inScope, what, where, who, whyItMatters]
     IntelligenceBrief:
       type: object
       properties:
@@ -418,6 +437,10 @@ components:
           type: string
         location:
           $ref: "#/components/schemas/Location"
+        orientation:
+          anyOf:
+            - $ref: "#/components/schemas/Orientation"
+            - type: "null"
         summary:
           type: string
         actors:

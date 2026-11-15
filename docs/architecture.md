@@ -28,7 +28,8 @@ On a hand-labelled set (`eval/claim-check-set.json`, run in CI by `claim-set.tes
 
 ## Serving
 
-* **Streaming.** `POST /api/intelligence/stream` sends server-sent events: the stage, then the sources found, then the whole brief (or an error). The brief is not streamed in parts, because its claims are checked before anything is shown.
+* **Early orientation.** A parallel model request supplies stable background. The server validates and records it separately, and cancels it if the brief finishes first. Older briefs return a null orientation.
+* **Streaming.** `POST /api/intelligence/stream` sends server-sent events: stage updates, retrieved sources and an optional orientation event, followed by the whole brief (or an error). The brief is not streamed in parts, because its claims are checked before anything is shown.
 * **Deduplication and caching.** Identical concurrent requests share one generation (per process). Briefs are cached with a TTL and a size bound, failures are not cached, and a brief saved within the TTL is reused.
 * **Limits.** A per-client rate limit (clients are stored as a keyed hash), a concurrency cap (per process) and a daily generation budget. With Postgres the rate limit and budget are shared by instances; if the database fails, each process continues from the counts it last saw.
 * **Errors.** One shape, `{ "error": CODE, "message": "…", "requestId": "…" }`. Provider messages are logged, never returned. Codes: `INVALID_INPUT`, `FETCH_BLOCKED`, `FETCH_FAILED`, `RATE_LIMITED`, `OVERLOADED`, `PROVIDER_UNAVAILABLE`, `MODEL_OUTPUT_INVALID`, `TIMED_OUT`, `INTERNAL`.

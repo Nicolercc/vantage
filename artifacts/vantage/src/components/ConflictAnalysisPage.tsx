@@ -5,6 +5,7 @@ import {
 	getGetBriefQueryKey,
 	useGetBrief,
 	type IntelligenceBrief,
+	type Orientation,
 	type RetrievalStatus,
 	type Source,
 } from "@workspace/api-client-react";
@@ -23,11 +24,11 @@ const SUGGESTED_TOPICS = [
 ];
 
 type Generation =
-	| { phase: "loading"; stage: BriefStage | null; sources: Source[] | null; retrieval: RetrievalStatus[] }
+	| { phase: "loading"; stage: BriefStage | null; sources: Source[] | null; retrieval: RetrievalStatus[]; orientation: Orientation | null }
 	| { phase: "error"; message: string }
 	| { phase: "out-of-scope" };
 
-const STARTING: Generation = { phase: "loading", stage: null, sources: null, retrieval: [] };
+const STARTING: Generation = { phase: "loading", stage: null, sources: null, retrieval: [], orientation: null };
 
 /**
  * /analysis — generate a brief for a topic, link or pasted text, showing what
@@ -53,6 +54,8 @@ export function ConflictAnalysisPageRoute() {
 				if (controller.signal.aborted) return;
 				if (event.type === "stage") {
 					setState((s) => (s.phase === "loading" ? { ...s, stage: event.stage } : s));
+				} else if (event.type === "orientation") {
+					setState((s) => (s.phase === "loading" ? { ...s, orientation: event.orientation } : s));
 				} else if (event.type === "sources") {
 					setState((s) =>
 						s.phase === "loading" ? { ...s, sources: event.sources, retrieval: event.retrieval } : s,
@@ -122,7 +125,7 @@ export function ConflictAnalysisPageRoute() {
 		return (
 			<Shell status={status}>
 				<div style={{ paddingTop: "56px" }}>
-					<AnalysisLoader request={request} stage={state.stage} sources={state.sources} retrieval={state.retrieval} />
+					<AnalysisLoader request={request} stage={state.stage} sources={state.sources} retrieval={state.retrieval} orientation={state.orientation} />
 				</div>
 			</Shell>
 		);

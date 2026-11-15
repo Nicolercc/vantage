@@ -6,7 +6,7 @@ import { logger } from "./logger";
 export type ModelCall = {
   at: string;
   briefId: string | null;
-  purpose: "writer" | "verifier";
+  purpose: "writer" | "verifier" | "orientation";
   model: string;
   inputTokens: number;
   outputTokens: number;

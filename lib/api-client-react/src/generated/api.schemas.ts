@@ -234,6 +234,18 @@ export interface RetrievalStatus {
   count: number;
 }
 
+export interface Orientation {
+  inScope: boolean;
+  /** @maxLength 220 */
+  what: string;
+  /** @maxLength 220 */
+  where: string;
+  /** @maxLength 220 */
+  who: string;
+  /** @maxLength 220 */
+  whyItMatters: string;
+}
+
 export type IntelligenceBriefEscalationRisk = typeof IntelligenceBriefEscalationRisk[keyof typeof IntelligenceBriefEscalationRisk];
 
 
@@ -260,6 +272,7 @@ export interface IntelligenceBrief {
   inScope: boolean;
   headline: string;
   location: Location;
+  orientation?: Orientation | null;
   summary: string;
   actors: string[];
   perspectives: Perspective[];

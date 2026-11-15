@@ -79,6 +79,6 @@ describe("configuration", () => {
 
   it("merges configured model prices over the defaults", () => {
     const { config } = loadConfig({ ...base, MODEL_PRICES: '{"claude-sonnet-5-5":{"input":3,"output":15}}' });
-    expect(Object.keys(config.modelPrices).sort()).toEqual(["claude-haiku-4-5-20251001", "claude-sonnet-5-5"]);
+    expect(Object.keys(config.modelPrices).sort()).toEqual(["claude-haiku-4-5-20251001", "claude-haiku-5-5", "claude-sonnet-5-5"]);
   });
 });

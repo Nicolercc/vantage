@@ -36,6 +36,8 @@ Vantage keeps that line visible. A reader enters a topic ("Sudan", "Red Sea ship
 
 ## How it works
 
+A short orientation can arrive while retrieval runs. It provides stable model background, and the brief continues if it is unavailable.
+
 ```mermaid
 flowchart TD
   A["Reader: topic, article link or pasted text"] --> B["React client"]
@@ -53,7 +55,7 @@ flowchart TD
   K --> L["Schema validation (Zod generated from OpenAPI); one retry, then a typed error"]
   L --> M["Geocoding (Nominatim): a pin only where lookup and model estimate agree"]
   M --> N[("Postgres, or memory")]
-  N --> Q["Server-sent events: stages, sources, then the brief"]
+  N --> Q["Server-sent events: stages, sources, optional orientation, then the brief"]
   Q --> B
 ```
 
@@ -82,9 +84,9 @@ Measured on this branch (Node 22, pnpm 9.9.0):
 
 | Suite | Tests |
 |---|---:|
-| API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 216 |
+| API: unit, route and contract tests (Vitest + Supertest, fake model and retrieval) | 218 |
 | API: Postgres-backed store, limit, ledger and deadline and retention tests (run when `TEST_DATABASE_URL` is set; CI sets it) | 14 |
-| Client: input validation, streaming, brief adapter, map, country outlines, labelling, share-link notice, dev proxy and stylesheet tests | 58 |
+| Client: input validation, streaming, brief adapter, map, country outlines, labelling, share-link notice, dev proxy and stylesheet tests | 82 |
 | **Total** | **288** |
 
 * Route tests run the real Express app with a fake model and fake retrieval: no network, no API key, no spend.
