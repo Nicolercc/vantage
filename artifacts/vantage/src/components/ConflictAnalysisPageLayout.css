@@ -138,8 +138,8 @@
 	background: none;
 	border: 1px solid var(--border-light);
 	border-radius: 4px;
-	padding: 6px 10px;
-	min-height: 32px;
+	padding: 6px 12px;
+	min-height: var(--tap);
 	cursor: pointer;
 }
 
@@ -1413,13 +1413,11 @@ span.ci-source__title {
 	padding-block: 4px;
 }
 
-/* Map zoom buttons are full touch targets on touch screens. */
-@media (pointer: coarse) {
-	.ci-interactive-map .leaflet-control-zoom a {
-		width: var(--tap);
-		height: var(--tap);
-		line-height: var(--tap);
-	}
+/* Map zoom buttons are full touch targets. */
+.ci-interactive-map .leaflet-control-zoom a {
+	width: var(--tap);
+	height: var(--tap);
+	line-height: var(--tap);
 }
 
 @media (max-width: 480px) {
@@ -1441,4 +1439,9 @@ span.ci-source__title {
 /* Room between the sticky menu and the first layer heading. */
 .ci-layers {
 	padding-top: 24px;
+}
+
+/* A folded section's heading row is a full touch target. */
+.ci-section__head--toggle {
+	min-height: var(--tap);
 }

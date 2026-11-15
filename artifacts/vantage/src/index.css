@@ -303,7 +303,9 @@ body {
 .site-header__cell--center a {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	min-height: var(--tap);
+	min-width: var(--tap);
 }
 
 /* The logo is a full-height touch target like the links beside it. */

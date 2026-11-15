@@ -13,7 +13,6 @@ import {
 	type BriefRequest,
 } from "@/lib/brief-request";
 import {
-	cardLabel,
 	homeTopics,
 	isReady,
 	timeAgo,
@@ -70,7 +69,8 @@ function TodaySection({ offer }: { offer: Extract<HomeTopics, { kind: "loading" 
 			<ul className="home-today__list" id="today-list">
 				{shown.map((t) => (
 					<li key={t.label}>
-						<Link href={todayHref(t)} className="home-today__card" aria-label={cardLabel(t, now)}>
+						{/* No aria-label: the card's visible text is its name, so voice control can say what it sees. */}
+						<Link href={todayHref(t)} className="home-today__card">
 							<span className="home-today__head">
 								<span className="home-today__label">{t.label}</span>
 								<span className={`home-today__badge${isReady(t) ? " home-today__badge--ready" : ""}`}>

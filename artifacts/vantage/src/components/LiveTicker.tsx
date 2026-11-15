@@ -25,7 +25,6 @@ export function SiteHeader({
 							onReset();
 						}
 					}}
-					aria-label="Vantage home"
 				>
 					<span className="site-header__brand-name">Vantage</span>
 					<span className="site-header__brand-tag">conflict, in context.</span>

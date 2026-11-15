@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { TrendingResponse, TrendingTopic } from "@workspace/api-client-react";
-import { cardLabel, homeTopics, isReady, QUICK_TOPICS, timeAgo, todayCaption, todayHref } from "./trending";
+import { homeTopics, isReady, QUICK_TOPICS, timeAgo, todayCaption, todayHref } from "./trending";
 
 const NOW = Date.parse("2026-11-14T12:00:00Z");
 const topic = (overrides: Partial<TrendingTopic> = {}): TrendingTopic => ({
@@ -43,12 +43,6 @@ describe("a Today card", () => {
 		expect(isReady(topic({ briefId: "abcdefghijkl" }))).toBe(true);
 	});
 
-	it("says everything it shows to a screen reader", () => {
-		expect(cardLabel(topic(), NOW)).toBe("Sudan. 7 outlets, newest 3 h ago: Sudan: aid trucks attacked. Brief takes about a minute.");
-		expect(cardLabel(topic({ label: "Gaza", country: "Palestinian territories", briefId: "abcdefghijkl" }), NOW)).toBe(
-			"Gaza, Palestinian territories. 7 outlets, newest 3 h ago: Sudan: aid trucks attacked. Brief ready.",
-		);
-	});
 });
 
 describe("labels", () => {
