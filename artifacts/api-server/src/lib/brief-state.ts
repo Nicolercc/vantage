@@ -6,6 +6,8 @@ import { loadConfig, type Config } from "./config";
 import { createPool } from "./db";
 import { MemoryLedger, PostgresLedger, useLedger, type CostLedger } from "./ledger";
 import { GenerationGate, RateLimiter } from "./limits";
+import { ProgressHub } from "./progress-hub";
+import type { BriefProgress } from "../brief/generate";
 import { PostgresUsageStore, ResilientUsageStore } from "./usage-store";
 
 /**
@@ -28,6 +30,9 @@ export function createBriefState(config: Config = loadConfig().config) {
   const limiter = new RateLimiter(limits.rateLimitMax, limits.rateLimitWindowMs, usage, Date.now, salt);
   const gate = new GenerationGate(limits.maxConcurrent, limits.dailyBudget, usage);
   const store = createBriefStore(pool);
+  // Shared by every request and the home page's warm-up, so a reader who
+  // arrives while a brief is being built watches it being built.
+  const progress = new ProgressHub<BriefProgress>();
   return {
     config,
     pool,
@@ -37,6 +42,7 @@ export function createBriefState(config: Config = loadConfig().config) {
     limiter,
     gate,
     ledger,
+    progress,
     reset() {
       cache.reset();
       store.reset();
