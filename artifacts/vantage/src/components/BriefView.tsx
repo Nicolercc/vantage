@@ -282,6 +282,7 @@ export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBri
 									claims={briefData.keyFacts}
 									sources={briefData.sources}
 									empty="Nothing in the retrieved sources could be tied to a specific claim, so none is shown."
+									showQuoteFor="first-verified"
 								/>
 								<p className="ci-section__note">{checkNote(briefData)}</p>
 								{hasNumbers ? <KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} /> : null}

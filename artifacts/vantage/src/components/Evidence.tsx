@@ -74,45 +74,142 @@ function Citation({ source, number, quote }: { source: Source; number: number; q
 			</button>
 			{open && (
 				<span className="ci-cite-pop" id={popId} ref={popRef} role="group" aria-label={`Source ${number}`}>
-					<span className="ci-cite-pop__meta">
-						<strong>{source.publisher}</strong>
-						{source.country ? ` · ${source.country}` : ""}
-						{source.kind === "news" ? ` · ${formatDate(source.publishedAt)}` : ""}
-						{source.kind !== "news" ? ` · ${KIND_LABEL[source.kind]}` : ""}
-					</span>
-					{quote ? (
-						<span className="ci-cite-pop__quote">
-							<span className="ci-cite-pop__quote-label">The words this rests on</span>
-							<q>{quote}</q>
-						</span>
-					) : null}
-					<span className="ci-cite-pop__title">{source.title}</span>
-					{quote ? null : source.excerpt ? (
-						<span className="ci-cite-pop__excerpt">{source.excerpt}</span>
-					) : (
-						<span className="ci-cite-pop__excerpt ci-cite-pop__excerpt--none">
-							{source.kind === "article"
-								? "Checked against the text you supplied, which is not stored or shown."
-								: "The publisher gave no summary for this item."}
-						</span>
-					)}
-					<span className="ci-cite-pop__links">
-						{source.url ? (
-							<a href={source.url} target="_blank" rel="noopener noreferrer">
-								Read the original
-								<span className="sr-only"> (opens in a new tab)</span>
-							</a>
-						) : null}
-						<a
-							href={`#${sourceAnchor(source.id)}`}
-							onClick={() => setOpen(false)}
-						>
-							Show in source list
-						</a>
-					</span>
+					<SourceBody source={source} quote={quote} onLeave={() => setOpen(false)} />
 				</span>
 			)}
 		</span>
+	);
+}
+
+/**
+ * Show one source in the source list. The list sits in a folded section, so
+ * open it first; otherwise the link scrolls to something hidden and seems dead.
+ */
+export function showSourceInList(id: string) {
+	const entry = document.getElementById(sourceAnchor(id));
+	if (!entry) return;
+	const details = entry.closest("details");
+	if (details) details.open = true;
+	const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	entry.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+	entry.focus({ preventScroll: true });
+}
+
+/**
+ * What a reader sees about one source behind a claim: outlet and date, the
+ * exact words the claim rests on, the headline, and the way to the original.
+ * Shared by the numbered pop-up and the inline "See source quote" panel, so
+ * the two can never disagree.
+ */
+export function SourceBody({ source, quote, onLeave }: { source: Source; quote: string; onLeave?: () => void }) {
+	return (
+		<>
+			<span className="ci-cite-pop__meta">
+				<strong>{source.publisher}</strong>
+				{source.country ? ` · ${source.country}` : ""}
+				{source.kind === "news" ? ` · ${formatDate(source.publishedAt)}` : ""}
+				{source.kind !== "news" ? ` · ${KIND_LABEL[source.kind]}` : ""}
+			</span>
+			{quote ? (
+				<span className="ci-cite-pop__quote">
+					<span className="ci-cite-pop__quote-label">The words this rests on</span>
+					<q>{quote}</q>
+				</span>
+			) : null}
+			<span className="ci-cite-pop__title">{source.title}</span>
+			{quote ? null : source.excerpt ? (
+				<span className="ci-cite-pop__excerpt">{source.excerpt}</span>
+			) : (
+				<span className="ci-cite-pop__excerpt ci-cite-pop__excerpt--none">
+					{source.kind === "article"
+						? "Checked against the text you supplied, which is not stored or shown."
+						: "The publisher gave no summary for this item."}
+				</span>
+			)}
+			<span className="ci-cite-pop__links">
+				{source.url ? (
+					<a href={source.url} target="_blank" rel="noopener noreferrer">
+						Read the original on {source.publisher}
+						<span className="sr-only"> (opens in a new tab)</span>
+					</a>
+				) : (
+					<span className="ci-cite-pop__none">Original not available online</span>
+				)}
+				<a
+					href={`#${sourceAnchor(source.id)}`}
+					onClick={(e) => {
+						e.preventDefault();
+						onLeave?.();
+						showSourceInList(source.id);
+					}}
+				>
+					Show in source list
+				</a>
+			</span>
+		</>
+	);
+}
+
+/**
+ * The quote to show for a claim, or null. Only a claim the second check
+ * verified, and only words actually quoted from a source we can name: never
+ * offer proof for text that wasn't checked.
+ */
+export function pickQuote(claim: Claim, sources: Source[]): { source: Source; quote: string } | null {
+	if (claim.support !== "verified") return null;
+	for (const id of claim.sourceIds) {
+		const quote = claim.evidence.find((e) => e.sourceId === id)?.quote?.trim() ?? "";
+		const source = sources.find((s) => s.id === id);
+		if (quote && source) return { source, quote };
+	}
+	return null;
+}
+
+/**
+ * "See source quote": a visible way to the evidence for one claim, opened in
+ * place. A disclosure, so focus stays on the button and the panel follows it
+ * in reading order; Escape or "Hide quote" closes it.
+ */
+export function QuoteDisclosure({ source, quote, startOpen = false }: { source: Source; quote: string; startOpen?: boolean }) {
+	const [open, setOpen] = useState(startOpen);
+	const buttonRef = useRef<HTMLButtonElement | null>(null);
+	const panelId = useId();
+	useEffect(() => {
+		if (!open) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key !== "Escape") return;
+			setOpen(false);
+			buttonRef.current?.focus();
+		};
+		document.addEventListener("keydown", onKey);
+		return () => document.removeEventListener("keydown", onKey);
+	}, [open]);
+	return (
+		<div className="ci-quote">
+			<button
+				ref={buttonRef}
+				type="button"
+				className="ci-quote__toggle"
+				aria-expanded={open}
+				aria-controls={panelId}
+				onClick={() => setOpen((v) => !v)}
+			>
+				See source quote <span aria-hidden="true">{open ? "▴" : "▾"}</span>
+			</button>
+			<div id={panelId} className="ci-quote__panel" role="region" aria-label="Source quote for this fact" hidden={!open}>
+				<SourceBody source={source} quote={quote} />
+				<button
+					type="button"
+					className="ci-quote__hide"
+					onClick={() => {
+						setOpen(false);
+						buttonRef.current?.focus();
+					}}
+				>
+					Hide quote
+				</button>
+			</div>
+		</div>
 	);
 }
 
@@ -134,19 +231,25 @@ export function ClaimList({
 	claims,
 	sources,
 	empty,
+	showQuoteFor,
 }: {
 	claims: Claim[];
 	sources: Source[];
 	empty: string;
+	/** Give the first verified, quoted claim a visible "See source quote". Only the key facts opt in. */
+	showQuoteFor?: "first-verified";
 }) {
 	if (claims.length === 0) {
 		return <p className="ci-evidence-empty">{empty}</p>;
 	}
+	const quoteIndex = showQuoteFor ? claims.findIndex((c) => pickQuote(c, sources) !== null) : -1;
+	const proof = quoteIndex >= 0 ? pickQuote(claims[quoteIndex], sources) : null;
 	return (
 		<ul className="ci-claims">
 			{claims.map((claim, i) => (
 				<li key={i} className="ci-claim">
 					{claim.text} <Citations claim={claim} sources={sources} />
+					{i === quoteIndex && proof ? <QuoteDisclosure source={proof.source} quote={proof.quote} /> : null}
 				</li>
 			))}
 		</ul>

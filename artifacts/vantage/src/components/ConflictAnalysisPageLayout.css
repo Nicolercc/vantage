@@ -1498,3 +1498,90 @@ span.ci-source__title {
 .ci-thirty__row dd {
 	font-size: 17px;
 }
+
+/* "See source quote": the visible way to the evidence for the first checked fact */
+.ci-quote {
+	margin-top: 10px;
+}
+
+.ci-quote__toggle,
+.ci-quote__hide {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: var(--tap);
+	padding: 0 14px;
+	border-radius: 10px;
+	font: 600 15px "Plus Jakarta Sans", system-ui, sans-serif;
+	cursor: pointer;
+}
+
+.ci-quote__toggle {
+	border: 1px solid var(--accent-navy);
+	background: var(--bg-surface);
+	color: var(--accent-navy);
+}
+
+.ci-quote__hide {
+	margin-top: 10px;
+	border: 1px solid var(--border-light);
+	background: var(--bg-surface);
+	color: var(--text-primary);
+}
+
+.ci-quote__toggle:focus-visible,
+.ci-quote__hide:focus-visible,
+.ci-quote__panel a:focus-visible {
+	outline: 2px solid var(--accent-navy);
+	outline-offset: 2px;
+}
+
+.ci-quote__panel {
+	display: grid;
+	gap: 8px;
+	margin-top: 10px;
+	padding: 14px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
+	border-radius: 12px;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.ci-quote__panel[hidden] {
+	display: none;
+}
+
+.ci-quote__panel > span {
+	display: block;
+}
+
+.ci-quote__panel .ci-cite-pop__quote q {
+	display: block;
+	font-family: "Newsreader", Georgia, serif;
+	font-style: italic;
+	font-size: 17px;
+	border-left: 3px solid var(--accent-navy);
+	padding-left: 12px;
+}
+
+.ci-quote__panel .ci-cite-pop__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+}
+
+.ci-quote__panel .ci-cite-pop__links a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+	color: var(--accent-navy);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.ci-cite-pop__none {
+	color: var(--text-muted);
+}
