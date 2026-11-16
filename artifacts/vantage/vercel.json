@@ -13,6 +13,17 @@
       "destination": "/api/brief-preview?id=:id"
     },
     {
+      "source": "/sample/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*([Bb]ot|[Cc]rawler|[Ss]pider|facebookexternalhit|Facebot|[Ss]lack|WhatsApp|[Tt]elegram|[Dd]iscord|LinkedIn|Pinterest|[Ee]mbedly|Quora|vkShare|Skype|Iframely|Mastodon|[Bb]luesky|[Pp]review).*"
+        }
+      ],
+      "destination": "/api/brief-preview?sample=:slug"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

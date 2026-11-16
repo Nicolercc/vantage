@@ -14,6 +14,7 @@
  * @property {boolean} [inScope]
  * @property {{ city?: string, country?: string, region?: string }} [location]
  * @property {Array<{ kind?: string, publisher?: string }>} [sources]
+ * @property {string} [sample] Set for a reviewed sample: its slug, used for the image link.
  */
 
 export const SITE_NAME = "Vantage";
@@ -56,10 +57,12 @@ export function coverageLine(brief) {
 export function previewMeta(brief, origin, path) {
 	const usable = brief && brief.inScope !== false && brief.headline?.trim();
 	const title = usable ? `${clip(brief.headline, 90)} · ${SITE_NAME}` : DEFAULT_TITLE;
+	const label = brief?.sample ? "Reviewed sample brief" : "AI-generated brief";
 	const description = usable
-		? clip(`AI-generated brief · ${coverageLine(brief)}. ${brief.summary}`, 200)
+		? clip(`${label} · ${coverageLine(brief)}. ${brief.summary}`, 200)
 		: DEFAULT_DESCRIPTION;
-	const image = usable ? `${origin}/api/og?id=${encodeURIComponent(brief.id)}` : `${origin}/og-default.png`;
+	const query = brief?.sample ? `sample=${encodeURIComponent(brief.sample)}` : `id=${encodeURIComponent(brief?.id ?? "")}`;
+	const image = usable ? `${origin}/api/og?${query}` : `${origin}/og-default.png`;
 	return { title, description, image, url: `${origin}${path}`, isBrief: Boolean(usable) };
 }
 
