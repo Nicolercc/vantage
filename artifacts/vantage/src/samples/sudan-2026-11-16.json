@@ -1,0 +1,461 @@
+{
+	"id": "dgUvNi4N3nPj",
+	"generatedAt": "2026-11-16T04:00:35.708Z",
+	"inScope": true,
+	"headline": "Sudan's humanitarian crisis deepens as funding and access collapse",
+	"location": {
+		"city": "Khartoum",
+		"country": "Sudan",
+		"region": "Middle East and North Africa",
+		"lat": 15.5635972,
+		"lng": 32.5349123
+	},
+	"orientation": {
+		"inScope": true,
+		"what": "Sudan has faced a long civil conflict where armed groups fight over power, land, and control.",
+		"where": "Sudan, a large country in northeast Africa, with fighting in cities, towns, and rural areas.",
+		"who": "The national army, paramilitary forces, rebel groups, local militias, aid workers, and displaced civilians are involved.",
+		"whyItMatters": "Blocked roads and insecurity keep food, medicine, and shelter from reaching families who need them most."
+	},
+	"glossary": [
+		{
+			"term": "Displacement",
+			"meaning": "The forced movement of people from their homes due to conflict, creating refugees (those who cross borders) and internally displaced persons (IDPs)."
+		},
+		{
+			"term": "Humanitarian access",
+			"meaning": "The ability of aid organizations to reach affected populations and deliver food, medicine, water and other life-saving supplies."
+		},
+		{
+			"term": "Drone strikes",
+			"meaning": "Attacks using unmanned aircraft; in Sudan's war, both sides use drones to hit military and civilian targets, often causing power outages and infrastructure collapse."
+		}
+	],
+	"summary": "Sudan's civil war, fought between the Sudanese Armed Forces (SAF) and the Rapid Support Forces (RSF) since April 2023, has created the world's largest active humanitarian crisis. Nearly two-thirds of Sudan's population now need aid, but funding covers only 47% of the required $2.9 billion, while drone attacks on infrastructure and fuel shortages are paralyzing daily life and blocking aid delivery.",
+	"actors": [
+		"Sudanese Armed Forces (SAF)",
+		"Rapid Support Forces (RSF)",
+		"United Nations and humanitarian agencies",
+		"Sudan's civilian population",
+		"Regional and international powers"
+	],
+	"perspectives": [
+		{
+			"actor": "United Nations (WFP, UNICEF, OCHA)",
+			"alignment": "Civil Society",
+			"framing": "Sudan faces an unprecedented humanitarian emergency with nearly two-thirds of the population needing aid, compounded by funding cuts, drone attacks on infrastructure, and killings of aid workers. Without urgent international support, the crisis will worsen into widespread famine.",
+			"interests": "Mobilizing international funding and political will to deliver life-saving aid while documenting violations that may warrant accountability."
+		},
+		{
+			"actor": "Sudanese civilians and displaced persons",
+			"alignment": "Affected Population",
+			"framing": "Daily survival has become impossible—fuel shortages paralyze cities, power cuts leave families in darkness, healthcare is gone, and hunger is spreading. Drone strikes hit indiscriminately, killing children and aid workers; nowhere is safe.",
+			"interests": "Access to food, water, medicine, electricity, and physical safety; restoration of basic services and an end to the conflict."
+		},
+		{
+			"actor": "Western governments and media",
+			"alignment": "Western",
+			"framing": "Sudan's war is framed as a regional security threat affecting Red Sea shipping and counterterrorism, with humanitarian consequences requiring Western-led donor coordination and logistics support.",
+			"interests": "Maintaining regional stability, protecting trade routes, and preventing Iranian or other rival influence while managing migration and refugee flows."
+		},
+		{
+			"actor": "Regional states and powers",
+			"alignment": "Regional",
+			"framing": "The conflict reflects competing regional interests in Sudan's resources and geopolitical position; drone technology and military support from external actors are escalating the humanitarian toll and fragmenting Sudan's state.",
+			"interests": "Securing influence over Sudan, accessing its resources, and preventing destabilization that could spread across the Horn of Africa and Red Sea region."
+		}
+	],
+	"relatedEvents": [
+		{
+			"date": "Apr 2023",
+			"title": "Sudanese civil war begins between SAF and RSF",
+			"description": "The conflict started with clashes between the Sudanese Armed Forces and Rapid Support Forces, triggering mass displacement and the onset of acute hunger and medical collapse.",
+			"type": "escalation",
+			"place": "Sudan",
+			"lat": null,
+			"lng": null,
+			"searchQuery": "Sudan civil war April 2023 SAF RSF conflict begins"
+		},
+		{
+			"date": "Sep 2024",
+			"title": "Healthcare system collapse reported; 80% of facilities non-functional",
+			"description": "By mid-2024, the destruction of medical infrastructure had reached a critical threshold, leaving millions without access to basic healthcare and enabling disease outbreaks.",
+			"type": "humanitarian",
+			"place": "Sudan",
+			"lat": null,
+			"lng": null,
+			"searchQuery": "Sudan healthcare collapse 2024 medical facilities destroyed"
+		},
+		{
+			"date": "Nov 2025",
+			"title": "UN warns of famine affecting 25 million; drone attacks escalate on infrastructure",
+			"description": "As funding shortages intensified, the UN reported famine conditions spreading while both sides escalated long-range drone strikes on power stations and other civilian infrastructure.",
+			"type": "humanitarian",
+			"place": "Sudan",
+			"lat": null,
+			"lng": null,
+			"searchQuery": "Sudan famine crisis 2025 UN humanitarian aid funding"
+		}
+	],
+	"escalationRisk": "High",
+	"escalationReason": "Drone technology has enabled unprecedented long-range strikes deep into civilian territory, destroying power and water infrastructure that millions depend on. Regional powers competing for influence over Sudan are supplying advanced weapons systems, while the collapse of the state and humanitarian system creates space for further militarization and potential involvement of external actors.",
+	"historicalContext": "Sudan's 2023 civil war erupted after years of political instability following the 2019 ouster of longtime autocrat Omar al-Bashir. The SAF and RSF, which had competed for power in a transitional government, clashed over control of the state. Sudan's economy has long depended on oil exports and agriculture; the conflict has crippled both, worsening pre-existing poverty and inequality. Regional actors—including Egypt, Saudi Arabia, the UAE, and others—have historical and strategic interests in Sudan's Red Sea access and Nile waters, shaping how the war has evolved.",
+	"affectedPopulation": "Civilians across Sudan face a convergence of hunger, disease, and violence. Nearly 34 million people need humanitarian aid; around 12 million have been forcibly displaced inside Sudan or across borders. As of April 2025, almost 4 million children under five were acutely malnourished, facing imminent risk of death without food aid. Power cuts have left cities in darkness, hospitals cannot function, and fuel shortages prevent the movement of food and medicine. Drone strikes kill indiscriminately, including children, and have killed at least 71 aid workers in 2025 alone, hampering relief efforts.",
+	"keyQuestion": "How can humanitarian access be restored and sustained when both warring parties control territory, drone attacks target infrastructure, and international donors are cutting funding—and will the conflict's regional dimensions allow any ceasefire to hold?",
+	"casualtyData": {
+		"description": "Reliable overall death tolls are not available. The UN and humanitarian sources have warned of genocide-level atrocities but have not published verified aggregate figures. A reference source notes that fatality assessments suggest the true number may exceed 150,000, but precise counts are uncertain due to the scale of displacement, lack of access to affected areas, and the inability of independent monitors to verify reports.",
+		"civilianImpact": "Nearly 12 million people have been forcibly displaced, creating one of the world's largest ongoing displacement crises. Approximately 80% of healthcare facilities are non-functional, leaving populations vulnerable to disease outbreaks; almost 4 million children under five are acutely malnourished as of April 2025. Fuel shortages and drone attacks on power stations have paralyzed cities, cutting water supply and destroying cold storage for medicines.",
+		"allSides": "Both the SAF and RSF have been credibly documented by the UN as using indiscriminate drone strikes and other attacks that kill civilians. The UN has warned of genocide-like violence but has not attributed specific casualty figures to each side; overall figures remain disputed, and the true toll is likely much higher than reported due to access restrictions and the scale of displacement. No single authoritative casualty count exists for the entire conflict."
+	},
+	"sources": [
+		{
+			"id": "S2",
+			"kind": "news",
+			"provider": "Africanews RSS",
+			"publisher": "Africanews",
+			"title": "Daily life in Sudan paralysed by deepening fuel crisis and rising costs",
+			"url": "http://africanews.com/2026/11/15/daily-life-in-sudan-paralysed-by-deepening-fuel-crisis-and-rising-costs",
+			"publishedAt": "2026-11-15T15:10:37.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Domestic refining has been crippled by the civil war while the Middle East conflict has led to significant fluctuations in oil prices."
+		},
+		{
+			"id": "S3",
+			"kind": "news",
+			"provider": "UN News RSS",
+			"publisher": "UN News",
+			"title": "Aid is the ‘only hope’ for millions in Sudan, WFP chief warns, as funding cuts deepen hunger crisis",
+			"url": "https://news.un.org/feed/view/en/story/2026/11/1168793",
+			"publishedAt": "2026-11-12T12:00:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": "United Nations",
+			"excerpt": "The World Food Programme’s (WFP) new Executive Director has warned that funding cuts are worsening Sudan’s hunger crisis following his first field mission to the country, where he met families displaced by conflict and struggling to feed their children."
+		},
+		{
+			"id": "S5",
+			"kind": "news",
+			"provider": "Africanews RSS",
+			"publisher": "Africanews",
+			"title": "UN food agency chief calls for end to Sudan war as famine crisis deepens",
+			"url": "http://africanews.com/2026/11/13/un-food-agency-chief-calls-for-end-to-sudan-war-as-famine-crisis-deepens",
+			"publishedAt": "2026-11-13T06:05:42.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "The UN says around 34 million people — nearly two-thirds of Sudan’s population — need humanitarian assistance. It has also warned that drone attacks by both sides have killed civilians, including children, and disrupted essential services."
+		},
+		{
+			"id": "S6",
+			"kind": "news",
+			"provider": "UN News RSS",
+			"publisher": "UN News",
+			"title": "Sudan war: First ‘suicide’ drone attacks, now long-range strikes are the norm",
+			"url": "https://news.un.org/feed/view/en/story/2026/11/1168771",
+			"publishedAt": "2026-11-10T12:00:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": "United Nations",
+			"excerpt": "Drones and drought are “closing in” on Sudan, the UN Children’s Fund (UNICEF), said on Tuesday, describing unprecedented attacks on the country’s infrastructure including by drones travelling up to 1,500 kilometres before hitting their target."
+		},
+		{
+			"id": "S7",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "DW",
+			"title": "Sudan: Misery worsens amid plummeting aid for displaced people",
+			"url": "https://msn.com/en-au/news/other/sudan-misery-worsens-amid-plummeting-aid-for-displaced-people/ar-AA2hqfWc",
+			"publishedAt": "2026-11-14T00:31:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Sudan's humanitarian crisis is exacerbated by cuts in international aid. Almost 34 million people are in need as war and drone strikes are making it difficult to deliver aid to the population."
+		},
+		{
+			"id": "S8",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "UA.NEWS",
+			"title": "Sudan aid plan funded at 47% — Deutsche Welle",
+			"url": "https://ua.news/en/dovkolo-svitu/plan-dopomogi-sudanu-profinansuvali-na-47-deutsche-welle",
+			"publishedAt": "2026-11-14T02:36:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Sudan's $2.9 billion humanitarian aid plan is funded at 47%, while 33.7 million people need support, Deutsche Welle reports."
+		},
+		{
+			"id": "S9",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "Oil Price US",
+			"title": "Why Sudan's Civil War Is Becoming a U.S. National Security Threat",
+			"url": "https://msn.com/en-us/news/other/why-sudans-civil-war-is-becoming-a-us-national-security-threat/ar-AA2h5tzU",
+			"publishedAt": "2026-11-12T18:20:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Sudan's civil war poses a major U.S. security threat, jeopardizing Red Sea shipping, regional stability and counterterrorism efforts while creating opportunities for Iranian influence."
+		},
+		{
+			"id": "S10",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "Al Jazeera",
+			"title": "Drone attacks on power stations plunge Sudan’s cities into darkness",
+			"url": "https://msn.com/en-us/news/world/drone-attacks-on-power-stations-plunge-sudan-s-cities-into-darkness/ar-AA2hsQeh",
+			"publishedAt": "2026-11-15T01:59:37.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Sudan’s power stations are being targeted in waves of drone attacks, resulting in power outages."
+		},
+		{
+			"id": "S11",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "allAfrica.com",
+			"title": "OCHA Reports 71 Aid Workers Killed in Sudan in 2025 As Humanitarian Funding Crisis Deepens",
+			"url": "https://msn.com/en-xl/africa/top-stories/ocha-reports-71-aid-workers-killed-in-sudan-in-2025-as-humanitarian-funding-crisis-deepens/ar-AA2hgWnj",
+			"publishedAt": "2026-11-11T21:04:05.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "At least 71 humanitarian workers were killed and 28 injured in Sudan during 2025, as attacks on aid operations, restricted access and severe funding shortages undermined the delivery of life-saving ..."
+		},
+		{
+			"id": "S12",
+			"kind": "news",
+			"provider": "Bing News search",
+			"publisher": "Yahoo",
+			"title": "Inside Sudan: The war the world ignored where ‘nowhere is safe’",
+			"url": "https://yahoo.com/news/articles/inside-sudan-war-world-ignored-114814991.html",
+			"publishedAt": "2026-11-14T04:04:00.000Z",
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "Sudan’s brutal civil war is causing the largest humanitarian, displacement and hunger crisis in the world right now – the UN has warned of genocide, but it has been ignored. Bel ..."
+		},
+		{
+			"id": "S13",
+			"kind": "reference",
+			"provider": "Wikipedia",
+			"publisher": "Wikipedia",
+			"title": "Humanitarian impact of the Sudanese civil war (2023–present)",
+			"url": "https://en.wikipedia.org/wiki/Humanitarian_impact_of_the_Sudanese_civil_war_(2023%E2%80%93present)",
+			"publishedAt": null,
+			"retrievedAt": "2026-11-16T03:59:59.266Z",
+			"language": "English",
+			"country": null,
+			"excerpt": "The Sudanese civil war that began in April 2023 has produced a severe humanitarian crisis. The conflict is fought between the Sudanese Armed Forces (SAF) and the Rapid Support Forces (RSF). Ten days into the fighting, communities faced severe shortages of food, water, medical supplies and fuel, with Khartoum and its…"
+		}
+	],
+	"keyFacts": [
+		{
+			"text": "Around 34 million people—nearly two-thirds of Sudan's population—need humanitarian assistance.",
+			"sourceIds": [
+				"S5"
+			],
+			"evidence": [
+				{
+					"sourceId": "S5",
+					"quote": "The UN says around 34 million people — nearly two-thirds of Sudan's population — need humanitarian assistance."
+				}
+			],
+			"support": "verified"
+		},
+		{
+			"text": "Sudan's $2.9 billion humanitarian aid plan is funded at 47%.",
+			"sourceIds": [
+				"S8"
+			],
+			"evidence": [
+				{
+					"sourceId": "S8",
+					"quote": "Sudan's $2.9 billion humanitarian aid plan is funded at 47%"
+				}
+			],
+			"support": "verified"
+		},
+		{
+			"text": "Drones are travelling up to 1,500 kilometres before hitting their target, striking infrastructure.",
+			"sourceIds": [
+				"S6"
+			],
+			"evidence": [
+				{
+					"sourceId": "S6",
+					"quote": "describing unprecedented attacks on the country's infrastructure including by drones travelling up to 1,500 kilometres before hitting their target"
+				}
+			],
+			"support": "verified"
+		},
+		{
+			"text": "At least 71 humanitarian workers were killed in Sudan during 2025.",
+			"sourceIds": [
+				"S11"
+			],
+			"evidence": [
+				{
+					"sourceId": "S11",
+					"quote": "At least 71 humanitarian workers were killed and 28 injured in Sudan during 2025"
+				}
+			],
+			"support": "verified"
+		},
+		{
+			"text": "Domestic fuel refining has been crippled by the civil war, while the Middle East conflict has led to significant fluctuations in oil prices.",
+			"sourceIds": [
+				"S2"
+			],
+			"evidence": [
+				{
+					"sourceId": "S2",
+					"quote": "Domestic refining has been crippled by the civil war while the Middle East conflict has led to significant fluctuations in oil prices."
+				}
+			],
+			"support": "verified"
+		}
+	],
+	"coverage": {
+		"agreements": [
+			{
+				"text": "Drone attacks by both sides are killing civilians and disrupting essential services.",
+				"sourceIds": [
+					"S5",
+					"S6"
+				],
+				"evidence": [
+					{
+						"sourceId": "S5",
+						"quote": "drone attacks by both sides have killed civilians, including children, and disrupted essential services"
+					},
+					{
+						"sourceId": "S6",
+						"quote": "Drones and drought are \"closing in\" on Sudan"
+					}
+				],
+				"support": "verified"
+			}
+		],
+		"differences": []
+	},
+	"verification": {
+		"status": "verified",
+		"checked": 8,
+		"removed": 2,
+		"corrected": 1
+	},
+	"retrieval": [
+		{
+			"provider": "Bing News search",
+			"status": "ok",
+			"count": 6
+		},
+		{
+			"provider": "Al Jazeera RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "BBC News RSS (World)",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "BBC News RSS (Africa)",
+			"status": "ok",
+			"count": 2
+		},
+		{
+			"provider": "BBC News RSS (Middle East)",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "BBC News RSS (Europe)",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "BBC News RSS (Asia)",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "The Guardian RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "France 24 RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "NPR RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "The Hindu RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "Times of India RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "Dawn RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "South China Morning Post RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "Premium Times RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "Africanews RSS",
+			"status": "ok",
+			"count": 2
+		},
+		{
+			"provider": "AllAfrica RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "teleSUR RSS",
+			"status": "empty",
+			"count": 0
+		},
+		{
+			"provider": "UN News RSS",
+			"status": "ok",
+			"count": 2
+		},
+		{
+			"provider": "UN News RSS (Peace and security)",
+			"status": "ok",
+			"count": 0
+		},
+		{
+			"provider": "Wikipedia",
+			"status": "ok",
+			"count": 1
+		}
+	],
+	"link": {
+		"durable": true
+	}
+}
