@@ -280,6 +280,10 @@ importers:
         version: 25.9.9
 
   scripts:
+    dependencies:
+      '@workspace/api-zod':
+        specifier: workspace:*
+        version: link:../lib/api-zod
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
