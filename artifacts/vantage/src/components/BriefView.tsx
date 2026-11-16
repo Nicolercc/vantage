@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Link } from "wouter";
 import type { IntelligenceBrief } from "@workspace/api-client-react";
 import { InThirtySeconds } from "./InThirtySeconds";
 import { KeyNumbers } from "./KeyNumbers";
@@ -15,6 +14,7 @@ import { InteractiveConflictMap } from "./InteractiveConflictMap";
 import { ConflictBackground } from "./ConflictBackground";
 import { KindMark, ReadingKey, type Kind } from "./SourceKind";
 import { temporaryLinkNotice } from "@/lib/share-link";
+import { newsCount, reportUrl, sourceBreakdown } from "@/lib/brief-labels";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
 import { PartiesPanel } from "./PartiesPanel";
@@ -34,21 +34,6 @@ function formatPublishedAt(iso: string) {
 	} catch {
 		return iso;
 	}
-}
-
-/** Where a reader can say a brief is wrong. Opens a pre-filled public issue naming the brief. */
-function reportUrl(brief: IntelligenceBrief) {
-	const title = `Problem with brief: ${brief.headline}`.slice(0, 120);
-	const body = [
-		`Brief: ${window.location.origin}/brief/${brief.id}`,
-		`Generated: ${brief.generatedAt}`,
-		"",
-		"What is wrong (quote the sentence if you can):",
-		"",
-		"What the source actually says, with a link if you have one:",
-		"",
-	].join("\n");
-	return `https://github.com/Nicolercc/conflict-analysis/issues/new?labels=brief-report&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
 
 /**
@@ -146,7 +131,10 @@ function WhereThisIs({ brief, countries }: { brief: IntelligenceBrief; countries
 }
 
 /** A finished brief. The page address is its permanent link. */
-export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
+/** A reviewed sample shipped with the site: dated in UTC and never updated. */
+export type SampleInfo = { date: string };
+
+export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBrief; sample?: SampleInfo }) {
 	const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 	const copyLink = useCallback(async () => {
 		try {
@@ -194,6 +182,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 	const nav: { id: string; label: string }[] = [
 		{ id: "layer-orient", label: "In 30 seconds" },
 		{ id: "layer-facts", label: "The facts" },
+		{ id: "layer-context", label: "Who and where" },
 		{ id: "layer-deeper", label: "Go deeper" },
 		{ id: "sources", label: `Sources (${briefData.sources.length})` },
 	];
@@ -203,11 +192,25 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 			<div className="ci-page">
 				<div className="ci-wrap">
 					<header className="ci-hero">
+						{sample ? (
+							<p className="ci-sample-banner" role="note">
+								Reviewed sample from {sample.date} · doesn&apos;t update
+							</p>
+						) : null}
 						<div className="ci-hero__region-row">
 							{regionBadge ? (
 								<span className="ci-hero__badge">{regionBadge}</span>
 							) : null}
 							<span className="ci-hero__locations">{regionSubtitle}</span>
+							<button
+								type="button"
+								className="ci-actions__btn ci-hero__share"
+								onClick={copyLink}
+								aria-live="polite"
+								aria-label={copyState === "copied" ? "Link copied" : "Share this brief"}
+							>
+								{copyState === "copied" ? "Link copied" : copyState === "failed" ? "Copy from the address bar" : "Share"}
+							</button>
 						</div>
 
 						<h1 ref={titleRef} tabIndex={-1} className="ci-hero__title">
@@ -215,45 +218,14 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 						</h1>
 
 						<p className="ci-hero__meta">
-							Generated {formatPublishedAt(analysis.publishedAt)}
+							{sample ? sample.date : `Generated ${formatPublishedAt(analysis.publishedAt)}`}
 							<span aria-hidden> · </span>
-							{analysis.coverage.articles}{" "}
-							{analysis.coverage.articles === 1 ? "article" : "articles"} retrieved
-							{analysis.coverage.outlets > 0
-								? ` from ${analysis.coverage.outlets} ${analysis.coverage.outlets === 1 ? "outlet" : "outlets"}`
-								: ""}
+							{newsCount(analysis.coverage.articles, analysis.coverage.outlets)}
 							<span aria-hidden> · </span>
-							AI-generated with Claude
+							Written by AI with Claude, facts checked against sources
 						</p>
 
-						<div className="ci-actions">
-							<Link href="/" className="ci-actions__btn">
-								New search
-							</Link>
-							<button
-								type="button"
-								className="ci-actions__btn"
-								onClick={copyLink}
-								aria-live="polite"
-							>
-								{copyState === "copied"
-									? "Link copied"
-									: copyState === "failed"
-										? "Copy from the address bar"
-										: "Copy link"}
-							</button>
-							<a
-								href={reportUrl(briefData)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="ci-actions__btn"
-								aria-label="Report a problem (opens GitHub in a new tab)"
-							>
-								Report<span className="ci-actions__more"> a problem</span>
-								<span className="sr-only"> (opens GitHub in a new tab)</span>
-							</a>
-						</div>
-						{temporaryLinkNotice(briefData) && (
+						{!sample && temporaryLinkNotice(briefData) && (
 							<p className="ci-section__note" role="note">
 								{temporaryLinkNotice(briefData)}
 							</p>
@@ -281,8 +253,13 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 					<div className="ci-layers">
 						<section id="layer-orient" className="ci-layer" aria-labelledby="layer-orient-h" tabIndex={-1}>
-							<h2 className="ci-layer__title" id="layer-orient-h">
+							<h2 className="ci-layer__title ci-layer__title--marked" id="layer-orient-h">
 								In 30 seconds
+								{hasOrientation ? (
+									<span className="ci-layer__mark">
+										<KindMark kind="background" /> AI background
+									</span>
+								) : null}
 							</h2>
 							{/* The orientation already says what happened; the longer summary then moves to Go deeper. */}
 							{hasOrientation ? (
@@ -294,38 +271,20 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									</p>
 								</Section>
 							)}
-							{hasNumbers ? (
-								<Section id="numbers" title="Key numbers" kind="sourced" startOpen>
-									<KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} />
-								</Section>
-							) : null}
-							<PartiesPanel parties={analysis.parties} />
-							<Section id="map" title="Where this is" kind="background" startOpen>
-								<WhereThisIs brief={briefData} countries={countries} />
-								<div className="ci-map-outer">
-									<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
-								</div>
-								<p className="ci-section__note">
-									The shaded country and its borders come from Natural Earth map data.
-									Pins mark places the model named, drawn only where a map lookup
-									confirms them or on the sea or strait they name.
-								</p>
-							</Section>
 						</section>
 
 						<section id="layer-facts" className="ci-layer" aria-labelledby="layer-facts-h" tabIndex={-1}>
 							<h2 className="ci-layer__title" id="layer-facts-h">
 								The facts
 							</h2>
-							<p className="ci-layer__lede">From reporting retrieved for this brief. Every statement quotes its source.</p>
-							<ReadingKey />
-							<Section id="key-facts" title="Key facts" kind="sourced" startOpen>
-								<p className="ci-section__note">{checkNote(briefData)}</p>
+							<Section id="key-facts" title="From news reports, each quote checked against its source" kind="sourced" startOpen>
 								<ClaimList
 									claims={briefData.keyFacts}
 									sources={briefData.sources}
 									empty="Nothing in the retrieved sources could be tied to a specific claim, so none is shown."
 								/>
+								<p className="ci-section__note">{checkNote(briefData)}</p>
+								{hasNumbers ? <KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} /> : null}
 							</Section>
 							{hasComparison && (
 								<Section id="coverage" title="How coverage compares" kind="sourced" startOpen>
@@ -350,8 +309,29 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								</Section>
 							)}
 							<Section id="sources" title={`Sources (${briefData.sources.length})`} kind="retrieved" collapsible startOpen={false}>
+								<p className="ci-section__note">{sourceBreakdown(briefData)}</p>
 								<RetrievalSummary retrieval={briefData.retrieval} />
 								<SourceList sources={briefData.sources} />
+							</Section>
+							<ReadingKey />
+						</section>
+
+						{/* After the answer and its proof: who is involved and where it is. */}
+						<section id="layer-context" className="ci-layer" aria-labelledby="layer-context-h" tabIndex={-1}>
+							<h2 className="ci-layer__title" id="layer-context-h">
+								Who and where
+							</h2>
+							<PartiesPanel parties={analysis.parties} />
+							<Section id="map" title="Where this is" kind="background" startOpen>
+								<WhereThisIs brief={briefData} countries={countries} />
+								<div className="ci-map-outer">
+									<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
+								</div>
+								<p className="ci-section__note">
+									The shaded country and its borders come from Natural Earth map data.
+									Pins mark places the model named, drawn only where a map lookup
+									confirms them or on the sea or strait they name.
+								</p>
 							</Section>
 						</section>
 
@@ -406,7 +386,10 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 					<p className="ci-footnote">
 						{analysis.credit}. This page is a saved copy: it shows the brief exactly
-						as generated and does not update.
+						as generated and does not update.{" "}
+						<a href={reportUrl(briefData)} target="_blank" rel="noopener noreferrer">
+							Report a problem with this brief<span className="sr-only"> (opens GitHub in a new tab)</span>
+						</a>
 					</p>
 				</div>
 			</div>

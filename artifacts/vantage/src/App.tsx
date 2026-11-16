@@ -15,6 +15,12 @@ const StoredBriefRoute = lazy(() =>
   })),
 );
 
+const SampleBriefRoute = lazy(() =>
+  import("@/components/ConflictAnalysisPage").then((m) => ({
+    default: m.SampleBriefRoute,
+  })),
+);
+
 const queryClient = new QueryClient();
 
 function Router() {
@@ -23,6 +29,7 @@ function Router() {
       <Switch>
         <Route path="/analysis" component={ConflictAnalysisPageRoute} />
         <Route path="/brief/:id" component={StoredBriefRoute} />
+        <Route path="/sample/:slug" component={SampleBriefRoute} />
         <Route path="/" component={Home} />
         <Route component={NotFound} />
       </Switch>

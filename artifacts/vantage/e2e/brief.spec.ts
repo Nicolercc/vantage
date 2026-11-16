@@ -11,7 +11,7 @@ test.describe("brief page", () => {
 		const net = await isolate(page);
 		await page.goto(`/brief/${BRIEF.id}`);
 		await expect(page.getByRole("heading", { level: 1 })).toHaveText(BRIEF.headline);
-		await expect(page.getByRole("heading", { level: 2 })).toHaveText(["In 30 seconds", "The facts", "Go deeper"]);
+		await expect(page.getByRole("heading", { level: 2 })).toHaveText([/^In 30 seconds/, "The facts", "Who and where", "Go deeper"]);
 		// Go deeper starts folded; every old section link still has a target.
 		expect(await page.locator("#layer-deeper details[open]").count()).toBe(0);
 		for (const id of ["summary", "map", "key-facts", "coverage", "timeline", "perspectives", "population", "context", "sources"]) {

@@ -14,6 +14,7 @@ import { BriefError, streamBrief, type BriefStage } from "@/lib/brief-stream";
 import { Notice, Shell } from "./Notice";
 import { AnalysisLoader } from "./AnalysisLoader";
 import { BriefView } from "./BriefView";
+import { findSample, latestSample, sampleDate } from "@/samples";
 import "./ConflictAnalysisPageLayout.css";
 
 const SUGGESTED_TOPICS = [
@@ -219,6 +220,88 @@ export function StoredBriefRoute() {
 					New search
 				</Link>
 			</Notice>
+		</Shell>
+	);
+}
+
+type SampleLoad = { state: "loading" } | { state: "ready"; brief: IntelligenceBrief } | { state: "failed" };
+
+/**
+ * /sample/:slug — a reviewed brief shipped with the site. It never calls the
+ * API, so it opens even while the API restarts. An unknown slug (an old link
+ * to a retired sample) points to the newest one instead of a dead end.
+ */
+export function SampleBriefRoute() {
+	const { slug = "" } = useParams<{ slug: string }>();
+	const sample = findSample(slug);
+	const [load, setLoad] = useState<SampleLoad>({ state: "loading" });
+	const [attempt, setAttempt] = useState(0);
+
+	useEffect(() => {
+		if (!sample) return;
+		let live = true;
+		setLoad({ state: "loading" });
+		sample
+			.load()
+			.then((brief) => live && setLoad({ state: "ready", brief }))
+			// The file is part of the site; this fails only when a new deploy replaced it under an open tab.
+			.catch(() => live && setLoad({ state: "failed" }));
+		return () => {
+			live = false;
+		};
+	}, [sample, attempt]);
+
+	useEffect(() => {
+		if (!sample) document.title = "Sample not available · Vantage";
+	}, [sample]);
+
+	if (!sample) {
+		const latest = latestSample();
+		return (
+			<Shell status="This sample isn't available.">
+				<Notice eyebrow="Sample not available" title="This sample isn't available">
+					<p className="ci-notice__text">
+						Samples are replaced every week, and this one has been retired.
+						{latest ? " The newest sample is ready to read." : ""}
+					</p>
+					<div className="ci-notice__actions">
+						{latest ? (
+							<Link href={`/sample/${latest.slug}`} className="ci-notice__primary">
+								Read the newest sample
+							</Link>
+						) : null}
+						<Link href="/" className="ci-notice__secondary">
+							New search
+						</Link>
+					</div>
+				</Notice>
+			</Shell>
+		);
+	}
+
+	if (load.state === "ready") return <BriefView brief={load.brief} sample={{ date: sampleDate(sample.generatedAt) }} />;
+
+	if (load.state === "failed") {
+		return (
+			<Shell status="The sample could not be opened.">
+				<Notice eyebrow="Sample not opened" title="We couldn't open this sample">
+					<p className="ci-notice__text">The site was updated while this page was open. Reloading fixes it.</p>
+					<div className="ci-notice__actions">
+						<button type="button" className="ci-notice__primary" onClick={() => setAttempt((n) => n + 1)}>
+							Try again
+						</button>
+						<button type="button" className="ci-notice__secondary" onClick={() => window.location.reload()}>
+							Reload the page
+						</button>
+					</div>
+				</Notice>
+			</Shell>
+		);
+	}
+
+	return (
+		<Shell status="Opening the sample.">
+			<p className="ci-opening">Opening the sample…</p>
 		</Shell>
 	);
 }

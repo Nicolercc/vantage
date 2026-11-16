@@ -1445,3 +1445,56 @@ span.ci-source__title {
 .ci-section__head--toggle {
 	min-height: var(--tap);
 }
+
+/* Sample brief: dated, reviewed, never updated */
+.ci-sample-banner {
+	margin: 0 calc(-1 * var(--gutter)) 14px;
+	padding: 10px var(--gutter);
+	background: var(--accent-navy-light);
+	color: var(--accent-navy);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+/* A full-height, underlined link: distinct from the sentence and easy to tap. */
+.ci-footnote a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+	color: var(--accent-navy);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* The share action sits on the region row, at the right edge. */
+.ci-hero__share {
+	margin-left: auto;
+}
+
+/* "In 30 seconds" carries its source label on the same line. */
+.ci-layer__title--marked {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+}
+
+.ci-layer__mark {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text-muted);
+}
+
+.ci-layer .ci-thirty {
+	padding: 4px 0 0;
+	background: none;
+}
+
+.ci-thirty__row dd {
+	font-size: 17px;
+}
