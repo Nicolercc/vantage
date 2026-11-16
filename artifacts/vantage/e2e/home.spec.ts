@@ -20,10 +20,18 @@ test.describe("home page", () => {
 		// The headline is visible from the first frame, not faded in late.
 		const opacity = await page.locator("h1").evaluate((h) => Number(getComputedStyle(h).opacity));
 		expect(opacity).toBeGreaterThan(0.9);
-		await expect(page.getByRole("button", { name: "Explain this" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Explain", exact: true })).toBeVisible();
+		// The search box and the whole ready story fit on the first screen.
+		const fold = page.viewportSize()!.height;
+		for (const sel of [".home-search__input", ".home-start__card"]) {
+			const bottom = await page.locator(sel).evaluate((e) => e.getBoundingClientRect().bottom);
+			expect(bottom, `${sel} ends above the fold`).toBeLessThanOrEqual(fold);
+		}
+		await expect(page.locator(".home-start__card")).toHaveAttribute("href", "/sample/sudan-2026-11-16");
+		await expect(page.locator(".home-start__card")).toContainText("Read in about a minute");
 		// Without Today topics, the example chips stand in.
-		await expect(page.getByRole("button", { name: "Sudan aid access" })).toBeVisible();
-		await expectSharedLeftEdge(page, [".site-header__brand", "h1", ".home-search__row", ".home-search__hint", ".home-chip"]);
+		await expect(page.getByRole("button", { name: "Gaza ceasefire" })).toBeVisible();
+		await expectSharedLeftEdge(page, [".site-header__brand", "h1", ".home-search__row", ".home-start__card", ".home-chip"]);
 		await expectNoSidewaysScroll(page);
 		await expectTapTargets(page);
 		await expectReadableText(page);
@@ -37,8 +45,9 @@ test.describe("home page", () => {
 		await page.route("**/api/trending", (route) => route.fulfill({ status: 200, json: TODAY }));
 		await page.goto("/");
 		const today = page.locator(".home-today");
-		await expect(today).toContainText("Sudan");
-		await expect(today).toContainText("Red Sea");
+		// Rows say what they open: a ready brief, or a fresh look at the coverage.
+		await expect(today.getByRole("link", { name: /Explore coverage of Sudan/ })).toContainText("Ready");
+		await expect(today.getByRole("link", { name: /Explore coverage of Red Sea/ })).toContainText("about a minute");
 		await expectNoSidewaysScroll(page);
 		await expectTapTargets(page);
 		await expectAccessible(page, testInfo);
@@ -53,7 +62,26 @@ test.describe("home page", () => {
 		await page.route("**/api/intelligence/stream", () => new Promise(() => {}));
 		await page.goto("/");
 		await page.getByRole("searchbox").fill("Sudan humanitarian access");
-		await page.getByRole("button", { name: "Explain this" }).click();
+		await page.getByRole("button", { name: "Explain", exact: true }).click();
 		await expect(page).toHaveURL(/\/analysis\?topic=Sudan(\+|%20)humanitarian(\+|%20)access/);
+	});
+
+	test("Start here opens the sample brief", async ({ page }) => {
+		await isolate(page);
+		await page.route("**/api/trending", (route) => route.fulfill({ status: 503, json: {} }));
+		await page.goto("/");
+		await page.locator(".home-start__card").click();
+		await expect(page).toHaveURL(/\/sample\/sudan-2026-11-16$/);
+		await expect(page.getByRole("note").filter({ hasText: "Reviewed sample" })).toBeVisible();
+	});
+
+	test("Paste it switches to the article box and back", async ({ page }) => {
+		await isolate(page);
+		await page.route("**/api/trending", (route) => route.fulfill({ status: 503, json: {} }));
+		await page.goto("/");
+		await page.getByRole("button", { name: "Have an article? Paste it" }).click();
+		await expect(page.locator(".home-search__textarea")).toBeFocused();
+		await page.getByRole("button", { name: "Ask about a story instead" }).click();
+		await expect(page.getByRole("searchbox")).toBeFocused();
 	});
 });

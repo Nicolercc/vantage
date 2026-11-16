@@ -4,9 +4,9 @@ import { briefPath } from "./brief-request";
 /** Shown when there is no ranking to show: before the API answers it, or when it fails or is empty. */
 export const QUICK_TOPICS = [
 	"Red Sea shipping",
-	"Sudan aid access",
 	"Gaza ceasefire",
 	"Ukraine front line",
+	"Haiti gang violence",
 ];
 
 /** Cards shown before "Show more". */
