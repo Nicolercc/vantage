@@ -40,4 +40,21 @@ describe("homepage text", () => {
 		const color = prop(rule(selector), "color")!;
 		expect(contrast(color, token(background))).toBeGreaterThanOrEqual(4.5);
 	});
+
+	// Today cards are white; their badges carry their own backgrounds.
+	it.each([
+		[".home-today__label", "#ffffff"],
+		[".home-today__headline", "#ffffff"],
+		[".home-today__country", "#ffffff"],
+		[".home-today__meta", "#ffffff"],
+		[".home-today__badge", prop(rule(".home-today__badge"), "background")!],
+		[".home-today__badge--ready", prop(rule(".home-today__badge--ready"), "background")!],
+		[".home-today__caption", "--home-sand-deep"],
+		[".home-today__title", "--home-sand-deep"],
+	])("%s meets 4.5:1 against %s", (selector, background) => {
+		const block = rule(selector);
+		const color = prop(block, "color") ?? prop(rule(".home-today__card"), "color")!;
+		const bg = background.startsWith("--") ? token(background) : background;
+		expect(contrast(color, bg)).toBeGreaterThanOrEqual(4.5);
+	});
 });

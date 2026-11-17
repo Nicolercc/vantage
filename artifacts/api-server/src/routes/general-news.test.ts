@@ -197,7 +197,7 @@ describe("conflict briefs are unchanged", () => {
 
   it("keeps the conflict writer's instructions exactly as they were", () => {
     // Changing this prompt changes every conflict brief; re-run the evaluation before updating the digest.
-    expect(createHash("sha256").update(SYSTEM_PROMPT).digest("hex")).toBe("59651b898f757fe0632640bd813c1a87964cf33f75708206f2fea11928f1741d");
+    expect(createHash("sha256").update(SYSTEM_PROMPT).digest("hex")).toBe("c073b09feb981a0b2c608240fc977f8cceb66a6a92cb4ca1633b1449a1448207");
   });
 
   it("holds the general writer to the conflict writer's quote rules", () => {

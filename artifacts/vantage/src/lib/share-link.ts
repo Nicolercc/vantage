@@ -7,6 +7,6 @@ import type { IntelligenceBrief } from "@workspace/api-client-react";
  */
 export function temporaryLinkNotice(brief: Pick<IntelligenceBrief, "link">): string | null {
 	return brief.link?.durable === false
-		? "Links are temporary right now: this server isn't saving briefs permanently, so this link will stop working when it restarts."
+		? "Temporary link: it will stop working when the server restarts."
 		: null;
 }
