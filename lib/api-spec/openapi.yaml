@@ -104,6 +104,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /trending:
+    get:
+      operationId: getTrending
+      tags: [intelligence]
+      summary: The conflict and crisis places most covered in the last 24 hours
+      description: >-
+        Worked out from headlines alone, with no model call: which places recent
+        conflict and crisis headlines name, ranked by how many different outlets
+        named each one, newer coverage counting more. Refreshed on a schedule.
+        Topics is empty when there is no recent enough ranking.
+      responses:
+        "200":
+          description: Up to 8 topics, most covered first
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendingResponse"
   /intelligence/stream:
     post:
       operationId: streamBrief
@@ -203,6 +220,57 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
+    TrendingHeadline:
+      type: object
+      description: The newest headline counted for a topic, so a reader can see what the coverage is about.
+      properties:
+        title:
+          type: string
+        publisher:
+          type: string
+        url:
+          type: string
+      required: [title, publisher, url]
+    TrendingTopic:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Short plain name of the place, also the topic a brief on it is requested with.
+        country:
+          type: string
+          description: The country the place is in, or the closest honest description (e.g. "Palestinian territories").
+        outletCount:
+          type: integer
+          minimum: 2
+          description: Distinct outlets that named the place in a conflict or crisis headline in the window.
+        newestAt:
+          type: string
+          description: ISO 8601 time of the newest such headline.
+        headline:
+          $ref: "#/components/schemas/TrendingHeadline"
+        briefId:
+          type: [string, "null"]
+          description: Id of a brief on this topic that opens without waiting, or null when one would have to be generated.
+      required: [label, country, outletCount, newestAt, headline, briefId]
+    TrendingResponse:
+      type: object
+      properties:
+        updatedAt:
+          type: [string, "null"]
+          description: ISO 8601 time of the ranking, or null when there is none yet.
+        windowHours:
+          type: integer
+          description: How far back headlines are counted.
+        outletCount:
+          type: integer
+          description: Distinct outlets with any headline in the window, across every source read.
+        topics:
+          type: array
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/TrendingTopic"
+      required: [updatedAt, windowHours, outletCount, topics]
     HealthStatus:
       type: object
       properties:

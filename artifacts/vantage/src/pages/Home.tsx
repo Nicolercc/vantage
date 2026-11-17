@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion, useReducedMotion } from "framer-motion";
 import { Search, ShieldCheck, MapPinned, Clock3 } from "lucide-react";
+import { getGetTrendingQueryKey, useGetTrending } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/LiveTicker";
 import {
 	briefPath,
@@ -11,6 +12,15 @@ import {
 	ARTICLE_MAX,
 	type BriefRequest,
 } from "@/lib/brief-request";
+import {
+	homeTopics,
+	isReady,
+	timeAgo,
+	todayCaption,
+	todayHref,
+	TODAY_VISIBLE,
+	type HomeTopics,
+} from "@/lib/trending";
 import "./HomePage.css";
 
 type Mode = BriefRequest["kind"];
@@ -21,17 +31,76 @@ const MODES: { id: Mode; label: string }[] = [
 	{ id: "article", label: "Paste text" },
 ];
 
-const QUICK_TOPICS = [
-	"Red Sea shipping tensions",
-	"Sudan humanitarian access",
-	"Gaza ceasefire reporting",
-	"Ukraine front-line updates",
-];
-
+// Text is readable from the first frame; only a short rise is animated.
 const fadeUp = {
-	initial: { opacity: 0, y: 18 },
+	initial: { opacity: 1, y: 8 },
 	animate: { opacity: 1, y: 0 },
 };
+
+/** Today's most covered topics, as links to their briefs. */
+function TodaySection({ offer }: { offer: Extract<HomeTopics, { kind: "loading" | "today" }> }) {
+	const [expanded, setExpanded] = useState(false);
+	if (offer.kind === "loading") {
+		return (
+			<section className="home-today" aria-labelledby="today-title" aria-busy="true">
+				<h2 id="today-title" className="home-today__title">
+					Today
+				</h2>
+				<p className="sr-only" role="status">
+					Loading today&apos;s most covered topics
+				</p>
+				<ul className="home-today__list" aria-hidden>
+					{Array.from({ length: TODAY_VISIBLE }, (_, i) => (
+						<li key={i} className="home-today__card home-today__card--placeholder" />
+					))}
+				</ul>
+			</section>
+		);
+	}
+	const now = Date.now();
+	const shown = expanded ? offer.topics : offer.topics.slice(0, TODAY_VISIBLE);
+	const hidden = offer.topics.length - shown.length;
+	return (
+		<section className="home-today" aria-labelledby="today-title">
+			<h2 id="today-title" className="home-today__title">
+				Today
+			</h2>
+			<p className="home-today__caption">{todayCaption(offer.outletCount)}</p>
+			<ul className="home-today__list" id="today-list">
+				{shown.map((t) => (
+					<li key={t.label}>
+						{/* No aria-label: the card's visible text is its name, so voice control can say what it sees. */}
+						<Link href={todayHref(t)} className="home-today__card">
+							<span className="home-today__head">
+								<span className="home-today__label">{t.label}</span>
+								<span className={`home-today__badge${isReady(t) ? " home-today__badge--ready" : ""}`}>
+									{isReady(t) ? "Ready" : "About a minute"}
+								</span>
+							</span>
+							{t.country !== t.label && <span className="home-today__country">{t.country}</span>}
+							<span className="home-today__headline">{t.headline.title}</span>
+							<span className="home-today__meta">
+								{t.outletCount} outlets · <span className="home-today__newest">newest </span>
+								<time dateTime={t.newestAt}>{timeAgo(t.newestAt, now)}</time>
+							</span>
+						</Link>
+					</li>
+				))}
+			</ul>
+			{offer.topics.length > TODAY_VISIBLE && (
+				<button
+					type="button"
+					className="home-today__more"
+					aria-expanded={expanded}
+					aria-controls="today-list"
+					onClick={() => setExpanded((e) => !e)}
+				>
+					{expanded ? "Show fewer" : `Show ${hidden} more`}
+				</button>
+			)}
+		</section>
+	);
+}
 
 export function Home() {
 	const [mode, setMode] = useState<Mode>("topic");
@@ -39,6 +108,16 @@ export function Home() {
 	const [problem, setProblem] = useState<string | null>(null);
 	const [, setLocation] = useLocation();
 	const reduceMotion = useReducedMotion();
+	const trending = useGetTrending({
+		query: {
+			queryKey: getGetTrendingQueryKey(),
+			staleTime: 60_000,
+			// A tab left open keeps up with the ranking, which refreshes hourly.
+			refetchInterval: 10 * 60_000,
+			retry: 1,
+		},
+	});
+	const offer = homeTopics(trending);
 
 	const transition = reduceMotion
 		? { duration: 0 }
@@ -145,6 +224,8 @@ export function Home() {
 								a background timeline, perspectives, and geography.
 							</motion.p>
 
+							{offer.kind !== "examples" && <TodaySection offer={offer} />}
+
 							<form
 								className="home-search"
 								onSubmit={handleSubmit}
@@ -211,7 +292,7 @@ export function Home() {
 												placeholder={
 													mode === "url"
 														? "https://…"
-														: "e.g. Gaza ceasefire, Red Sea tensions, Sudan…"
+														: "e.g. Sudan, Red Sea, Gaza"
 												}
 												autoComplete="off"
 												autoCapitalize={mode === "url" ? "off" : "sentences"}
@@ -222,7 +303,7 @@ export function Home() {
 										</>
 									)}
 									<button type="submit" className="home-search__submit">
-										Run briefing
+										Explain this
 									</button>
 								</div>
 								<div id="search-help">
@@ -233,7 +314,7 @@ export function Home() {
 									) : (
 										<p className="home-search__hint">
 											{mode === "topic"
-												? "Search any news story, conflict or country · No account required"
+												? "Any news story, conflict or country · No account needed"
 												: mode === "url"
 													? "We fetch the public page and brief that article"
 													: `Up to ${ARTICLE_MAX.toLocaleString()} characters · Pasted text stays out of the page address`}
@@ -243,32 +324,34 @@ export function Home() {
 							</form>
 						</div>
 
-						<div className="home-chips" aria-label="Example searches">
-							<p
-								style={{
-									flexBasis: "100%",
-									textAlign: "center",
-									fontFamily: "var(--mono)",
-									fontSize: "11px",
-									textTransform: "uppercase",
-									letterSpacing: ".08em",
-									color: "var(--color-text-secondary)",
-									marginBottom: "10px",
-								}}
-							>
-								Try one of these →
-							</p>
-							{QUICK_TOPICS.map((q) => (
-								<button
-									key={q}
-									type="button"
-									className="home-chip"
-									onClick={() => applyQuickTopic(q)}
+						{offer.kind === "examples" && (
+							<div className="home-chips" aria-label="Example searches">
+								<p
+									style={{
+										flexBasis: "100%",
+										textAlign: "left",
+										fontFamily: "var(--mono)",
+										fontSize: "13px",
+										textTransform: "uppercase",
+										letterSpacing: ".08em",
+										color: "var(--color-text-secondary)",
+										marginBottom: "10px",
+									}}
 								>
-									{q}
-								</button>
-							))}
-						</div>
+									Try one of these →
+								</p>
+								{offer.topics.map((q) => (
+									<button
+										key={q}
+										type="button"
+										className="home-chip"
+										onClick={() => applyQuickTopic(q)}
+									>
+										{q}
+									</button>
+								))}
+							</div>
+						)}
 					</div>
 				</section>
 

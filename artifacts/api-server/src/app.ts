@@ -6,6 +6,7 @@ import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { createBriefState } from "./lib/brief-state";
+import { TrendingService } from "./brief/trending-service";
 import { AppError, invalidInput, sendError } from "./lib/errors";
 
 const app: Express = express();
@@ -15,6 +16,8 @@ app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
 app.locals.briefs = createBriefState();
+// Created here, started by index.ts: importing the app (as tests do) starts no timers.
+app.locals.trending = new TrendingService(app.locals.briefs, app.locals.briefs.config.trending);
 
 // This server only ever answers with JSON, so nothing it sends may be framed,
 // sniffed as another type, or load anything. Responses stay readable by the

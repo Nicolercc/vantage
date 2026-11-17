@@ -81,4 +81,40 @@ describe("configuration", () => {
     const { config } = loadConfig({ ...base, MODEL_PRICES: '{"claude-sonnet-5-5":{"input":3,"output":15}}' });
     expect(Object.keys(config.modelPrices).sort()).toEqual(["claude-haiku-4-5-20251001", "claude-haiku-5-5", "claude-sonnet-5-5"]);
   });
+
+  describe("Today topics", () => {
+    it("refreshes hourly and warms four briefs a refresh, at most 24 a day, in production", () => {
+      const { config, problems } = loadConfig(base);
+      expect(problems).toEqual([]);
+      expect(config.trending).toEqual({ enabled: true, intervalMs: 3_600_000, pregenerate: 4, dailyMax: 24 });
+    });
+
+    it("warms nothing on a development server unless asked", () => {
+      expect(loadConfig({ ...base, NODE_ENV: "development" }).config.trending.pregenerate).toBe(0);
+      expect(loadConfig({ ...base, NODE_ENV: "development", TRENDING_PREGENERATE: "2" }).config.trending.pregenerate).toBe(2);
+    });
+
+    it("accepts zero to turn warming off, and can be switched off entirely", () => {
+      const { config, problems } = loadConfig({ ...base, TRENDING_PREGENERATE: "0", TRENDING_ENABLED: "false", TRENDING_INTERVAL_MINUTES: "15" });
+      expect(problems).toEqual([]);
+      expect(config.trending).toMatchObject({ enabled: false, pregenerate: 0, intervalMs: 900_000 });
+    });
+
+    it("names each bad value", () => {
+      const { problems } = loadConfig({
+        ...base,
+        TRENDING_ENABLED: "maybe",
+        TRENDING_INTERVAL_MINUTES: "0.5",
+        TRENDING_PREGENERATE: "9",
+        TRENDING_DAILY_MAX: "-1",
+      });
+      expect([...problems].sort()).toEqual([
+        'TRENDING_ENABLED must be true or false; got "maybe"',
+        'TRENDING_INTERVAL_MINUTES must be at least 1; got "0.5"',
+        'TRENDING_PREGENERATE must be a whole number from 0 to 8; got "9"',
+        'TRENDING_DAILY_MAX must be a positive whole number; got "-1"',
+      ].sort());
+      expect(loadConfig({ ...base, TRENDING_PREGENERATE: "1.5" }).problems).toEqual(['TRENDING_PREGENERATE must be a whole number from 0 to 8; got "1.5"']);
+    });
+  });
 });
