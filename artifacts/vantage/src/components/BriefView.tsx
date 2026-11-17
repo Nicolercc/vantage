@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { IntelligenceBrief } from "@workspace/api-client-react";
 import { InThirtySeconds } from "./InThirtySeconds";
-import { KeyNumbers } from "./KeyNumbers";
 import { bigNumbers } from "@/lib/big-numbers";
 import { TermText, WordsToKnow } from "./Term";
 import "./AnalysisLoader.css";
@@ -14,6 +13,7 @@ import { InteractiveConflictMap } from "./InteractiveConflictMap";
 import { ConflictBackground } from "./ConflictBackground";
 import { KindMark, ReadingKey, type Kind } from "./SourceKind";
 import { temporaryLinkNotice } from "@/lib/share-link";
+import { hiddenSides, type HiddenSides } from "@/lib/scroll-edges";
 import { newsCount, reportUrl, sourceBreakdown } from "@/lib/brief-labels";
 import { ClaimList, RetrievalSummary, SourceList } from "./Evidence";
 import { adaptBrief } from "./conflict/adapter";
@@ -153,7 +153,6 @@ export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBri
 		titleRef.current?.focus();
 	}, [briefData.id, briefData.headline]);
 
-
 	const countries = useCountries();
 	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
 	// Events the map can show: a confirmed pin, or a place that is a whole country it shades.
@@ -169,7 +168,20 @@ export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBri
 	// Each defined term is explained once on the page, at its first appearance.
 	const termsShown = new Set<string>();
 	const hasOrientation = Boolean(briefData.orientation?.inScope);
-	const hasNumbers = bigNumbers(briefData.keyFacts).length > 0;
+	// The section menu scrolls sideways on a phone; fade only the side that hides more items.
+	const navRef = useRef<HTMLUListElement>(null);
+	const [navHidden, setNavHidden] = useState<HiddenSides>("none");
+	const updateNavEdges = useCallback(() => {
+		const el = navRef.current;
+		if (el) setNavHidden(hiddenSides(el.scrollLeft, el.clientWidth, el.scrollWidth));
+	}, []);
+	useEffect(() => {
+		updateNavEdges();
+		window.addEventListener("resize", updateNavEdges);
+		return () => window.removeEventListener("resize", updateNavEdges);
+	}, [updateNavEdges]);
+	// The largest checked figures stand out in bold inside their own facts, not repeated below them.
+	const figures = new Map(bigNumbers(briefData.keyFacts).map((n) => [n.claim, n.figure]));
 	const analysis = adaptBrief(briefData);
 	const regionBits = analysis.region.split("·").map((s) => s.trim());
 	const regionBadge = regionBits[0] ?? "";
@@ -233,7 +245,7 @@ export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBri
 					</header>
 
 					<nav className="ci-nav" aria-label="Sections of this brief">
-						<ul className="ci-nav__list">
+						<ul className="ci-nav__list" ref={navRef} data-hidden={navHidden} onScroll={updateNavEdges}>
 							{nav.map((item) => (
 								<li key={item.id}>
 									<a
@@ -277,15 +289,16 @@ export function BriefView({ brief: briefData, sample }: { brief: IntelligenceBri
 							<h2 className="ci-layer__title" id="layer-facts-h">
 								The facts
 							</h2>
-							<Section id="key-facts" title="From news reports, each quote checked against its source" kind="sourced" startOpen>
+							<Section id="key-facts" title="Checked facts" kind="sourced" startOpen>
+								<p className="ci-section__lede">From news reports. Each quote was checked against its source.</p>
 								<ClaimList
 									claims={briefData.keyFacts}
 									sources={briefData.sources}
 									empty="Nothing in the retrieved sources could be tied to a specific claim, so none is shown."
 									showQuoteFor="first-verified"
+									figures={figures}
 								/>
 								<p className="ci-section__note">{checkNote(briefData)}</p>
-								{hasNumbers ? <KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} /> : null}
 							</Section>
 							{hasComparison && (
 								<Section id="coverage" title="How coverage compares" kind="sourced" startOpen>

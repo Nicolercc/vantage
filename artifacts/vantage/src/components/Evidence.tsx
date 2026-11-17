@@ -227,17 +227,33 @@ export function Citations({ claim, sources }: { claim: Claim; sources: Source[] 
 	);
 }
 
+/** The claim's own words, with its key figure (if any) in bold where it already stands. */
+function ClaimText({ text, figure }: { text: string; figure?: string }) {
+	const at = figure ? text.indexOf(figure) : -1;
+	if (!figure || at < 0) return <>{text}</>;
+	return (
+		<>
+			{text.slice(0, at)}
+			<strong className="ci-claim__figure">{figure}</strong>
+			{text.slice(at + figure.length)}
+		</>
+	);
+}
+
 export function ClaimList({
 	claims,
 	sources,
 	empty,
 	showQuoteFor,
+	figures,
 }: {
 	claims: Claim[];
 	sources: Source[];
 	empty: string;
 	/** Give the first verified, quoted claim a visible "See source quote". Only the key facts opt in. */
 	showQuoteFor?: "first-verified";
+	/** A figure to set in bold inside its claim, exactly as the claim writes it. */
+	figures?: Map<Claim, string>;
 }) {
 	if (claims.length === 0) {
 		return <p className="ci-evidence-empty">{empty}</p>;
@@ -248,7 +264,7 @@ export function ClaimList({
 		<ul className="ci-claims">
 			{claims.map((claim, i) => (
 				<li key={i} className="ci-claim">
-					{claim.text} <Citations claim={claim} sources={sources} />
+					<ClaimText text={claim.text} figure={figures?.get(claim)} /> <Citations claim={claim} sources={sources} />
 					{i === quoteIndex && proof ? <QuoteDisclosure source={proof.source} quote={proof.quote} /> : null}
 				</li>
 			))}
