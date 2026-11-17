@@ -397,6 +397,35 @@ export const GetBriefResponse = zod.object({
 
 
 /**
+ * Worked out from headlines alone, with no model call: which places recent conflict and crisis headlines name, ranked by how many different outlets named each one, newer coverage counting more. Refreshed on a schedule. Topics is empty when there is no recent enough ranking.
+ * @summary The conflict and crisis places most covered in the last 24 hours
+ */
+export const getTrendingResponseTopicsItemOutletCountMin = 2;
+
+export const getTrendingResponseTopicsMax = 8;
+
+
+
+export const GetTrendingResponse = zod.object({
+  "updatedAt": zod.string().nullable().describe('ISO 8601 time of the ranking, or null when there is none yet.'),
+  "windowHours": zod.number().describe('How far back headlines are counted.'),
+  "outletCount": zod.number().describe('Distinct outlets with any headline in the window, across every source read.'),
+  "topics": zod.array(zod.object({
+  "label": zod.string().describe('Short plain name of the place, also the topic a brief on it is requested with.'),
+  "country": zod.string().describe('The country the place is in, or the closest honest description (e.g. \"Palestinian territories\").'),
+  "outletCount": zod.number().min(getTrendingResponseTopicsItemOutletCountMin).describe('Distinct outlets that named the place in a conflict or crisis headline in the window.'),
+  "newestAt": zod.string().describe('ISO 8601 time of the newest such headline.'),
+  "headline": zod.object({
+  "title": zod.string(),
+  "publisher": zod.string(),
+  "url": zod.string()
+}).describe('The newest headline counted for a topic, so a reader can see what the coverage is about.'),
+  "briefId": zod.string().nullable().describe('Id of a brief on this topic that opens without waiting, or null when one would have to be generated.')
+})).max(getTrendingResponseTopicsMax)
+})
+
+
+/**
  * Takes a topic, an article URL or article text and answers with a
  * `text/event-stream`. Events:
  *

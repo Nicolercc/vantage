@@ -194,6 +194,7 @@ export function modelText(text: string) {
 /** Clear cached briefs, in-flight work and rate-limit counters between tests. */
 export function resetBriefState(app: { locals: Record<string, unknown> }) {
   (app.locals["briefs"] as { reset: () => void }).reset();
+  (app.locals["trending"] as { reset?: () => void } | undefined)?.reset?.();
   resetModelHealth();
   resetGeocoder();
 }

@@ -1,6 +1,6 @@
 import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
-import { cleanText, enoughOfTopic, topicScorer, topicTerms, truncate, type Candidate, type ProviderResult } from "../sources";
+import { cleanText, headlineRelevance, topicTerms, truncate, type Candidate, type ProviderResult } from "../sources";
 
 const PROVIDER = "Bing News search";
 export const NEWS_SEARCH_TIMEOUT_MS = 6_000;
@@ -20,9 +20,8 @@ export function articleUrl(link: string): string | null {
   }
 }
 
-export function parseNewsSearch(xml: string, topic: string): Candidate[] {
-  const relevance = topicScorer(topic);
-  const needed = enoughOfTopic(topic) - 1e-9;
+export function parseNewsSearch(xml: string, topic: string | ((title: string) => boolean)): Candidate[] {
+  const relevance = headlineRelevance(topic);
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const raw = doc.rss?.channel?.item;
   const items = (Array.isArray(raw) ? raw : raw ? [raw] : []) as Array<Record<string, unknown>>;
@@ -36,7 +35,7 @@ export function parseNewsSearch(xml: string, topic: string): Candidate[] {
     // Headline only, as for feeds: a summary names places in passing ("…as
     // arrivals from Sudan continue" under a headline about South Sudan).
     const score = relevance(title);
-    if (score === 0 || score < needed) continue;
+    if (score === 0) continue;
     const date = new Date(text(item["pubDate"]));
     out.push({
       kind: "news",
@@ -62,12 +61,30 @@ export function parseNewsSearch(xml: string, topic: string): Candidate[] {
  * feeds are not carrying this week still has reporting behind it.
  */
 export async function searchNews(topic: string, signal: AbortSignal = NEVER): Promise<ProviderResult> {
-  const failed: ProviderResult = { provider: PROVIDER, status: "failed", candidates: [] };
   const terms = topicTerms(topic);
   if (terms.length === 0) return { provider: PROVIDER, status: "empty", candidates: [] };
+  // interval="8": results from the past week.
+  return fetchSearch(terms.join(" "), 'interval="8"', topic, signal);
+}
+
+/**
+ * Headlines for a broad query from the past 24 hours, unfiltered, for working
+ * out what is most covered. The query is sent as written.
+ */
+export function searchHeadlines(query: string, signal: AbortSignal = NEVER): Promise<ProviderResult> {
+  // interval="7": results from the past 24 hours.
+  return fetchSearch(query, 'interval="7"', () => true, signal);
+}
+
+async function fetchSearch(
+  query: string,
+  interval: string,
+  keep: string | ((title: string) => boolean),
+  signal: AbortSignal,
+): Promise<ProviderResult> {
+  const failed: ProviderResult = { provider: PROVIDER, status: "failed", candidates: [] };
   try {
-    // interval="8": results from the past week.
-    const url = `https://www.bing.com/news/search?q=${encodeURIComponent(terms.join(" "))}&format=rss&qft=${encodeURIComponent('interval="8"')}&setlang=en`;
+    const url = `https://www.bing.com/news/search?q=${encodeURIComponent(query)}&format=rss&qft=${encodeURIComponent(interval)}&setlang=en`;
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; VantageBot/1.0)" },
       signal: until(signal, NEWS_SEARCH_TIMEOUT_MS),
@@ -76,7 +93,7 @@ export async function searchNews(topic: string, signal: AbortSignal = NEVER): Pr
     const xml = await res.text();
     // An error or consent page is HTML, not a feed: that is a failure, not "no coverage".
     if (!/<rss[\s>]/i.test(xml)) return failed;
-    const candidates = parseNewsSearch(xml, topic);
+    const candidates = parseNewsSearch(xml, keep);
     return { provider: PROVIDER, status: candidates.length ? "ok" : "empty", candidates };
   } catch {
     return failed;
