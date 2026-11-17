@@ -28,6 +28,12 @@ export class BriefCache<T> {
     return hit.value;
   }
 
+  /** Like `get`, without counting as a use: looking does not keep an entry alive. */
+  peek(key: string): T | undefined {
+    const hit = this.entries.get(key);
+    return hit && hit.expires > this.now() ? hit.value : undefined;
+  }
+
   set(key: string, value: T) {
     this.entries.delete(key);
     this.entries.set(key, { value, expires: this.now() + this.ttlMs });

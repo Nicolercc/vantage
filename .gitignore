@@ -49,3 +49,8 @@ Thumbs.db
 
 .cache/
 .local/
+
+# Browser test output
+test-results/
+playwright-report/
+blob-report/

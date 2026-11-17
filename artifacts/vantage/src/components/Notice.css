@@ -8,7 +8,7 @@
 
 .ci-notice__eyebrow {
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 12px;
+	font-size: 13px;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	color: var(--text-muted);
@@ -70,7 +70,7 @@
 
 .ci-notice__chip {
 	font-weight: 500;
-	font-size: 14px;
+	font-size: 15px;
 }
 
 .ci-notice a:focus-visible,
@@ -90,7 +90,7 @@
 	background: var(--accent-navy);
 	color: #fff;
 	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: 600;
 	text-decoration: none;
 	transform: translateY(-200%);

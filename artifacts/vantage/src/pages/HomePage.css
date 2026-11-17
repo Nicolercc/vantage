@@ -33,7 +33,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	padding: clamp(5rem, 12vw, 7.5rem) clamp(1.25rem, 4vw, 2rem) clamp(4rem, 8vw, 6rem);
+	padding: clamp(5rem, 12vw, 7.5rem) var(--gutter) clamp(4rem, 8vw, 6rem);
 	overflow: hidden;
 }
 
@@ -61,26 +61,29 @@
 .home-hero__inner {
 	position: relative;
 	z-index: 1;
-	max-width: 720px;
+	max-width: var(--content);
 	margin: 0 auto;
 	width: 100%;
 }
 
 .home-kicker {
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
-	letter-spacing: 0.2em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--home-teal);
 	margin-bottom: 1.25rem;
 	display: flex;
-	align-items: center;
+	/* The dot stays beside the first line, never alone on a line of its own. */
+	align-items: baseline;
 	gap: 0.65rem;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 }
 
 .home-kicker__dot {
+	flex-shrink: 0;
+	transform: translateY(-0.15em);
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
@@ -228,11 +231,11 @@
 }
 
 .home-search__hint {
-	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
-	letter-spacing: 0.06em;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 0.8125rem;
 	color: #6e6964;
-	text-align: center;
+	text-align: left;
+	text-wrap: balance;
 }
 
 /* —— Quick topics —— */
@@ -240,15 +243,16 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
-	justify-content: center;
+	justify-content: flex-start;
 	margin-bottom: 3rem;
 }
 
 .home-chip {
 	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.8125rem;
+	font-size: 0.9375rem;
 	font-weight: 500;
-	padding: 0.4rem 0.85rem;
+	min-height: var(--tap);
+	padding: 0 1rem;
 	border-radius: 999px;
 	border: 1px solid rgba(10, 11, 13, 0.1);
 	background: rgba(255, 255, 255, 0.65);
@@ -264,6 +268,163 @@
 	background: #fff;
 	border-color: rgba(36, 61, 92, 0.25);
 	color: var(--home-blue);
+}
+
+/* —— Today: most covered topics —— */
+.home-today {
+	margin: 0 0 1.75rem;
+	text-align: left;
+}
+
+.home-today__title {
+	font-family: "IBM Plex Mono", ui-monospace, monospace;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: #1e5c52;
+	margin: 0;
+}
+
+.home-today__caption {
+	font-size: 0.875rem;
+	line-height: 1.45;
+	color: #3d3834;
+	margin: 0.25rem 0 0.75rem;
+}
+
+.home-today__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.625rem;
+}
+
+.home-today__card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	height: 100%;
+	min-height: 44px;
+	padding: 0.75rem 0.875rem;
+	border-radius: 12px;
+	border: 1px solid rgba(10, 11, 13, 0.12);
+	background: #ffffff;
+	color: #0a0b0d;
+	text-decoration: none;
+	transition:
+		border-color 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+a.home-today__card:hover {
+	border-color: rgba(36, 61, 92, 0.45);
+	box-shadow: 0 4px 14px rgba(36, 61, 92, 0.1);
+}
+
+.home-today__card--placeholder {
+	min-height: 7.5rem;
+	background: rgba(255, 255, 255, 0.55);
+	border-style: dashed;
+}
+
+.home-today__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.home-today__label {
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.25;
+	overflow-wrap: anywhere;
+}
+
+.home-today__badge {
+	flex-shrink: 0;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	line-height: 1.2;
+	padding: 0.2rem 0.45rem;
+	border-radius: 999px;
+	background: #e8e2d8;
+	color: #2a2624;
+	white-space: nowrap;
+}
+
+.home-today__badge--ready {
+	background: #1e5c52;
+	color: #ffffff;
+}
+
+.home-today__country {
+	font-size: 0.75rem;
+	color: #4f4943;
+}
+
+.home-today__headline {
+	font-size: 0.8125rem;
+	line-height: 1.4;
+	color: #2a2624;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.home-today__meta {
+	margin-top: auto;
+	font-size: 0.75rem;
+	color: #4f4943;
+}
+
+.home-today__more {
+	margin-top: 0.625rem;
+	min-height: 44px;
+	padding: 0 0.875rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #243d5c;
+	background: transparent;
+	border: 1px solid rgba(36, 61, 92, 0.3);
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+/* On a phone the search box must stay near the top: cards drop the sample
+   headline (still read out in each card's label) and tighten up. */
+@media (max-width: 640px) {
+	.home-today {
+		margin-bottom: 1.25rem;
+	}
+
+	.home-today__headline,
+	.home-today__newest {
+		display: none;
+	}
+
+	.home-today__meta {
+		margin-top: 0.25rem;
+	}
+
+	.home-today__card {
+		padding: 0.625rem 0.75rem;
+	}
+
+	.home-today__card--placeholder {
+		min-height: 4.5rem;
+	}
+}
+
+@media (max-width: 340px) {
+	.home-today__list {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
 
 /* —— Feature band —— */
@@ -286,7 +447,7 @@
 
 .home-band__label {
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
 	letter-spacing: 0.18em;
 	text-transform: uppercase;
@@ -386,7 +547,7 @@
 
 .home-strip__meta {
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
 	color: #66615c;
@@ -397,7 +558,7 @@
 	padding: 1.5rem;
 	text-align: center;
 	font-family: "IBM Plex Mono", monospace;
-	font-size: 0.6875rem;
+	font-size: 0.8125rem;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: #66615c;
@@ -446,10 +607,13 @@
 .home-mode {
 	position: relative;
 	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.8125rem;
+	font-size: 0.9375rem;
 	font-weight: 600;
-	padding: 0.45rem 0.95rem;
-	min-height: 24px;
+	padding: 0 1rem;
+	min-height: var(--tap);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	border-radius: 999px;
 	color: var(--home-ink-soft);
 	cursor: pointer;
@@ -500,7 +664,20 @@
 .home-search__error {
 	margin: 0.65rem 0 0;
 	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.875rem;
+	font-size: 0.9375rem;
 	font-weight: 600;
 	color: #9b2c2c;
+}
+
+/* On a phone the mode switch spans the same width as the search box. */
+@media (max-width: 640px) {
+	.home-modes {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		width: 100%;
+	}
+	.home-mode {
+		padding: 0 0.5rem;
+		white-space: nowrap;
+	}
 }
