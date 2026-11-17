@@ -47,7 +47,7 @@ flowchart TD
   D --> E
   E -->|"yes"| Q
   E -->|"no"| F["Concurrency cap · daily generation budget"]
-  F --> G["Retrieval in parallel: 19 RSS feeds · Bing News RSS · Wikipedia · reader's article"]
+  F --> G["Retrieval in parallel: 43 RSS feeds · Bing News RSS · Wikipedia · reader's article"]
   G --> H["Select: topic match · dedupe · cap per outlet · spread countries · ids S1, S2…"]
   H --> I["Claude writer: constant system prompt, sources in the user turn"]
   I --> J["Quote checks, no model: quote is in its source · figures are in the quote · shared vocabulary · two sources for a comparison"]

@@ -1,6 +1,6 @@
 import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
-import { cleanText, topicMatcher, topicTerms, truncate, type Candidate, type ProviderResult } from "../sources";
+import { cleanText, headlineRelevance, topicTerms, truncate, type Candidate, type ProviderResult } from "../sources";
 
 const PROVIDER = "Bing News search";
 export const NEWS_SEARCH_TIMEOUT_MS = 6_000;
@@ -21,7 +21,7 @@ export function articleUrl(link: string): string | null {
 }
 
 export function parseNewsSearch(xml: string, topic: string | ((title: string) => boolean)): Candidate[] {
-  const isAboutTopic = typeof topic === "string" ? topicMatcher(topic) : topic;
+  const relevance = headlineRelevance(topic);
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const raw = doc.rss?.channel?.item;
   const items = (Array.isArray(raw) ? raw : raw ? [raw] : []) as Array<Record<string, unknown>>;
@@ -34,7 +34,8 @@ export function parseNewsSearch(xml: string, topic: string | ((title: string) =>
     if (!title || !url) continue;
     // Headline only, as for feeds: a summary names places in passing ("…as
     // arrivals from Sudan continue" under a headline about South Sudan).
-    if (!isAboutTopic(title)) continue;
+    const score = relevance(title);
+    if (score === 0) continue;
     const date = new Date(text(item["pubDate"]));
     out.push({
       kind: "news",
@@ -49,6 +50,7 @@ export function parseNewsSearch(xml: string, topic: string | ((title: string) =>
       language: "English",
       country: null,
       excerpt: truncate(summary, 320) || null,
+      relevance: score,
     });
   }
   return out;

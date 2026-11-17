@@ -1,14 +1,18 @@
 import { NEVER, until } from "../abort";
 import { XMLParser } from "fast-xml-parser";
-import { cleanText, topicMatcher, truncate, type Candidate, type ProviderResult } from "../sources";
+import { cleanText, headlineRelevance, truncate, type Candidate, type ProviderResult } from "../sources";
 
-export type Feed = { provider: string; publisher: string; country: string | null; url: string };
+/** The kind of news a feed carries. World feeds cover conflicts and foreign news; the others widen general news. */
+export type Desk = "world" | "business" | "technology" | "science" | "national" | "sport";
 
-const feed = (publisher: string, country: string | null, url: string, section = ""): Feed => ({
+export type Feed = { provider: string; publisher: string; country: string | null; url: string; desk: Desk };
+
+const feed = (publisher: string, country: string | null, url: string, section = "", desk: Desk = "world"): Feed => ({
   provider: `${publisher} RSS${section ? ` (${section})` : ""}`,
   publisher,
   country,
   url,
+  desk,
 });
 
 /**
@@ -36,6 +40,34 @@ export const FEEDS: Feed[] = [
   feed("teleSUR", "Venezuela", "https://www.telesurenglish.net/feed/"),
   feed("UN News", "United Nations", "https://news.un.org/feed/subscribe/en/news/all/rss.xml"),
   feed("UN News", "United Nations", "https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml", "Peace and security"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/world/latin_america/rss.xml", "Latin America"),
+
+  // Desks beyond world news, so a business, technology, science, national or
+  // sport story has publisher reporting too. Every brief reads them all (they
+  // are cached like the rest); the headline matcher decides what is relevant.
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/business/rss.xml", "Business", "business"),
+  feed("The Guardian", "United Kingdom", "https://www.theguardian.com/business/rss", "Business", "business"),
+  feed("NPR", "United States", "https://feeds.npr.org/1006/rss.xml", "Business", "business"),
+  feed("South China Morning Post", "Hong Kong", "https://www.scmp.com/rss/92/feed", "Business", "business"),
+  feed("The Hindu", "India", "https://www.thehindu.com/business/feeder/default.rss", "Business", "business"),
+  feed("Dawn", "Pakistan", "https://www.dawn.com/feeds/business", "Business", "business"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/technology/rss.xml", "Technology", "technology"),
+  feed("The Guardian", "United Kingdom", "https://www.theguardian.com/technology/rss", "Technology", "technology"),
+  feed("NPR", "United States", "https://feeds.npr.org/1019/rss.xml", "Technology", "technology"),
+  feed("South China Morning Post", "Hong Kong", "https://www.scmp.com/rss/36/feed", "Technology", "technology"),
+  feed("The Hindu", "India", "https://www.thehindu.com/sci-tech/technology/feeder/default.rss", "Technology", "technology"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml", "Science", "science"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/health/rss.xml", "Health", "science"),
+  feed("NPR", "United States", "https://feeds.npr.org/1128/rss.xml", "Health", "science"),
+  feed("The Guardian", "United Kingdom", "https://www.theguardian.com/science/rss", "Science", "science"),
+  feed("NPR", "United States", "https://feeds.npr.org/1003/rss.xml", "National", "national"),
+  feed("PBS NewsHour", "United States", "https://www.pbs.org/newshour/feeds/rss/headlines", "", "national"),
+  feed("The Guardian", "United Kingdom", "https://www.theguardian.com/us-news/rss", "US", "national"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "US and Canada", "national"),
+  feed("BBC News", "United Kingdom", "https://feeds.bbci.co.uk/news/uk/rss.xml", "UK", "national"),
+  feed("The Hindu", "India", "https://www.thehindu.com/news/national/feeder/default.rss", "National", "national"),
+  feed("BBC Sport", "United Kingdom", "https://feeds.bbci.co.uk/sport/rss.xml", "", "sport"),
+  feed("The Guardian", "United Kingdom", "https://www.theguardian.com/football/rss", "Football", "sport"),
 ];
 
 export const FEED_TIMEOUT_MS = 6_000;
@@ -47,7 +79,7 @@ const text = (v: unknown): string =>
 /** Keep only items about `topic`, or those a given filter accepts (discovery keeps every item). */
 export function parseFeed(xml: string, feed: Feed, topic: string | ((title: string) => boolean)): Candidate[] {
   // A feed is everything the outlet published lately; keep only items about the topic.
-  const isAboutTopic = typeof topic === "string" ? topicMatcher(topic) : topic;
+  const relevance = headlineRelevance(topic);
   const doc = parser.parse(xml) as { rss?: { channel?: { item?: unknown } } };
   const raw = doc.rss?.channel?.item;
   const items = (Array.isArray(raw) ? raw : raw ? [raw] : []) as Array<Record<string, unknown>>;
@@ -59,7 +91,8 @@ export function parseFeed(xml: string, feed: Feed, topic: string | ((title: stri
     const link = text(item["link"]).trim();
     if (!title || !/^https?:\/\//i.test(link)) continue;
     // Headline only: summaries mention places in passing ("…after the Sudan game").
-    if (!isAboutTopic(title)) continue;
+    const score = relevance(title);
+    if (score === 0) continue;
     const date = new Date(text(item["pubDate"]));
     out.push({
       kind: "news",
@@ -71,6 +104,7 @@ export function parseFeed(xml: string, feed: Feed, topic: string | ((title: stri
       language: "English",
       country: feed.country,
       excerpt: excerpt || null,
+      relevance: score,
     });
   }
   return out;
