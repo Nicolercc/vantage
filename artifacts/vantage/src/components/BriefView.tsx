@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import type { IntelligenceBrief } from "@workspace/api-client-react";
 import { InThirtySeconds } from "./InThirtySeconds";
 import { KeyNumbers } from "./KeyNumbers";
+import { bigNumbers } from "@/lib/big-numbers";
 import { TermText, WordsToKnow } from "./Term";
 import "./AnalysisLoader.css";
 import { Shell } from "./Notice";
@@ -184,9 +185,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 	// Each defined term is explained once on the page, at its first appearance.
 	const termsShown = new Set<string>();
+	const hasOrientation = Boolean(briefData.orientation?.inScope);
+	const hasNumbers = bigNumbers(briefData.keyFacts).length > 0;
 	const analysis = adaptBrief(briefData);
 	const regionBits = analysis.region.split("·").map((s) => s.trim());
-	const regionBadge = regionBits[0]?.toUpperCase() ?? "";
+	const regionBadge = regionBits[0] ?? "";
 	const regionSubtitle =
 		regionBits.slice(1).join(" · ").trim() || analysis.location;
 	const hasComparison =
@@ -249,8 +252,9 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								target="_blank"
 								rel="noopener noreferrer"
 								className="ci-actions__btn"
+								aria-label="Report a problem (opens GitHub in a new tab)"
 							>
-								Report a problem
+								Report<span className="ci-actions__more"> a problem</span>
 								<span className="sr-only"> (opens GitHub in a new tab)</span>
 							</a>
 						</div>
@@ -280,22 +284,26 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 						</ul>
 					</nav>
 
-					<ReadingKey />
-
 					<div className="ci-layers">
 						<section id="layer-orient" className="ci-layer" aria-labelledby="layer-orient-h" tabIndex={-1}>
 							<h2 className="ci-layer__title" id="layer-orient-h">
 								In 30 seconds
 							</h2>
-							{briefData.orientation?.inScope ? (
+							{/* The orientation already says what happened; the longer summary then moves to Go deeper. */}
+							{hasOrientation ? (
 								<InThirtySeconds orientation={briefData.orientation} titled={false} glossary={briefData.glossary} used={termsShown} />
+							) : (
+								<Section id="summary" title="What happened" kind="background" startOpen>
+									<p className="ci-summary">
+										<TermText text={analysis.summary} glossary={briefData.glossary} used={termsShown} />
+									</p>
+								</Section>
+							)}
+							{hasNumbers ? (
+								<Section id="numbers" title="Key numbers" kind="sourced" startOpen>
+									<KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} />
+								</Section>
 							) : null}
-							<Section id="summary" title="What happened" kind="background" startOpen>
-								<p className="ci-summary">
-									<TermText text={analysis.summary} glossary={briefData.glossary} used={termsShown} />
-								</p>
-								<KeyNumbers keyFacts={briefData.keyFacts} sources={briefData.sources} />
-							</Section>
 							<PartiesPanel parties={analysis.parties} />
 							{mapped ? (
 								<Section id="map" title="Where this is" kind="background" startOpen>
@@ -317,6 +325,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								The facts
 							</h2>
 							<p className="ci-layer__lede">From reporting retrieved for this brief. Every statement quotes its source.</p>
+							<ReadingKey />
 							<Section id="key-facts" title="Key facts" kind="sourced" startOpen>
 								<p className="ci-section__note">{checkNote(briefData)}</p>
 								<ClaimList
@@ -363,6 +372,13 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								Go deeper
 							</h2>
 							<p className="ci-layer__lede">Background from the model&apos;s general knowledge. Tap a heading to open it.</p>
+							{hasOrientation ? (
+								<Section id="summary" title="The fuller summary" kind="background" collapsible startOpen={false}>
+									<p className="ci-summary">
+										<TermText text={analysis.summary} glossary={briefData.glossary} used={termsShown} />
+									</p>
+								</Section>
+							) : null}
 							{briefData.escalationRisk || analysis.keyQuestion ? (
 								<Section id="assessment" title={conflict ? "Where this could go" : "What to watch"} kind="background" collapsible startOpen={false}>
 									{briefData.escalationRisk ? (

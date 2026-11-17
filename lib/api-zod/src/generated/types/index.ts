@@ -36,5 +36,8 @@ export * from './sourceKind';
 export * from './stakeholder';
 export * from './streamBriefBody';
 export * from './topicType';
+export * from './trendingHeadline';
+export * from './trendingResponse';
+export * from './trendingTopic';
 export * from './verification';
 export * from './verificationStatus';

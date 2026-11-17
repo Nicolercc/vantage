@@ -2,28 +2,18 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import crypto from "crypto";
 import { AnalyzeArticleBody, ExploreConflictBody, StreamBriefBody } from "@workspace/api-zod";
 import { articleSearchTopic, scrapeArticle } from "../brief/article";
-import { buildBrief, type BriefInput, type BriefProgress } from "../brief/generate";
+import { briefFor as briefForState, resolveTopic, type Resolved } from "../brief/brief-for";
 import { upgradeStoredBrief } from "../brief/upgrade";
 import type { BriefState } from "../lib/brief-state";
 import { isBriefId, type StoredBrief } from "../lib/brief-store";
 import { AppError, invalidInput, sendError } from "../lib/errors";
-import { ProgressHub } from "../lib/progress-hub";
 
 const router: IRouter = Router();
 
 const briefState = (req: Request) => req.app.locals["briefs"] as BriefState;
-const progress = new ProgressHub<BriefProgress>();
 
 const firstIssue = (issues: Array<{ path: Array<string | number>; message: string }>) =>
   issues[0] ? `${issues[0].path.join(".") || "body"}: ${issues[0].message}` : "Invalid request.";
-
-type Resolved = { key: string; input: BriefInput };
-
-function resolveTopic(raw: string): Resolved {
-  const topic = raw.trim().replace(/\s+/g, " ");
-  if (topic.length < 3) throw invalidInput("Topic must be at least 3 characters.");
-  return { key: `topic:${topic.toLowerCase()}`, input: { topic } };
-}
 
 async function resolveArticle(article: string | undefined, url: string | undefined): Promise<Resolved> {
   if ((article === undefined) === (url === undefined)) {
@@ -40,35 +30,7 @@ async function resolveArticle(article: string | undefined, url: string | undefin
   };
 }
 
-/**
- * A decline saved before Vantage briefed news beyond conflicts, or one the
- * conflict writer gave without knowing the topic's type. Either may be news
- * that can now be briefed, so it is written again rather than served.
- */
-const isUntypedDecline = (brief: StoredBrief) => {
-  const b = brief as StoredBrief & { inScope?: boolean; topicType?: string };
-  return b.inScope === false && b.topicType === undefined;
-};
-
-/**
- * Serve a brief from this process's cache or the store; otherwise generate it
- * once, however many requests are waiting, and save it so its link keeps working.
- */
-function briefFor(req: Request, { key, input }: Resolved): Promise<StoredBrief> {
-  const { cache, cacheTtlMs, gate, store } = briefState(req);
-  return cache.getOrCreate(key, async () => {
-    const saved = await store.latest(key, cacheTtlMs);
-    if (saved && !isUntypedDecline(saved)) return upgradeStoredBrief(saved);
-    progress.open(key);
-    try {
-      const brief = await gate.run(() => buildBrief(input, (event) => progress.publish(key, event)));
-      await store.save(key, brief);
-      return brief;
-    } finally {
-      progress.close(key);
-    }
-  });
-}
+const briefFor = (req: Request, resolved: Resolved): Promise<StoredBrief> => briefForState(briefState(req), resolved);
 
 /**
  * A brief as sent to a reader, with whether its link will outlive this
@@ -151,7 +113,7 @@ router.post("/stream", async (req: Request, res: Response) => {
 
   // Subscribing after the work starts is fine: the hub replays what was missed.
   const work = briefFor(req, resolved);
-  const unsubscribe = progress.subscribe(resolved.key, ({ type, ...data }) => send(type, data));
+  const unsubscribe = briefState(req).progress.subscribe(resolved.key, ({ type, ...data }) => send(type, data));
   // A comment line every so often keeps idle-connection timeouts from cutting a long wait.
   const heartbeat = setInterval(() => open && res.write(": waiting\n\n"), 15_000);
   try {
