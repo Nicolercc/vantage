@@ -1,0 +1,304 @@
+{
+  "id": "news-helene-recovery",
+  "topic": "Hurricane Helene recovery",
+  "recordedAt": "2026-11-15T20:20:13.969Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "NPR RSS (National)",
+      "publisher": "NPR",
+      "title": "Why the government's Hurricane Helene recovery effort in North Carolina was so slow",
+      "url": "https://npr.org/2026/11/14/nx-s1-6037565/why-the-governments-hurricane-helene-recovery-effort-in-north-carolina-was-so-slow",
+      "publishedAt": "2026-11-14T22:35:16.000Z",
+      "language": "English",
+      "country": "United States",
+      "excerpt": "NPR's Rob Schmitz speaks with Blue Ridge Public Radio's Gerard Albert III about his new podcast A Man-Made Disaster.",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:13.969Z",
+      "text": "Why the government's Hurricane Helene recovery effort in North Carolina was so slow. NPR's Rob Schmitz speaks with Blue Ridge Public Radio's Gerard Albert III about his new podcast A Man-Made Disaster."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "WFAE 90.7",
+      "title": "A Man-Made Disaster: How Trump's administration slowed Hurricane Helene recovery",
+      "url": "https://wfae.org/2026-11-09/manmadedisaster",
+      "publishedAt": "2026-11-09T06:02:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Trump administration policies and Congressional inaction have undermined Hurricane Helene recovery in many parts of Western North Carolina.",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:13.969Z",
+      "text": "A Man-Made Disaster: How Trump's administration slowed Hurricane Helene recovery. Trump administration policies and Congressional inaction have undermined Hurricane Helene recovery in many parts of Western North Carolina."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "WSPA 7News",
+      "title": "Western NC bridge wiped out by Hurricane Helene replaced",
+      "url": "https://msn.com/en-us/news/other/western-nc-bridge-wiped-out-by-hurricane-helene-replaced/ar-AA2huuGa",
+      "publishedAt": "2026-11-15T08:06:22.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "For the first time in over two years, traffic is flowing along a permanent bridge over the Cane River in Burnsville.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:13.969Z",
+      "text": "Western NC bridge wiped out by Hurricane Helene replaced. For the first time in over two years, traffic is flowing along a permanent bridge over the Cane River in Burnsville."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "EducationNC",
+      "title": "Child Care WAGE$ Program receives $11.3 million expansion to aid Hurricane Helene-impacted counties",
+      "url": "https://ednc.org/governor-stein-expands-child-care-program-after-hurricane-helene",
+      "publishedAt": "2026-11-11T14:30:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Gov. Josh Stein announced a $11.3 million expansion of the WAGE$ program to support the early education workforce after Hurricane Helene.",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:13.969Z",
+      "text": "Child Care WAGE$ Program receives $11.3 million expansion to aid Hurricane Helene-impacted counties. Gov. Josh Stein announced a $11.3 million expansion of the WAGE$ program to support the early education workforce after Hurricane Helene."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "Hurricane Helene",
+      "url": "https://en.wikipedia.org/wiki/Hurricane_Helene",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "Hurricane Helene was a powerful and devastating tropical cyclone that caused widespread catastrophic damage and numerous fatalities across the Southeastern United States in late September 2024. It was the strongest hurricane on record to strike the Big Bend region of Florida, the deadliest Atlantic hurricane since…",
+      "text": "Hurricane Helene. Hurricane Helene was a powerful and devastating tropical cyclone that caused widespread catastrophic damage and numerous fatalities across the Southeastern United States in late September 2024. It was the strongest hurricane on record to strike the Big Bend region of Florida, the deadliest Atlantic hurricane since Hurricane Maria in 2017, and the deadliest to strike the mainland U.S. since Hurricane Katrina in 2005.",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:13.969Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 3
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

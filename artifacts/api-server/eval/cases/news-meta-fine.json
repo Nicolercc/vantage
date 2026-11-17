@@ -1,0 +1,416 @@
+{
+  "id": "news-meta-fine",
+  "topic": "Italy fines Meta",
+  "recordedAt": "2026-11-15T20:20:12.378Z",
+  "sources": [
+    {
+      "kind": "news",
+      "provider": "BBC News RSS (Europe)",
+      "publisher": "BBC News",
+      "title": "Italy fines Meta €805m over accessing users' photos",
+      "url": "https://bbc.co.uk/news/articles/cwn83gxemk35o",
+      "publishedAt": "2026-11-14T18:28:06.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "The social media giant is accused of not informing 20 million users it had access to their photos.",
+      "id": "S1",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta €805m over accessing users' photos. The social media giant is accused of not informing 20 million users it had access to their photos."
+    },
+    {
+      "kind": "news",
+      "provider": "teleSUR RSS",
+      "publisher": "teleSUR",
+      "title": "Italy Fines Meta €805 Million for Accessing User Photos Without Permission",
+      "url": "https://telesurenglish.net/italy-fines-meta-e805-million-for-accessing-user-photos-without-permission",
+      "publishedAt": "2026-11-14T15:11:02.000Z",
+      "language": "English",
+      "country": "Venezuela",
+      "excerpt": "The Italian Data Protection Authority has fined Meta Platforms Ireland Limited 805 million euros for accessing photos, videos, and metadata stored on the phones of approximately 20 million users through the Facebook app for Android devices, without specific consent. The penalty, which is equivalent to approximately…",
+      "id": "S2",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy Fines Meta €805 Million for Accessing User Photos Without Permission. The Italian Data Protection Authority has fined Meta Platforms Ireland Limited 805 million euros for accessing photos, videos, and metadata stored on the phones of approximately 20 million users through the Facebook app for Android devices, without specific consent. The penalty, which is equivalent to approximately…"
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Washington Post",
+      "title": "Italy fines Meta $887M for accessing Android users’ photos",
+      "url": "https://washingtonpost.com/technology/2026/11/15/meta-fined-887m-by-italy-accessing-android-users-photos",
+      "publishedAt": "2026-11-15T08:30:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Meta's Facebook app accessed users’ photos and videos on Android devices without “obtaining specific consent,” Italian authorities said.",
+      "id": "S3",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta $887M for accessing Android users’ photos. Meta's Facebook app accessed users’ photos and videos on Android devices without “obtaining specific consent,” Italian authorities said."
+    },
+    {
+      "kind": "news",
+      "provider": "The Guardian RSS (Technology)",
+      "publisher": "The Guardian",
+      "title": "Italy fines Meta $887m for accessing Android users’ photos and videos",
+      "url": "https://theguardian.com/technology/2026/nov/15/italy-fines-meta-887m-for-accessing-android-users-photos-and-videos",
+      "publishedAt": "2026-11-15T02:02:01.000Z",
+      "language": "English",
+      "country": "United Kingdom",
+      "excerpt": "The fine is among the largest an Italian authority has imposed on a tech giant and Meta says it plans to appeal the decision Italy’s data protection agency has fined Facebook parent company Meta €805m ($887m) for accessing users’ photos without their specific consent. Through the Facebook application for Android…",
+      "id": "S4",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta $887m for accessing Android users’ photos and videos. The fine is among the largest an Italian authority has imposed on a tech giant and Meta says it plans to appeal the decision Italy’s data protection agency has fined Facebook parent company Meta €805m ($887m) for accessing users’ photos without their specific consent. Through the Facebook application for Android…"
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "CBS News",
+      "title": "Italy fines Meta $880 million over accessing users' photos",
+      "url": "https://msn.com/en-us/news/other/italy-fines-meta-880-million-over-accessing-users-photos/ar-AA2hrk7X",
+      "publishedAt": "2026-11-14T10:33:08.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "The country's data protection authority said Meta accessed users' photos without their \"specific\" consent.",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta $880 million over accessing users' photos. The country's data protection authority said Meta accessed users' photos without their \"specific\" consent."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Reuters",
+      "title": "Italy fines Meta $887 million over Android users' data access",
+      "url": "https://msn.com/en-us/news/news/italy-fines-meta-887-million-over-android-users-data-access/ar-AA2hroZD",
+      "publishedAt": "2026-11-14T10:11:38.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "MILAN, Nov 14 (Reuters) - Italy's data protection agency said on Saturday it had fined Meta Platforms €805 million ($887 million) after finding the company had accessed Android users' photographs and ...",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta $887 million over Android users' data access. MILAN, Nov 14 (Reuters) - Italy's data protection agency said on Saturday it had fined Meta Platforms €805 million ($887 million) after finding the company had accessed Android users' photographs and ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Yahoo Finance",
+      "title": "Italy Fines Meta €805 Million. Why the Legal Route Matters More Than the Money",
+      "url": "https://finance.yahoo.com/technology/articles/italy-fines-meta-805-million-135324699.html",
+      "publishedAt": "2026-11-15T05:53:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Key TakeawaysItaly fined Meta €805 million (about $887 million) over a Facebook Android feature that accessed users’ photo galleries without specific consent. Meta must switch it off by default within ...",
+      "id": "S7",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy Fines Meta €805 Million. Why the Legal Route Matters More Than the Money. Key TakeawaysItaly fined Meta €805 million (about $887 million) over a Facebook Android feature that accessed users’ photo galleries without specific consent. Meta must switch it off by default within ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Yahoo Finance",
+      "title": "Italy fines Meta $887M over sly access into Android users’ photo galleries",
+      "url": "https://finance.yahoo.com/technology/articles/italy-fines-meta-887m-over-130804106.html",
+      "publishedAt": "2026-11-15T05:07:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Italy announced an €805 million ($887 million) fine against Meta on Saturday for using photos and videos from Android users' galleries on Facebook without specific consent or adequate disclosure.",
+      "id": "S8",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy fines Meta $887M over sly access into Android users’ photo galleries. Italy announced an €805 million ($887 million) fine against Meta on Saturday for using photos and videos from Android users' galleries on Facebook without specific consent or adequate disclosure."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "news.lavx.hu",
+      "title": "Italy Fines Meta €805 Million Over Facebook's Android Gallery Access",
+      "url": "https://news.lavx.hu/article/italy-fines-meta-805-million-over-facebook-s-android-gallery-access",
+      "publishedAt": "2026-11-15T06:30:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Italy's data protection authority fined Meta €805 million over a Facebook for Android feature that suggests photos and videos from users' phone galleries without explicit consent. Meta has 60 days to ...",
+      "id": "S9",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy Fines Meta €805 Million Over Facebook's Android Gallery Access. Italy's data protection authority fined Meta €805 million over a Facebook for Android feature that suggests photos and videos from users' phone galleries without explicit consent. Meta has 60 days to ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "ainvest",
+      "title": "Italy Fined Meta €805 Million. The Fine Is 35 Cents a Share. The Precedent Is the Trade.",
+      "url": "https://ainvest.com/news/italy-fined-meta-805-million-fine-35-cents-share-precedent-trade-2611",
+      "publishedAt": "2026-11-15T06:28:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Italy's data authority fined Meta €805M for default-enabled photo access in its Android app, citing lack of specific user consent.",
+      "id": "S10",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy Fined Meta €805 Million. The Fine Is 35 Cents a Share. The Precedent Is the Trade.. Italy's data authority fined Meta €805M for default-enabled photo access in its Android app, citing lack of specific user consent."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Rio Times",
+      "title": "Italy Fines Meta US$890 Million Over Photos",
+      "url": "https://riotimesonline.com/italy-fines-meta-facebook-android-photo-access",
+      "publishedAt": "2026-11-14T15:30:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Italy’s privacy regulator fined Meta about US$890 million over Facebook photo access on Android. Brazil’s electoral court fined it US$1.3 million.",
+      "id": "S11",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy Fines Meta US$890 Million Over Photos. Italy’s privacy regulator fined Meta about US$890 million over Facebook photo access on Android. Brazil’s electoral court fined it US$1.3 million."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "The Verge",
+      "title": "Italy slaps Meta with $887 million fine.",
+      "url": "https://theverge.com/tech/1033981/italy-slaps-meta-with-887-million-fine",
+      "publishedAt": "2026-11-15T09:23:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "According to the country’s data protection agency, the company accessed Android users’ photos and videos through the Facebook app without consent or notice. In addition to the fine, the agency gave ...",
+      "id": "S12",
+      "retrievedAt": "2026-11-15T20:20:12.378Z",
+      "text": "Italy slaps Meta with $887 million fine.. According to the country’s data protection agency, the company accessed Android users’ photos and videos through the Facebook app without consent or notice. In addition to the fine, the agency gave ..."
+    },
+    {
+      "kind": "reference",
+      "provider": "Wikipedia",
+      "publisher": "Wikipedia",
+      "title": "Meta Platforms",
+      "url": "https://en.wikipedia.org/wiki/Meta_Platforms",
+      "publishedAt": null,
+      "language": "English",
+      "country": null,
+      "excerpt": "Meta Platforms, Inc., headquartered in Menlo Park, California, is an American multinational technology company and is one of the Big Tech companies. Meta owns and operates several prominent social media platforms and communication services, including Facebook, Instagram, WhatsApp, Messenger, and Threads. The company…",
+      "text": "Meta Platforms. Meta Platforms, Inc., headquartered in Menlo Park, California, is an American multinational technology company and is one of the Big Tech companies. Meta owns and operates several prominent social media platforms and communication services, including Facebook, Instagram, WhatsApp, Messenger, and Threads. The company also operates an advertising network for its own sites and third parties; as of 2023, advertising accounted for 97.8% of its total revenue.",
+      "id": "S13",
+      "retrievedAt": "2026-11-15T20:20:12.378Z"
+    }
+  ],
+  "retrieval": [
+    {
+      "provider": "Bing News search",
+      "status": "ok",
+      "count": 9
+    },
+    {
+      "provider": "Al Jazeera RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (World)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Africa)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Middle East)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Europe)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "BBC News RSS (Asia)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "France 24 RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Times of India RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Premium Times RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Africanews RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "AllAfrica RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "teleSUR RSS",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "UN News RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "UN News RSS (Peace and security)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "ok",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "ok",
+      "count": 1
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Wikipedia",
+      "status": "ok",
+      "count": 1
+    }
+  ]
+}

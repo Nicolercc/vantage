@@ -24,7 +24,9 @@ const median = (xs: number[]) => (xs.length ? [...xs].sort((a, b) => a - b)[Math
 const sum = (rows: CaseResult[], f: (r: CaseResult) => number) => rows.reduce((a, r) => a + f(r), 0);
 
 export function renderReport(run: Run): string {
-  const all = run.results;
+  // Headline numbers and limits are for the conflict cohort; news cases get their own section.
+  const all = run.results.filter((r) => (r.cohort ?? "conflict") === "conflict");
+  const newsCases = run.results.filter((r) => r.cohort === "news");
   const inScope = all.filter((r) => r.scope.expected);
   const done = inScope.filter((r) => r.ok);
   const judged = sum(done, (r) => r.judged.supported + r.judged.partly + r.judged.unsupported);
@@ -82,6 +84,26 @@ export function renderReport(run: Run): string {
     "",
   ];
 
+  if (newsCases.length > 0) {
+    const newsDone = newsCases.filter((r) => r.ok && r.scope.expected);
+    const newsJudged = sum(newsDone, (r) => r.judged.supported + r.judged.partly + r.judged.unsupported);
+    lines.push(
+      "## General news (reported; no limits yet)",
+      "",
+      "Topics that are not conflicts. Their numbers are kept apart so they can neither hide a conflict regression nor fail a run before they have a history.",
+      "",
+      `Topic type matched: ${pct(newsCases.filter((r) => r.type.correct).length, newsCases.length)} · briefed: ${pct(newsCases.filter((r) => r.ok && r.scope.correct).length, newsCases.length)} · kept claims fully supported: ${pct(sum(newsDone, (r) => r.judged.supported), newsJudged)} · unsupported: ${pct(sum(newsDone, (r) => r.judged.unsupported), newsJudged)}`,
+      "",
+      "| Case | Type (expected) | Sources | Briefed | Claims kept / proposed | Supported / partly / unsupported | Expected facts | Seconds |",
+      "|---|---|---|---|---|---|---|---|",
+      ...newsCases.map(
+        (r) =>
+          `| ${r.id} | ${r.type.correct ? r.type.got : `**${r.type.got ?? "none"}**`} (${r.type.expected.join(", ")}) | ${r.sources} | ${r.ok ? (r.scope.correct ? "yes" : "**no**") : "**failed**"} | ${r.claims.kept} / ${r.claims.proposed} | ${r.judged.supported} / ${r.judged.partly} / ${r.judged.unsupported} | ${r.expected.total ? `${r.expected.conveyed} / ${r.expected.total}` : "—"} | ${r.seconds.toFixed(0)} |`,
+      ),
+      "",
+    );
+  }
+
   if (run.labelled) {
     const l = run.labelled;
     const caughtByChecks = l.unsupportedTotal - l.unsupportedReachingVerifier;
@@ -103,7 +125,7 @@ export function renderReport(run: Run): string {
   if (dropReasons.size > 0) {
     lines.push("## Why the quote checks discarded claims", "", ...[...dropReasons].sort((a, b) => b[1] - a[1]).map(([k, n]) => `- ${k}: ${n}`), "");
   }
-  const failures = done.flatMap((r) => r.failures.map((f) => ({ ...f, id: r.id })));
+  const failures = [...done, ...newsCases.filter((r) => r.ok)].flatMap((r) => r.failures.map((f) => ({ ...f, id: r.id })));
   if (failures.length > 0) {
     lines.push("## Kept claims the grader did not fully support", "");
     for (const f of failures) lines.push(`- **${f.id}** (${f.verdict}, cites ${f.cites.join(", ")}): ${f.claim}`, `  - ${f.why}`);
@@ -113,7 +135,7 @@ export function renderReport(run: Run): string {
   if (missed.length > 0) lines.push("## Expected facts not conveyed", "", ...missed, "");
   const wrongPins = inScope.filter((r) => r.pin !== "correct").map((r) => `- **${r.id}**: ${r.pin}${r.pinDetail ? ` — ${r.pinDetail}` : ""}`);
   if (wrongPins.length > 0) lines.push("## Main pins that were wrong or missing", "", ...wrongPins, "");
-  const errors = all.filter((r) => !r.ok).map((r) => `- **${r.id}**: ${r.error}`);
+  const errors = run.results.filter((r) => !r.ok).map((r) => `- **${r.id}**: ${r.error}`);
   if (errors.length > 0) lines.push("## Cases that failed to produce a brief", "", ...errors, "");
   return `${lines.join("\n")}\n`;
 }

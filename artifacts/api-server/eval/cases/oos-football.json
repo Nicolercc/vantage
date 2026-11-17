@@ -1,91 +1,161 @@
 {
   "id": "oos-football",
   "topic": "Premier League transfer news",
-  "recordedAt": "2026-10-08T02:52:35.377Z",
+  "recordedAt": "2026-11-15T20:20:15.669Z",
   "sources": [
     {
       "kind": "news",
-      "provider": "Bing News search",
-      "publisher": "Sports Illustrated",
-      "title": "Transfer rumors: Mbappe’s Premier League move; Ballon d’Or winner eyes Real Madrid",
-      "url": "https://msn.com/en-us/news/other/transfer-rumors-mbappe-s-premier-league-move-ballon-d-or-winner-eyes-real-madrid/ar-AA2dMuhS",
-      "publishedAt": "2026-10-07T16:05:00.000Z",
+      "provider": "The Guardian RSS (Football)",
+      "publisher": "The Guardian",
+      "title": "Transfer window verdict: how every Premier League club fared",
+      "url": "https://theguardian.com/football/2026/sep/02/premier-league-transfer-window-club-analysis-summer-2026",
+      "publishedAt": "2026-09-02T08:30:27.000Z",
       "language": "English",
-      "country": null,
-      "excerpt": "Julián Alvarez, Erling Haaland, Luka Modrić, Viktor Gyökeres, Kevin De Bruyne and many more feature in the gossip.",
+      "country": "United Kingdom",
+      "excerpt": "The British transfer record was equalled and one club signed no fewer than 18 players in another hectic summer Bringing in Christos Tzolis, Bruno Guimarães and Ezri Konsa was a strong start to the window but could Arsenal’s failure to sign a marquee attacker cost them in the long run? They began targeting Morgan…",
       "id": "S1",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Transfer rumors: Mbappe’s Premier League move; Ballon d’Or winner eyes Real Madrid. Julián Alvarez, Erling Haaland, Luka Modrić, Viktor Gyökeres, Kevin De Bruyne and many more feature in the gossip."
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Transfer window verdict: how every Premier League club fared. The British transfer record was equalled and one club signed no fewer than 18 players in another hectic summer Bringing in Christos Tzolis, Bruno Guimarães and Ezri Konsa was a strong start to the window but could Arsenal’s failure to sign a marquee attacker cost them in the long run? They began targeting Morgan…"
     },
     {
       "kind": "news",
       "provider": "Bing News search",
       "publisher": "Yahoo Sports",
-      "title": "Liverpool losing £100m transfer battle to Premier League rivals",
-      "url": "https://sports.yahoo.com/articles/liverpool-losing-100m-transfer-battle-125500700.html",
-      "publishedAt": "2026-10-06T05:55:00.000Z",
+      "title": "Premier League giants circle as RB Leipzig face €100m transfer sales",
+      "url": "https://sports.yahoo.com/articles/premier-league-giants-circle-rb-154700796.html",
+      "publishedAt": "2026-11-15T07:47:00.000Z",
       "language": "English",
       "country": null,
-      "excerpt": "Chelsea lead Alex Scott race as Liverpool assess January midfield optionsLiverpool have made a steady start under Andoni Iraola, but recruitment around the centre of the pitch still feels like one of ...",
+      "excerpt": "Premier League clubs are monitoring the situation at RB Leipzig with the club requiring significant sales.Leipzig need to raise more than €100m in gross transfer revenue, a figure that could rise ...",
       "id": "S2",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Liverpool losing £100m transfer battle to Premier League rivals. Chelsea lead Alex Scott race as Liverpool assess January midfield optionsLiverpool have made a steady start under Andoni Iraola, but recruitment around the centre of the pitch still feels like one of ..."
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Premier League giants circle as RB Leipzig face €100m transfer sales. Premier League clubs are monitoring the situation at RB Leipzig with the club requiring significant sales.Leipzig need to raise more than €100m in gross transfer revenue, a figure that could rise ..."
     },
     {
       "kind": "news",
-      "provider": "Bing News search",
-      "publisher": "Yahoo Sports",
-      "title": "Chelsea dealt transfer hammer blow as Premier League star turns down move",
-      "url": "https://sports.yahoo.com/articles/chelsea-dealt-transfer-hammer-blow-185500550.html",
-      "publishedAt": "2026-10-06T11:55:00.000Z",
+      "provider": "The Guardian RSS (Football)",
+      "publisher": "The Guardian",
+      "title": "Women’s transfer window summer 2026: all deals from world’s top six leagues",
+      "url": "https://theguardian.com/football/ng-interactive/2026/sep/01/womens-transfer-window-summer-2026-all-deals-from-worlds-top-six-leagues",
+      "publishedAt": "2026-09-22T08:59:39.000Z",
       "language": "English",
-      "country": null,
-      "excerpt": "JJ Gabriel transfer latest as Chelsea learn Manchester United teenager prefers EuropeChelsea have been dealt an early setback in the race for JJ Gabriel, with the Manchester United teenager now ...",
+      "country": "United Kingdom",
+      "excerpt": "Every deal in the NWSL, WSL, Liga F, Frauen-Bundesliga, Première Ligue and Serie A Femminile as well as a club-by-club guide Men’s transfer window interactive guide Continue reading...",
       "id": "S3",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Chelsea dealt transfer hammer blow as Premier League star turns down move. JJ Gabriel transfer latest as Chelsea learn Manchester United teenager prefers EuropeChelsea have been dealt an early setback in the race for JJ Gabriel, with the Manchester United teenager now ..."
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Women’s transfer window summer 2026: all deals from world’s top six leagues. Every deal in the NWSL, WSL, Liga F, Frauen-Bundesliga, Première Ligue and Serie A Femminile as well as a club-by-club guide Men’s transfer window interactive guide Continue reading..."
     },
     {
       "kind": "news",
       "provider": "Bing News search",
-      "publisher": "ESPN",
-      "title": "Ranking the top 10 Premier League's summer transfers so far",
-      "url": "https://msn.com/en-us/news/other/ranking-the-top-10-premier-leagues-summer-transfers-so-far/ar-AA2dp9LA",
-      "publishedAt": "2026-10-02T01:00:00.000Z",
+      "publisher": "The Mirror",
+      "title": "Man Utd line up Premier League star for January transfer in boost for Mauricio Pochettino",
+      "url": "https://mirror.co.uk/sport/football/transfer-news/man-utd-transfers-pochettino-bassey-37879581",
+      "publishedAt": "2026-11-15T08:24:00.000Z",
       "language": "English",
       "country": null,
-      "excerpt": "Which players have impressed since making a move over the summer? Sometimes a £17 million arrival does better than a £117 million one.",
+      "excerpt": "Mauricio Pochettino will be looking to add new faces to his Manchester United squad in January and the club have their sights set on Fulham's Calvin Bassey after a fine start to the season ...",
       "id": "S4",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Ranking the top 10 Premier League's summer transfers so far. Which players have impressed since making a move over the summer? Sometimes a £17 million arrival does better than a £117 million one."
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Man Utd line up Premier League star for January transfer in boost for Mauricio Pochettino. Mauricio Pochettino will be looking to add new faces to his Manchester United squad in January and the club have their sights set on Fulham's Calvin Bassey after a fine start to the season ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "Football.London",
+      "title": "Tottenham's £50million blow as Premier League duo circle for January transfer",
+      "url": "https://msn.com/en-gb/news/other/tottenhams-50million-blow-as-premier-league-duo-circle-for-january-transfer/ar-AA2htPRQ",
+      "publishedAt": "2026-11-15T06:35:04.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "A pair of Premier League clubs are circling before the winter transfer window with the scale of Tottenham Hotspur's transfer mistake coming into focus ...",
+      "id": "S5",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Tottenham's £50million blow as Premier League duo circle for January transfer. A pair of Premier League clubs are circling before the winter transfer window with the scale of Tottenham Hotspur's transfer mistake coming into focus ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "GOAL",
+      "title": "Why Premier League suitors of Khvicha Kvaratskhelia face transfer frustration despite boasting ‘crazy’ funds required to lure winger away from PSG",
+      "url": "https://msn.com/en-gb/news/other/why-premier-league-suitors-of-khvicha-kvaratskhelia-face-transfer-frustration-despite-boasting-crazy-funds-required-to-lure-winger-away-from-psg/ar-AA2hh2Qw",
+      "publishedAt": "2026-11-12T01:03:05.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Any Premier League suitors of exciting Georgian winger Khvicha Kvaratskhelia have been warned that they face transfer frustration on that front, with ex-Paris Saint-Germain star Youssouf Mulumbu ...",
+      "id": "S6",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Why Premier League suitors of Khvicha Kvaratskhelia face transfer frustration despite boasting ‘crazy’ funds required to lure winger away from PSG. Any Premier League suitors of exciting Georgian winger Khvicha Kvaratskhelia have been warned that they face transfer frustration on that front, with ex-Paris Saint-Germain star Youssouf Mulumbu ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "besoccer",
+      "title": "Premier League 2026/27: Latest news, transfers, rumours and updates",
+      "url": "https://besoccer.com/new/premier-league-202627-latest-news-transfers-rumours-and-updates-1421561",
+      "publishedAt": "2026-11-12T10:25:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "The 2026/27 Premier League season is under way, with England's top-flight clubs battling it out both on and off the pitch. Follow all the latest news, results, transfer developments, rumours and ...",
+      "id": "S7",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Premier League 2026/27: Latest news, transfers, rumours and updates. The 2026/27 Premier League season is under way, with England's top-flight clubs battling it out both on and off the pitch. Follow all the latest news, results, transfer developments, rumours and ..."
     },
     {
       "kind": "news",
       "provider": "Bing News search",
       "publisher": "Sports Mole",
-      "title": "Man Utd transfer news: Red Devils face 'fierce' Liverpool battle to sign £60m-rated Premier League star",
-      "url": "https://sportsmole.co.uk/football/man-utd/transfer-talk/news/man-utd-face-fierce-liverpool-battle-in-tussle-for-gbp60m-rated-prem-star_606413.html",
-      "publishedAt": "2026-10-07T18:35:00.000Z",
+      "title": "Spurs transfer news: Roberto De Zerbi to be 'blocked' from signing Premier League striker",
+      "url": "https://sportsmole.co.uk/football/spurs/transfer-talk/news/spurs-to-be-blocked-from-signing-premier-league-striker_609156.html",
+      "publishedAt": "2026-11-15T06:48:00.000Z",
       "language": "English",
       "country": null,
-      "excerpt": "Manchester United are reportedly preparing for a fierce challenge from domestic rivals Liverpool as they continue their pursuit of Bournemouth defender Adrien Truffert. The highly regarded France ...",
-      "id": "S5",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Man Utd transfer news: Red Devils face 'fierce' Liverpool battle to sign £60m-rated Premier League star. Manchester United are reportedly preparing for a fierce challenge from domestic rivals Liverpool as they continue their pursuit of Bournemouth defender Adrien Truffert. The highly regarded France ..."
+      "excerpt": "Tottenham Hotspur will allegedly be blocked from signing a Premier League striker during the 2027 transfer windows.",
+      "id": "S8",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Spurs transfer news: Roberto De Zerbi to be 'blocked' from signing Premier League striker. Tottenham Hotspur will allegedly be blocked from signing a Premier League striker during the 2027 transfer windows."
     },
     {
       "kind": "news",
       "provider": "Bing News search",
-      "publisher": "footballtransfers",
-      "title": "Premier League Transfer News",
-      "url": "https://footballtransfers.com/en/transfer-news/uk-premier-league",
-      "publishedAt": "2026-10-06T17:00:00.000Z",
+      "publisher": "Sunderland Echo",
+      "title": "When does the January transfer window open for business for Premier League clubs after big summer net spend",
+      "url": "https://msn.com/en-gb/news/other/when-does-the-january-transfer-window-open-for-business-for-premier-league-clubs-after-big-summer-net-spend/ar-AA2hpwQ1",
+      "publishedAt": "2026-11-14T01:00:37.000Z",
       "language": "English",
       "country": null,
-      "excerpt": "Our goal is simple - to become the #1 multi-language transfers source in the football world, serving the football fan their direct desire for everything around the most popular subject in football: ...",
-      "id": "S6",
-      "retrievedAt": "2026-10-08T02:52:35.376Z",
-      "text": "Premier League Transfer News. Our goal is simple - to become the #1 multi-language transfers source in the football world, serving the football fan their direct desire for everything around the most popular subject in football: ..."
+      "excerpt": "The January transfer window is always a hectic period for clubs across the Premier League and the EFL.",
+      "id": "S9",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "When does the January transfer window open for business for Premier League clubs after big summer net spend. The January transfer window is always a hectic period for clubs across the Premier League and the EFL."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "BBC",
+      "title": "Gossip: Gusto attracting Premier League interest",
+      "url": "https://bbc.com/sport/football/articles/ckdd143d6yylo",
+      "publishedAt": "2026-11-13T01:04:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Manchester United and Manchester City are set to battle it out for 23-year-old Chelsea and France defender Malo Gusto. (Talksport), external Want more transfer stories? Read Friday's full gossip colum ...",
+      "id": "S10",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Gossip: Gusto attracting Premier League interest. Manchester United and Manchester City are set to battle it out for 23-year-old Chelsea and France defender Malo Gusto. (Talksport), external Want more transfer stories? Read Friday's full gossip colum ..."
+    },
+    {
+      "kind": "news",
+      "provider": "Bing News search",
+      "publisher": "FootballFanCast",
+      "title": "Newcastle and Everton racing to sign £25,000-a-week Premier League star",
+      "url": "https://footballfancast.com/newcastle-and-everton-now-racing-jack-rudoni-transfer-news",
+      "publishedAt": "2026-11-15T04:41:00.000Z",
+      "language": "English",
+      "country": null,
+      "excerpt": "Dominic is a football journalist at Football FanCast with experience in breaking news, Premier League transfer reporting and coverage across the English football pyramid. A graduate of the University ...",
+      "id": "S11",
+      "retrievedAt": "2026-11-15T20:20:15.668Z",
+      "text": "Newcastle and Everton racing to sign £25,000-a-week Premier League star. Dominic is a football journalist at Football FanCast with experience in breaking news, Premier League transfer reporting and coverage across the English football pyramid. A graduate of the University ..."
     },
     {
       "kind": "reference",
@@ -98,15 +168,15 @@
       "country": null,
       "excerpt": "The 2026–27 Premier League is the 35th season of the Premier League and the 128th season of top-flight English football overall. The season began on 21 August 2026 and is scheduled to conclude on 30 May 2027. The full list of fixtures was released at 10:00 BST on 19 June 2026.",
       "text": "2026–27 Premier League. The 2026–27 Premier League is the 35th season of the Premier League and the 128th season of top-flight English football overall. The season began on 21 August 2026 and is scheduled to conclude on 30 May 2027. The full list of fixtures was released at 10:00 BST on 19 June 2026.",
-      "id": "S7",
-      "retrievedAt": "2026-10-08T02:52:35.376Z"
+      "id": "S12",
+      "retrievedAt": "2026-11-15T20:20:15.668Z"
     }
   ],
   "retrieval": [
     {
       "provider": "Bing News search",
       "status": "ok",
-      "count": 6
+      "count": 9
     },
     {
       "provider": "Al Jazeera RSS",
@@ -202,6 +272,126 @@
       "provider": "UN News RSS (Peace and security)",
       "status": "empty",
       "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Latin America)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "Dawn RSS (Business)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "South China Morning Post RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (Technology)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (Health)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Science)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "NPR RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "PBS NewsHour RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (US)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (US and Canada)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC News RSS (UK)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Hindu RSS (National)",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "BBC Sport RSS",
+      "status": "empty",
+      "count": 0
+    },
+    {
+      "provider": "The Guardian RSS (Football)",
+      "status": "ok",
+      "count": 2
     },
     {
       "provider": "Wikipedia",
