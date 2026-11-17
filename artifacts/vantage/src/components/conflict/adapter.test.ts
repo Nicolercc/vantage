@@ -98,3 +98,30 @@ describe("uniqueParties", () => {
 		]);
 	});
 });
+
+describe("adaptBrief for news that is not a conflict", () => {
+  it("adapts a brief with no conflict sections", () => {
+    const b = brief({ topicType: "technology", relatedEvents: [] });
+    for (const key of ["perspectives", "escalationRisk", "escalationReason", "affectedPopulation", "casualtyData"] as const) {
+      delete (b as Record<string, unknown>)[key];
+    }
+    const a = adaptBrief(b);
+    expect(a.escalationLevel).toBeNull();
+    expect(a.escalationTag).toBe("");
+    expect(a.perspectives).toEqual([]);
+  });
+
+  it("draws an outage or an announcement as a plain place, not a strike", () => {
+    const event = { date: "Nov 2026", title: "Booking system fails", description: "d", place: "Atlanta, United States", lat: 33.75, lng: -84.39, searchQuery: "q" };
+    const a = adaptBrief(
+      brief({
+        relatedEvents: [
+          { ...event, type: "incident" },
+          { ...event, type: "announcement" },
+        ],
+      }),
+    );
+    expect(a.mapEvents.slice(1).map((m) => m.type)).toEqual(["city", "city"]);
+    expect(a.timeline.map((t) => t.type)).toEqual(["event", "now"]);
+  });
+});

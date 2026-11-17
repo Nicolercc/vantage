@@ -1,5 +1,6 @@
 export type EscalationLevel = 'Low' | 'Medium' | 'High';
-export type TimelineEventType = 'strike' | 'escalation' | 'negotiation' | 'now';
+/** 'event' is any timeline entry that is not part of a conflict (an outage, an announcement). */
+export type TimelineEventType = 'strike' | 'escalation' | 'negotiation' | 'event' | 'now';
 export type MapEventType = 'strike' | 'city' | 'talks';
 
 export interface ConflictAnalysis {
@@ -10,7 +11,8 @@ export interface ConflictAnalysis {
   publishedAt: string;
   summary: string;
   keyQuestion: string;
-  escalationLevel: EscalationLevel;
+  /** Conflict briefs only; null for any other news. */
+  escalationLevel: EscalationLevel | null;
   escalationTag: string;
   /** Counts of articles actually returned by retrieval. */
   coverage: Coverage;

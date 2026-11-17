@@ -38,6 +38,18 @@ export const BRIEF_DEADLINE_MS =
   GEOCODER_BUDGET_MS +
   5_000;
 
+/**
+ * The stored contract leaves the conflict sections optional, because briefs on
+ * other news have none. A conflict brief must still have every one of them.
+ */
+export const ConflictBrief = ExploreConflictResponse.required({
+  perspectives: true,
+  escalationRisk: true,
+  escalationReason: true,
+  affectedPopulation: true,
+  casualtyData: true,
+});
+
 const timedOut = () => new AppError(504, "TIMED_OUT", "This brief took too long to prepare. Please try again.");
 
 const providerUnavailable = (cause: unknown) =>
@@ -204,7 +216,7 @@ async function generateOnce(coverage: Coverage, userMessage: string, onProgress:
     casualty["civilianImpact"],
     casualty["allSides"],
   ]);
-  const checked = ExploreConflictResponse.safeParse({ ...candidate, glossary });
+  const checked = ConflictBrief.safeParse({ ...candidate, glossary });
   if (!checked.success) {
     throw new Error(`brief failed contract: ${checked.error.issues.slice(0, 5).map((i) => `${i.path.join(".")} ${i.message}`).join("; ")}`);
   }

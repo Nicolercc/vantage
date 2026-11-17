@@ -42,6 +42,26 @@ const TYPE_META: Record<
 		color: "#9B7BC8",
 		short: "Political or institutional move",
 	},
+	incident: {
+		label: "Incident",
+		color: "#B5651D",
+		short: "Outage, accident or disruption",
+	},
+	announcement: {
+		label: "Announcement",
+		color: "#5B7A99",
+		short: "Statement or launch",
+	},
+	decision: {
+		label: "Decision",
+		color: "#6B6B8E",
+		short: "Ruling, vote or official decision",
+	},
+	other: {
+		label: "Event",
+		color: "#777777",
+		short: "Related development",
+	},
 };
 
 const HUB_COLOR = "#1a3a52";

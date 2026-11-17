@@ -4,17 +4,20 @@ import type { ConflictAnalysis, MapEvent, MapEventType, TimelineEventType } from
 const PARTY_COLORS = ['#3B78D4', '#4A9B8B', '#C2536A', '#E07B39', '#9B7BC8', '#888888'];
 const PERSPECTIVE_COLORS = ['#3B78D4', '#C2536A', '#E07B39', '#9B7BC8', '#4A9B8B'];
 
+/** Only a strike or an escalation is drawn as one; an outage or an announcement is a plain place. */
 function toMapEventType(type: string): MapEventType {
   if (type === 'negotiation') return 'talks';
-  if (type === 'humanitarian' || type === 'political') return 'city';
-  return 'strike';
+  if (type === 'strike' || type === 'escalation') return 'strike';
+  return 'city';
 }
+
+const CONFLICT_EVENT_TYPES = new Set(['strike', 'escalation', 'negotiation', 'humanitarian', 'political']);
 
 function toTimelineType(type: string): TimelineEventType {
   if (type === 'strike' || type === 'escalation' || type === 'negotiation') {
     return type as TimelineEventType;
   }
-  return 'escalation';
+  return CONFLICT_EVENT_TYPES.has(type) ? 'escalation' : 'event';
 }
 
 /** A place is plotted only when both coordinates are known. */
@@ -75,8 +78,8 @@ export function adaptBrief(brief: IntelligenceBrief): ConflictAnalysis {
     publishedAt: brief.generatedAt,
     summary: brief.summary,
     keyQuestion: brief.keyQuestion,
-    escalationLevel: brief.escalationRisk,
-    escalationTag: brief.escalationReason,
+    escalationLevel: brief.escalationRisk ?? null,
+    escalationTag: brief.escalationReason ?? '',
     coverage: {
       articles: news.length,
       outlets: new Set(news.map((s) => s.publisher)).size,
@@ -95,7 +98,7 @@ export function adaptBrief(brief: IntelligenceBrief): ConflictAnalysis {
       lat: e.lat,
       lng: e.lng,
     })),
-    perspectives: brief.perspectives.map((p, i) => ({
+    perspectives: (brief.perspectives ?? []).map((p, i) => ({
       label: p.alignment.replace(' ', '\u00A0'),
       actor: p.actor,
       color: PERSPECTIVE_COLORS[i % PERSPECTIVE_COLORS.length],

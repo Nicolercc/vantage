@@ -14,6 +14,10 @@ const TYPE_LABELS: Record<string, string> = {
 	negotiation: "Negotiation",
 	humanitarian: "Humanitarian",
 	political: "Political",
+	incident: "Incident",
+	announcement: "Announcement",
+	decision: "Decision",
+	other: "Event",
 };
 
 export function EventTimeline({

@@ -118,6 +118,14 @@ describe("POST /api/intelligence/explore — trust contract", () => {
     expect(res.body.error).toBe("MODEL_OUTPUT_INVALID");
   });
 
+  it("rejects a conflict brief that leaves out a conflict section, though the stored contract allows it", async () => {
+    const { perspectives: _perspectives, ...withoutPerspectives } = modelBrief();
+    create.mockImplementation(async () => modelText(JSON.stringify(withoutPerspectives)));
+    const res = await explore("Sudan humanitarian access");
+    expect(res.status).toBe(502);
+    expect(res.body.error).toBe("MODEL_OUTPUT_INVALID");
+  });
+
   it("drops a model-invented credibility score", async () => {
     modelAnswers(
       modelBrief({ credibility: { score: 82, label: "High", reason: "r" } }),
