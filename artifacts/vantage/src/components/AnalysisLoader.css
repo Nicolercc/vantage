@@ -11,7 +11,7 @@
 		color-mix(in srgb, var(--accent-navy) 7%, transparent),
 		transparent 60%
 	);
-	padding: 24px 16px 64px;
+	padding: 24px var(--gutter) 64px;
 	box-sizing: border-box;
 }
 
@@ -26,7 +26,7 @@
 
 .al__eyebrow {
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 500;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
@@ -97,7 +97,7 @@
 	border: 2px solid var(--border-medium);
 	background: var(--bg-surface);
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 600;
 	color: var(--text-muted);
 	transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
@@ -216,7 +216,7 @@
 }
 
 .ci-place-map .leaflet-control-attribution {
-	font-size: 10px;
+	font-size: 13px;
 }
 
 /* Sources as they are found */
@@ -239,7 +239,7 @@
 
 .al-sources__publisher {
 	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 12px;
+	font-size: 13px;
 	letter-spacing: 0.04em;
 	color: var(--accent-navy);
 }
@@ -252,7 +252,7 @@
 }
 
 .al-sources__when {
-	font-size: 12px;
+	font-size: 13px;
 	color: var(--text-muted);
 }
 

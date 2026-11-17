@@ -25,7 +25,8 @@ import type {
   ExploreConflictBody,
   HealthStatus,
   IntelligenceBrief,
-  StreamBriefBody
+  StreamBriefBody,
+  TrendingResponse
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -269,6 +270,84 @@ export function useGetBrief<TData = Awaited<ReturnType<typeof getBrief>>, TError
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetBriefQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetTrendingUrl = () => {
+
+
+
+
+  return `/api/trending`
+}
+
+/**
+ * Worked out from headlines alone, with no model call: which places recent conflict and crisis headlines name, ranked by how many different outlets named each one, newer coverage counting more. Refreshed on a schedule. Topics is empty when there is no recent enough ranking.
+ * @summary The conflict and crisis places most covered in the last 24 hours
+ */
+export const getTrending = async ( options?: RequestInit): Promise<TrendingResponse> => {
+
+  return customFetch<TrendingResponse>(getGetTrendingUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTrendingQueryKey = () => {
+    return [
+    `/api/trending`
+    ] as const;
+    }
+
+
+export const getGetTrendingQueryOptions = <TData = Awaited<ReturnType<typeof getTrending>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTrending>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTrendingQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTrending>>> = ({ signal }) => getTrending({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTrending>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTrendingQueryResult = NonNullable<Awaited<ReturnType<typeof getTrending>>>
+export type GetTrendingQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary The conflict and crisis places most covered in the last 24 hours
+ */
+
+export function useGetTrending<TData = Awaited<ReturnType<typeof getTrending>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTrending>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTrendingQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

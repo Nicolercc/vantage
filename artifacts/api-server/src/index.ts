@@ -35,9 +35,11 @@ const server = app.listen(port, '0.0.0.0', (err) => {
   }
 
   logger.info({ port }, "Server listening");
+  app.locals["trending"].start();
 });
 
 const shutdown = () => {
+  app.locals["trending"].stop();
   server.close(() => {
     logger.info("Server closed cleanly");
     process.exit(0);
