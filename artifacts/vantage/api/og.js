@@ -1,6 +1,7 @@
 import { ImageResponse } from "@vercel/og";
 import { clip, coverageLine, SITE_NAME } from "./_preview.js";
 import { loadBrief } from "./_brief.js";
+import { loadSample } from "./_samples.js";
 
 export const config = { runtime: "edge" };
 
@@ -42,7 +43,8 @@ function card(brief) {
 
 /** @param {Request} request */
 export default async function handler(request) {
-	const brief = await loadBrief(new URL(request.url).searchParams.get("id"));
+	const params = new URL(request.url).searchParams;
+	const brief = params.has("sample") ? loadSample(params.get("sample")) : await loadBrief(params.get("id"));
 	const image = new ImageResponse(card(brief), { width: 1200, height: 630 });
 	// The library marks every image as cacheable for a year. A brief's card may
 	// be kept that long; the fallback must not be, because a brief can be

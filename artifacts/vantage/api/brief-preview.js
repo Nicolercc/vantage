@@ -1,19 +1,23 @@
 import { previewHtml } from "./_preview.js";
 import { loadBrief } from "./_brief.js";
+import { loadSample } from "./_samples.js";
 
 export const config = { runtime: "edge" };
 
 /**
- * /brief/<id> as link-preview crawlers see it (vercel.json sends only them
- * here). People get the app itself; this page has the same address, the
- * brief's headline and summary as preview tags, and no script.
+ * /brief/<id> and /sample/<slug> as link-preview crawlers see them
+ * (vercel.json sends only them here). People get the app itself; this page
+ * has the same address, the brief's headline and summary as preview tags,
+ * and no script. A sample never touches the API, so its preview works even
+ * while the API is asleep.
  * @param {Request} request
  */
 export default async function handler(request) {
 	const url = new URL(request.url);
+	const slug = url.searchParams.get("sample");
 	const id = url.searchParams.get("id");
-	const brief = await loadBrief(id);
-	const path = id ? `/brief/${encodeURIComponent(id)}` : "/";
+	const brief = slug !== null ? loadSample(slug) : await loadBrief(id);
+	const path = slug ? `/sample/${encodeURIComponent(slug)}` : id ? `/brief/${encodeURIComponent(id)}` : "/";
 	return new Response(previewHtml(brief, url.origin, path), {
 		status: 200,
 		headers: {

@@ -41,19 +41,20 @@ describe("homepage text", () => {
 		expect(contrast(color, token(background))).toBeGreaterThanOrEqual(4.5);
 	});
 
-	// Today cards are white; their badges carry their own backgrounds.
+	// The Start here card is white; its pill carries its own background.
+	// Today rows and labels sit on the hero's sand.
 	it.each([
-		[".home-today__label", "#ffffff"],
-		[".home-today__headline", "#ffffff"],
-		[".home-today__country", "#ffffff"],
-		[".home-today__meta", "#ffffff"],
-		[".home-today__badge", prop(rule(".home-today__badge"), "background")!],
-		[".home-today__badge--ready", prop(rule(".home-today__badge--ready"), "background")!],
-		[".home-today__caption", "--home-sand-deep"],
-		[".home-today__title", "--home-sand-deep"],
+		[".home-start__meta", "#ffffff"],
+		[".home-start__headline", "#ffffff"],
+		[".home-start__why", "#ffffff"],
+		[".home-start__go", "#ffffff"],
+		[".home-start__pill", prop(rule(".home-start__pill"), "background")!],
+		[".home-start__pill--old", prop(rule(".home-start__pill--old"), "background")!],
+		[".home-today__row", "--home-sand-deep"],
+		[".home-today__when", "--home-sand-deep"],
+		[".home-paste", "--home-sand-deep"],
 	])("%s meets 4.5:1 against %s", (selector, background) => {
-		const block = rule(selector);
-		const color = prop(block, "color") ?? prop(rule(".home-today__card"), "color")!;
+		const color = prop(rule(selector), "color")!;
 		const bg = background.startsWith("--") ? token(background) : background;
 		expect(contrast(color, bg)).toBeGreaterThanOrEqual(4.5);
 	});

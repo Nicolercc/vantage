@@ -879,8 +879,19 @@ span.ci-source__title {
 	list-style: none;
 	overflow-x: auto;
 	scrollbar-width: none;
-	/* Fades at the right edge so a cut-off item reads as 'scroll for more'. */
-	mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+
+/* A fade on each side that still hides items, so a cut-off tab reads as 'scroll for more'. */
+.ci-nav__list[data-hidden="right"] {
+	mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+}
+
+.ci-nav__list[data-hidden="left"] {
+	mask-image: linear-gradient(to left, #000 calc(100% - 56px), transparent);
+}
+
+.ci-nav__list[data-hidden="both"] {
+	mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent);
 }
 
 .ci-nav__list::-webkit-scrollbar {
@@ -1125,44 +1136,6 @@ span.ci-source__title {
 	font-size: 15px;
 	line-height: 1.5;
 	color: var(--text-secondary);
-}
-
-/* Key numbers: big figures from checked facts */
-.ci-numbers {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	gap: 12px;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-.ci-numbers__item {
-	display: grid;
-	gap: 6px;
-	padding: 14px 16px;
-	/* The section's rule already frames these; no second border. */
-	background: var(--bg-surface);
-	border: 0;
-	border-radius: 12px;
-}
-
-.ci-numbers__figure {
-	font-family: "Newsreader", Georgia, serif;
-	font-size: clamp(32px, 7vw, 44px);
-	line-height: 1;
-	color: var(--accent-navy);
-	font-variant-numeric: tabular-nums;
-}
-
-.ci-numbers__caption {
-	font-size: 15px;
-	line-height: 1.45;
-	color: var(--text-secondary);
-}
-
-.ci-numbers {
-	margin-top: 4px;
 }
 
 /* Three layers, one reading column */
@@ -1444,4 +1417,171 @@ span.ci-source__title {
 /* A folded section's heading row is a full touch target. */
 .ci-section__head--toggle {
 	min-height: var(--tap);
+}
+
+/* Sample brief: dated, reviewed, never updated */
+.ci-sample-banner {
+	margin: 0 calc(-1 * var(--gutter)) 14px;
+	padding: 10px var(--gutter);
+	background: var(--accent-navy-light);
+	color: var(--accent-navy);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+/* A full-height, underlined link: distinct from the sentence and easy to tap. */
+.ci-footnote a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+	color: var(--accent-navy);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* The share action sits on the region row, at the right edge. */
+.ci-hero__share {
+	margin-left: auto;
+}
+
+/* "In 30 seconds" carries its source label on the same line. */
+.ci-layer__title--marked {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+}
+
+.ci-layer__mark {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text-muted);
+}
+
+.ci-layer .ci-thirty {
+	padding: 4px 0 0;
+	background: none;
+}
+
+.ci-thirty__row dd {
+	font-size: 17px;
+}
+
+/* "See source quote": the visible way to the evidence for the first checked fact */
+.ci-quote {
+	margin-top: 10px;
+}
+
+.ci-quote__toggle,
+.ci-quote__hide {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: var(--tap);
+	padding: 0 14px;
+	border-radius: 10px;
+	font: 600 15px "Plus Jakarta Sans", system-ui, sans-serif;
+	cursor: pointer;
+}
+
+.ci-quote__toggle {
+	border: 1px solid var(--accent-navy);
+	background: var(--bg-surface);
+	color: var(--accent-navy);
+}
+
+.ci-quote__hide {
+	margin-top: 10px;
+	border: 1px solid var(--border-light);
+	background: var(--bg-surface);
+	color: var(--text-primary);
+}
+
+.ci-quote__toggle:focus-visible,
+.ci-quote__hide:focus-visible,
+.ci-quote__panel a:focus-visible {
+	outline: 2px solid var(--accent-navy);
+	outline-offset: 2px;
+}
+
+.ci-quote__panel {
+	display: grid;
+	gap: 8px;
+	margin-top: 10px;
+	padding: 14px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-light);
+	border-radius: 12px;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.ci-quote__panel[hidden] {
+	display: none;
+}
+
+.ci-quote__panel > span {
+	display: block;
+}
+
+.ci-quote__panel .ci-cite-pop__quote q {
+	display: block;
+	font-family: "Newsreader", Georgia, serif;
+	font-style: italic;
+	font-size: 17px;
+	border-left: 3px solid var(--accent-navy);
+	padding-left: 12px;
+}
+
+.ci-quote__panel .ci-cite-pop__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+}
+
+.ci-quote__panel .ci-cite-pop__links a {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+	color: var(--accent-navy);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.ci-cite-pop__none {
+	color: var(--text-muted);
+}
+
+/* Labels are words, not data: sentence case, sans, no tracking (DESIGN.md).
+   Mono stays only on data tags such as map labels. */
+.ci-thirty__row dt,
+.ci-compare__head,
+.ci-section__head--toggle::after,
+.ci-assessment__label,
+.ci-perspective__alignment,
+.ci-cite-pop__quote-label {
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+/* A fact's key figure, bold where the fact already says it */
+.ci-claim__figure {
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.ci-section__lede {
+	margin: -4px 0 12px;
+	font: 500 14px/1.45 "Plus Jakarta Sans", system-ui, sans-serif;
+	color: var(--text-muted);
 }

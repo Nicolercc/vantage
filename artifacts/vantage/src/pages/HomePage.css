@@ -29,11 +29,10 @@
 .home-hero {
 	position: relative;
 	isolation: isolate;
-	min-height: min(calc(100vh - 56px), 900px);
+	/* Content-height: the search and the ready story start near the top, not mid-screen. */
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	padding: clamp(5rem, 12vw, 7.5rem) var(--gutter) clamp(4rem, 8vw, 6rem);
+	padding: calc(56px + 22px) var(--gutter) clamp(3rem, 6vw, 5rem);
 	overflow: hidden;
 }
 
@@ -244,7 +243,7 @@
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	justify-content: flex-start;
-	margin-bottom: 3rem;
+	margin-bottom: 1rem;
 }
 
 .home-chip {
@@ -270,119 +269,6 @@
 	color: var(--home-blue);
 }
 
-/* —— Today: most covered topics —— */
-.home-today {
-	margin: 0 0 1.75rem;
-	text-align: left;
-}
-
-.home-today__title {
-	font-family: "IBM Plex Mono", ui-monospace, monospace;
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: #1e5c52;
-	margin: 0;
-}
-
-.home-today__caption {
-	font-size: 0.875rem;
-	line-height: 1.45;
-	color: #3d3834;
-	margin: 0.25rem 0 0.75rem;
-}
-
-.home-today__list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.625rem;
-}
-
-.home-today__card {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	height: 100%;
-	min-height: 44px;
-	padding: 0.75rem 0.875rem;
-	border-radius: 12px;
-	border: 1px solid rgba(10, 11, 13, 0.12);
-	background: #ffffff;
-	color: #0a0b0d;
-	text-decoration: none;
-	transition:
-		border-color 0.15s ease,
-		box-shadow 0.15s ease;
-}
-
-a.home-today__card:hover {
-	border-color: rgba(36, 61, 92, 0.45);
-	box-shadow: 0 4px 14px rgba(36, 61, 92, 0.1);
-}
-
-.home-today__card--placeholder {
-	min-height: 7.5rem;
-	background: rgba(255, 255, 255, 0.55);
-	border-style: dashed;
-}
-
-.home-today__head {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 0.5rem;
-}
-
-.home-today__label {
-	font-size: 1rem;
-	font-weight: 700;
-	line-height: 1.25;
-	overflow-wrap: anywhere;
-}
-
-.home-today__badge {
-	flex-shrink: 0;
-	font-size: 0.6875rem;
-	font-weight: 600;
-	line-height: 1.2;
-	padding: 0.2rem 0.45rem;
-	border-radius: 999px;
-	background: #e8e2d8;
-	color: #2a2624;
-	white-space: nowrap;
-}
-
-.home-today__badge--ready {
-	background: #1e5c52;
-	color: #ffffff;
-}
-
-.home-today__country {
-	font-size: 0.75rem;
-	color: #4f4943;
-}
-
-.home-today__headline {
-	font-size: 0.8125rem;
-	line-height: 1.4;
-	color: #2a2624;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-}
-
-.home-today__meta {
-	margin-top: auto;
-	font-size: 0.75rem;
-	color: #4f4943;
-}
-
 .home-today__more {
 	margin-top: 0.625rem;
 	min-height: 44px;
@@ -394,37 +280,6 @@ a.home-today__card:hover {
 	border: 1px solid rgba(36, 61, 92, 0.3);
 	border-radius: 999px;
 	cursor: pointer;
-}
-
-/* On a phone the search box must stay near the top: cards drop the sample
-   headline (still read out in each card's label) and tighten up. */
-@media (max-width: 640px) {
-	.home-today {
-		margin-bottom: 1.25rem;
-	}
-
-	.home-today__headline,
-	.home-today__newest {
-		display: none;
-	}
-
-	.home-today__meta {
-		margin-top: 0.25rem;
-	}
-
-	.home-today__card {
-		padding: 0.625rem 0.75rem;
-	}
-
-	.home-today__card--placeholder {
-		min-height: 4.5rem;
-	}
-}
-
-@media (max-width: 340px) {
-	.home-today__list {
-		grid-template-columns: minmax(0, 1fr);
-	}
 }
 
 /* —— Feature band —— */
@@ -591,52 +446,6 @@ a.home-today__card:hover {
 	}
 }
 
-/* Input mode: topic, article link, or pasted text */
-.home-modes {
-	display: flex;
-	width: fit-content;
-	max-width: 100%;
-	gap: 4px;
-	padding: 4px;
-	margin-bottom: 10px;
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.7);
-	border: 1px solid rgba(10, 11, 13, 0.08);
-}
-
-.home-mode {
-	position: relative;
-	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-	font-size: 0.9375rem;
-	font-weight: 600;
-	padding: 0 1rem;
-	min-height: var(--tap);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 999px;
-	color: var(--home-ink-soft);
-	cursor: pointer;
-}
-
-.home-mode input {
-	position: absolute;
-	inset: 0;
-	opacity: 0;
-	margin: 0;
-	cursor: pointer;
-}
-
-.home-mode--on {
-	background: var(--home-ink);
-	color: #fff;
-}
-
-.home-mode:has(input:focus-visible) {
-	outline: 2px solid var(--home-blue);
-	outline-offset: 2px;
-}
-
 .home-search__row--stack {
 	flex-direction: column;
 }
@@ -669,15 +478,148 @@ a.home-today__card:hover {
 	color: #9b2c2c;
 }
 
-/* On a phone the mode switch spans the same width as the search box. */
-@media (max-width: 640px) {
-	.home-modes {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		width: 100%;
-	}
-	.home-mode {
-		padding: 0 0.5rem;
-		white-space: nowrap;
-	}
+/* Section labels on the home page: sentence case, semibold, readable */
+.home-label {
+	font: 600 15px/1.3 "Plus Jakarta Sans", system-ui, sans-serif;
+	color: var(--home-ink, #1a1614);
+	margin: 0 0 10px;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.home-lead {
+	margin: 0 0 16px;
+}
+
+/* "Have an article? Paste it": the second way in, quieter than search */
+.home-paste {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--tap);
+	padding: 0;
+	border: 0;
+	background: none;
+	font: 500 15px "Plus Jakarta Sans", system-ui, sans-serif;
+	color: #243d5c;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+
+.home-paste:focus-visible,
+.home-start__card:focus-visible,
+.home-today__row:focus-visible {
+	outline: 2px solid #243d5c;
+	outline-offset: 3px;
+}
+
+/* Start here: one ready story, the whole card is the link */
+.home-start {
+	margin-top: 14px;
+}
+
+.home-start__card {
+	display: grid;
+	gap: 8px;
+	padding: 16px 16px 0;
+	background: #fff;
+	border: 1px solid rgba(10, 11, 13, 0.1);
+	border-radius: 16px;
+	color: inherit;
+	font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+	text-decoration: none;
+	box-shadow: 0 1px 2px rgba(10, 11, 13, 0.04), 0 8px 24px rgba(36, 61, 92, 0.06);
+}
+
+.home-start__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 10px;
+	font-size: 13px;
+	color: #6e6964;
+}
+
+.home-start__pill {
+	padding: 3px 10px;
+	border-radius: 999px;
+	background: #ebf5f0;
+	color: #2d6a4f;
+	font-weight: 600;
+}
+
+.home-start__pill--old {
+	background: #fbf5e6;
+	color: #8b6914;
+}
+
+.home-start__headline {
+	font: 500 22px/1.2 "Newsreader", Georgia, serif;
+	color: #1a1614;
+}
+
+.home-start__why {
+	font-size: 15px;
+	line-height: 1.45;
+	color: #3d3835;
+}
+
+.home-start__go {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	min-height: var(--tap);
+	margin: 4px -16px 0;
+	padding: 0 16px;
+	border-top: 1px solid rgba(10, 11, 13, 0.08);
+	font-weight: 600;
+	font-size: 15px;
+	color: #243d5c;
+}
+
+/* Today, after the ready story: plain rows, honest about what they open */
+.home-today {
+	margin-top: 28px;
+}
+
+.home-today__rows {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.home-today__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: var(--tap);
+	padding: 4px 0;
+	border-top: 1px solid rgba(10, 11, 13, 0.08);
+	color: #1a1614;
+	text-decoration: none;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.home-today__row--placeholder {
+	background: rgba(10, 11, 13, 0.04);
+	border-radius: 8px;
+	margin-bottom: 6px;
+}
+
+.home-today__when {
+	flex-shrink: 0;
+	font-size: 13px;
+	font-weight: 500;
+	color: #56514c;
+}
+
+.home-chips {
+	margin-top: 28px;
+}
+
+.home-chips .home-label {
+	flex-basis: 100%;
+	margin-bottom: 2px;
 }

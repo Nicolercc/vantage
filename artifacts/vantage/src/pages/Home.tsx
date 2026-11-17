@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, useReducedMotion } from "framer-motion";
-import { Search, ShieldCheck, MapPinned, Clock3 } from "lucide-react";
+import { ShieldCheck, MapPinned, Clock3 } from "lucide-react";
 import { getGetTrendingQueryKey, useGetTrending } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/LiveTicker";
 import {
@@ -15,21 +15,14 @@ import {
 import {
 	homeTopics,
 	isReady,
-	timeAgo,
-	todayCaption,
 	todayHref,
 	TODAY_VISIBLE,
 	type HomeTopics,
 } from "@/lib/trending";
+import { isStale, latestSample, sampleDate } from "@/samples";
 import "./HomePage.css";
 
 type Mode = BriefRequest["kind"];
-
-const MODES: { id: Mode; label: string }[] = [
-	{ id: "topic", label: "Topic" },
-	{ id: "url", label: "Article link" },
-	{ id: "article", label: "Paste text" },
-];
 
 // Text is readable from the first frame; only a short rise is animated.
 const fadeUp = {
@@ -37,52 +30,74 @@ const fadeUp = {
 	animate: { opacity: 1, y: 0 },
 };
 
-/** Today's most covered topics, as links to their briefs. */
-function TodaySection({ offer }: { offer: Extract<HomeTopics, { kind: "loading" | "today" }> }) {
+/**
+ * The ready sample, first: one tap opens a finished brief with no wait. Its
+ * card shows the same headline and reason to care as the page it opens.
+ */
+function StartHere() {
+	const sample = latestSample();
+	if (!sample) return null;
+	const old = isStale(sample.generatedAt);
+	return (
+		<section className="home-start" aria-labelledby="start-title">
+			<h2 id="start-title" className="home-label">
+				Start here
+			</h2>
+			<Link href={`/sample/${sample.slug}`} className="home-start__card">
+				<span className="home-start__meta">
+					<span className={`home-start__pill${old ? " home-start__pill--old" : ""}`}>
+						{old ? "More than two weeks old" : "Ready"}
+					</span>
+					<span>
+						{sample.country} · {sampleDate(sample.generatedAt)}
+					</span>
+				</span>
+				<span className="home-start__headline">{sample.headline}</span>
+				<span className="home-start__why">{sample.why}</span>
+				<span className="home-start__go">
+					Read in about a minute <span aria-hidden="true">→</span>
+				</span>
+			</Link>
+		</section>
+	);
+}
+
+/**
+ * Today's most covered places, after the ready story. Until stories have
+ * their own briefs, a row opens a fresh brief on the whole place, and says so.
+ */
+function TodayRows({ offer }: { offer: Extract<HomeTopics, { kind: "loading" | "today" }> }) {
 	const [expanded, setExpanded] = useState(false);
 	if (offer.kind === "loading") {
 		return (
 			<section className="home-today" aria-labelledby="today-title" aria-busy="true">
-				<h2 id="today-title" className="home-today__title">
-					Today
+				<h2 id="today-title" className="home-label">
+					More from today&apos;s coverage
 				</h2>
 				<p className="sr-only" role="status">
 					Loading today&apos;s most covered topics
 				</p>
-				<ul className="home-today__list" aria-hidden>
-					{Array.from({ length: TODAY_VISIBLE }, (_, i) => (
-						<li key={i} className="home-today__card home-today__card--placeholder" />
+				<ul className="home-today__rows" aria-hidden>
+					{Array.from({ length: 3 }, (_, i) => (
+						<li key={i} className="home-today__row home-today__row--placeholder" />
 					))}
 				</ul>
 			</section>
 		);
 	}
-	const now = Date.now();
 	const shown = expanded ? offer.topics : offer.topics.slice(0, TODAY_VISIBLE);
 	const hidden = offer.topics.length - shown.length;
 	return (
 		<section className="home-today" aria-labelledby="today-title">
-			<h2 id="today-title" className="home-today__title">
-				Today
+			<h2 id="today-title" className="home-label">
+				More from today&apos;s coverage
 			</h2>
-			<p className="home-today__caption">{todayCaption(offer.outletCount)}</p>
-			<ul className="home-today__list" id="today-list">
+			<ul className="home-today__rows" id="today-list">
 				{shown.map((t) => (
 					<li key={t.label}>
-						{/* No aria-label: the card's visible text is its name, so voice control can say what it sees. */}
-						<Link href={todayHref(t)} className="home-today__card">
-							<span className="home-today__head">
-								<span className="home-today__label">{t.label}</span>
-								<span className={`home-today__badge${isReady(t) ? " home-today__badge--ready" : ""}`}>
-									{isReady(t) ? "Ready" : "About a minute"}
-								</span>
-							</span>
-							{t.country !== t.label && <span className="home-today__country">{t.country}</span>}
-							<span className="home-today__headline">{t.headline.title}</span>
-							<span className="home-today__meta">
-								{t.outletCount} outlets · <span className="home-today__newest">newest </span>
-								<time dateTime={t.newestAt}>{timeAgo(t.newestAt, now)}</time>
-							</span>
+						<Link href={todayHref(t)} className="home-today__row">
+							<span className="home-today__what">Explore coverage of {t.label}</span>
+							<span className="home-today__when">{isReady(t) ? "Ready" : "about a minute"}</span>
 						</Link>
 					</li>
 				))}
@@ -167,9 +182,11 @@ export function Home() {
 		setLocation(briefPath(request));
 	};
 
+	// Topic search is the default; pasting an article is one link away.
 	const changeMode = (next: Mode) => {
 		setMode(next);
 		setProblem(null);
+		window.setTimeout(() => document.getElementById("search-input")?.focus(), 0);
 	};
 
 	const applyQuickTopic = (q: string) => {
@@ -179,12 +196,7 @@ export function Home() {
 		document.getElementById("search-input")?.focus();
 	};
 
-	const inputLabel =
-		mode === "topic"
-			? "Conflict, crisis or country to brief"
-			: mode === "url"
-				? "Link to a news article"
-				: "Article text";
+	const inputLabel = mode === "article" ? "Article text" : "Ask about a story";
 
 	return (
 		<div className="home">
@@ -196,70 +208,22 @@ export function Home() {
 					<div className="home-hero__grain" aria-hidden />
 					<div className="home-hero__inner">
 						<div id="search">
-							<motion.p
-								className="home-kicker"
-								{...fadeUp}
-								transition={{ ...transition, delay: reduceMotion ? 0 : 0.05 }}
-							>
-								<span className="home-kicker__dot" aria-hidden />
-								For reporters, editors &amp; engaged citizens
-							</motion.p>
-
 							<motion.h1
 								id="home-hero-title"
 								className="home-title"
 								{...fadeUp}
-								transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }}
+								transition={{ ...transition, delay: 0 }}
 							>
-								See the full story behind the headline.
+								Understand what&apos;s happening.
 							</motion.h1>
-
-							<motion.p
-								className="home-lead"
-								{...fadeUp}
-								transition={{ ...transition, delay: reduceMotion ? 0 : 0.2 }}
-							>
-								Built for geopolitical conflicts, humanitarian crises, and regional
-								tensions. Search a specific event — we assemble recent coverage,
-								a background timeline, perspectives, and geography.
-							</motion.p>
-
-							{offer.kind !== "examples" && <TodaySection offer={offer} />}
-
-							<form
-								className="home-search"
-								onSubmit={handleSubmit}
-								role="search"
-								noValidate
-							>
-								<div
-									className="home-modes"
-									role="radiogroup"
-									aria-label="What do you want briefed?"
-								>
-									{MODES.map((m) => (
-										<label
-											key={m.id}
-											className={`home-mode${mode === m.id ? " home-mode--on" : ""}`}
-										>
-											<input
-												type="radio"
-												name="mode"
-												value={m.id}
-												checked={mode === m.id}
-												onChange={() => changeMode(m.id)}
-											/>
-											{m.label}
-										</label>
-									))}
-								</div>
-
+							<p className="home-lead">
+								World news explained in plain words, with every fact tied to its source.
+							</p>
+							<form className="home-search" onSubmit={handleSubmit} role="search" noValidate>
 								<label htmlFor="search-input" className="sr-only">
 									{inputLabel}
 								</label>
-								<div
-									className={`home-search__row${mode === "article" ? " home-search__row--stack" : ""}`}
-								>
+								<div className={`home-search__row${mode === "article" ? " home-search__row--stack" : ""}`}>
 									{mode === "article" ? (
 										<textarea
 											id="search-input"
@@ -275,35 +239,25 @@ export function Home() {
 											aria-describedby="search-help"
 										/>
 									) : (
-										<>
-											<span className="home-search__icon" aria-hidden>
-												<Search size={22} strokeWidth={2} />
-											</span>
-											<input
-												id="search-input"
-												className="home-search__input"
-												type={mode === "url" ? "url" : "search"}
-												inputMode={mode === "url" ? "url" : undefined}
-												value={value}
-												onChange={(e) => {
-													setValue(e.currentTarget.value);
-													setProblem(null);
-												}}
-												placeholder={
-													mode === "url"
-														? "https://…"
-														: "e.g. Sudan, Red Sea, Gaza"
-												}
-												autoComplete="off"
-												autoCapitalize={mode === "url" ? "off" : "sentences"}
-												enterKeyHint="search"
-												aria-invalid={problem ? true : undefined}
-												aria-describedby="search-help"
-											/>
-										</>
+										<input
+											id="search-input"
+											className="home-search__input"
+											type="search"
+											value={value}
+											onChange={(e) => {
+												setValue(e.currentTarget.value);
+												setProblem(null);
+											}}
+											placeholder="Ask about a story"
+											autoComplete="off"
+											autoCapitalize="sentences"
+											enterKeyHint="search"
+											aria-invalid={problem ? true : undefined}
+											aria-describedby="search-help"
+										/>
 									)}
 									<button type="submit" className="home-search__submit">
-										Explain this
+										Explain
 									</button>
 								</div>
 								<div id="search-help">
@@ -311,46 +265,37 @@ export function Home() {
 										<p className="home-search__error" role="alert">
 											{problem}
 										</p>
-									) : (
+									) : mode === "article" ? (
 										<p className="home-search__hint">
-											{mode === "topic"
-												? "A conflict, crisis or country · No account needed"
-												: mode === "url"
-													? "We fetch the public page and brief that article"
-													: `Up to ${ARTICLE_MAX.toLocaleString()} characters · Pasted text stays out of the page address`}
+											Up to {ARTICLE_MAX.toLocaleString()} characters · Pasted text stays out of the page address
 										</p>
-									)}
+									) : null}
 								</div>
+								<button
+									type="button"
+									className="home-paste"
+									onClick={() => changeMode(mode === "article" ? "topic" : "article")}
+								>
+									{mode === "article" ? "Ask about a story instead" : "Have an article? Paste it"}
+								</button>
 							</form>
 						</div>
 
-						{offer.kind === "examples" && (
-							<div className="home-chips" aria-label="Example searches">
-								<p
-									style={{
-										flexBasis: "100%",
-										textAlign: "left",
-										fontFamily: "var(--mono)",
-										fontSize: "13px",
-										textTransform: "uppercase",
-										letterSpacing: ".08em",
-										color: "var(--color-text-secondary)",
-										marginBottom: "10px",
-									}}
-								>
-									Try one of these →
+						<StartHere />
+
+						{offer.kind === "examples" ? (
+							<div className="home-chips" role="group" aria-labelledby="try-title">
+								<p id="try-title" className="home-label">
+									Try a topic
 								</p>
 								{offer.topics.map((q) => (
-									<button
-										key={q}
-										type="button"
-										className="home-chip"
-										onClick={() => applyQuickTopic(q)}
-									>
+									<button key={q} type="button" className="home-chip" onClick={() => applyQuickTopic(q)}>
 										{q}
 									</button>
 								))}
 							</div>
+						) : (
+							<TodayRows offer={offer} />
 						)}
 					</div>
 				</section>

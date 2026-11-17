@@ -11,13 +11,15 @@ test.describe("brief page", () => {
 		const net = await isolate(page);
 		await page.goto(`/brief/${BRIEF.id}`);
 		await expect(page.getByRole("heading", { level: 1 })).toHaveText(BRIEF.headline);
-		await expect(page.getByRole("heading", { level: 2 })).toHaveText(["In 30 seconds", "The facts", "Go deeper"]);
+		await expect(page.getByRole("heading", { level: 2 })).toHaveText([/^In 30 seconds/, "The facts", "Who and where", "Go deeper"]);
 		// Go deeper starts folded; every old section link still has a target.
 		expect(await page.locator("#layer-deeper details[open]").count()).toBe(0);
 		for (const id of ["summary", "map", "key-facts", "coverage", "timeline", "perspectives", "population", "context", "sources"]) {
 			await expect(page.locator(`#${id}`)).toHaveCount(1);
 		}
-		await expect(page.locator(".ci-numbers__figure")).toHaveText(["34 million", "47%"]);
+		// Key figures are bold inside their facts, and each fact appears once.
+		await expect(page.locator("#key-facts .ci-claim__figure")).toHaveText(["34 million", "47%"]);
+		await expect(page.locator(".ci-numbers")).toHaveCount(0);
 		await expectSharedLeftEdge(page, [".site-header__brand", "h1", ".ci-nav__link", ".ci-layer__title"]);
 		// The 30-second version starts inside the first screen.
 		const top = await page.locator(".ci-thirty").evaluate((e) => e.getBoundingClientRect().top);

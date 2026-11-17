@@ -32,11 +32,7 @@ export function InThirtySeconds({
 				<h2 className="al-card__title">
 					In 30 seconds <KindMark kind="background" />
 				</h2>
-			) : (
-				<p className="ci-thirty__kind">
-					<KindMark kind="background" /> A quick orientation from AI background knowledge
-				</p>
-			)}
+			) : null}
 			<dl className="ci-thirty__rows">
 				{ROWS.map(({ key, label }) =>
 					orientation[key] ? (
