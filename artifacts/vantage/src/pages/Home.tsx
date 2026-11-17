@@ -181,7 +181,7 @@ export function Home() {
 
 	const inputLabel =
 		mode === "topic"
-			? "Conflict, crisis or country to brief"
+			? "News story, conflict or place to brief"
 			: mode === "url"
 				? "Link to a news article"
 				: "Article text";
@@ -314,7 +314,7 @@ export function Home() {
 									) : (
 										<p className="home-search__hint">
 											{mode === "topic"
-												? "A conflict, crisis or country · No account needed"
+												? "Any news story, conflict or country · No account needed"
 												: mode === "url"
 													? "We fetch the public page and brief that article"
 													: `Up to ${ARTICLE_MAX.toLocaleString()} characters · Pasted text stays out of the page address`}

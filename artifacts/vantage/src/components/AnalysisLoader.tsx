@@ -22,7 +22,7 @@ export const STEPS: { stage: Stage; short: string; label: string }[] = [
 
 const NOTES = [
 	"Two independent sources beat one loud headline.",
-	"Dates matter: casualty counts and front lines go stale in hours.",
+	"Dates matter: figures and facts go stale in hours.",
 	"When the sides disagree, Vantage shows both and says who said what.",
 ];
 

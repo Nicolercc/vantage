@@ -21,6 +21,8 @@ import { PartiesPanel } from "./PartiesPanel";
 import { describeWhere, type CountryIndex } from "./map/countries";
 import { useCountries } from "./map/useCountries";
 import { eventPoint } from "./map/places";
+import { isConflictBrief, moduleSections, showsMap } from "@/lib/brief-kind";
+import { ModuleBody, StakeholderList } from "./NewsSections";
 import "./ConflictAnalysisPageLayout.css";
 
 function formatPublishedAt(iso: string) {
@@ -168,9 +170,12 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 
 	const countries = useCountries();
 	const [showEvent, setShowEvent] = useState<{ index: number; at: number } | null>(null);
+	const conflict = isConflictBrief(briefData);
+	const mapped = showsMap(briefData);
+	const modules = moduleSections(briefData);
 	// Events the map can show: a confirmed pin, or a place that is a whole country it shades.
 	const showOnMap = briefData.relatedEvents.map((evt, index) =>
-		eventPoint(evt) || countries?.find(evt.place)
+		mapped && (eventPoint(evt) || countries?.find(evt.place))
 			? () => {
 					goToSection("map");
 					setShowEvent({ index, at: Date.now() });
@@ -300,17 +305,19 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								</Section>
 							) : null}
 							<PartiesPanel parties={analysis.parties} />
-							<Section id="map" title="Where this is" kind="background" startOpen>
-								<WhereThisIs brief={briefData} countries={countries} />
-								<div className="ci-map-outer">
-									<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
-								</div>
-								<p className="ci-section__note">
-									The shaded country and its borders come from Natural Earth map data.
-									Pins mark places the model named, drawn only where a map lookup
-									confirms them or on the sea or strait they name.
-								</p>
-							</Section>
+							{mapped ? (
+								<Section id="map" title="Where this is" kind="background" startOpen>
+									<WhereThisIs brief={briefData} countries={countries} />
+									<div className="ci-map-outer">
+										<InteractiveConflictMap data={briefData} active={true} showEvent={showEvent} />
+									</div>
+									<p className="ci-section__note">
+										The shaded country and its borders come from Natural Earth map data.
+										Pins mark places the model named, drawn only where a map lookup
+										confirms them or on the sea or strait they name.
+									</p>
+								</Section>
+							) : null}
 						</section>
 
 						<section id="layer-facts" className="ci-layer" aria-labelledby="layer-facts-h" tabIndex={-1}>
@@ -327,6 +334,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 									empty="Nothing in the retrieved sources could be tied to a specific claim, so none is shown."
 								/>
 							</Section>
+							{modules.map((section) => (
+								<Section key={section.id} id={section.id} title={section.title} kind="sourced" startOpen>
+									<ModuleBody section={section} sources={briefData.sources} />
+								</Section>
+							))}
 							{hasComparison && (
 								<Section id="coverage" title="How coverage compares" kind="sourced" startOpen>
 									<div className="ci-compare">
@@ -368,7 +380,7 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 								</Section>
 							) : null}
 							{briefData.escalationRisk || analysis.keyQuestion ? (
-								<Section id="assessment" title="Where this could go" kind="background" collapsible startOpen={false}>
+								<Section id="assessment" title={conflict ? "Where this could go" : "What to watch"} kind="background" collapsible startOpen={false}>
 									{briefData.escalationRisk ? (
 										<p className="ci-assessment">
 											<span className="ci-assessment__label">Escalation risk</span>{" "}
@@ -391,6 +403,11 @@ export function BriefView({ brief: briefData }: { brief: IntelligenceBrief }) {
 							<Section id="timeline" title="How we got here" kind="background" collapsible startOpen={false}>
 								<EventTimeline events={briefData.relatedEvents} active={true} onShowOnMap={showOnMap} />
 							</Section>
+							{briefData.stakeholders?.length ? (
+								<Section id="stakeholders" title="Where each one stands" kind="background" collapsible startOpen={false}>
+									<StakeholderList stakeholders={briefData.stakeholders} />
+								</Section>
+							) : null}
 							{briefData.perspectives?.length ? (
 								<Section id="perspectives" title="How each side sees it" kind="background" collapsible startOpen={false}>
 									<PerspectivesPanel perspectives={briefData.perspectives} active={true} />
