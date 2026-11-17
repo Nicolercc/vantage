@@ -34,8 +34,9 @@ afterEach(() => {
 
 describe("whole-brief deadline", () => {
   it("is every step's own limit in sequence, plus a margin", () => {
-    // retrieval 12s (two sequential Wikipedia fetches) + 2 attempts × (writer 62s + 2 verifier calls × 27s) + geocoding 9s + 5s
-    expect(BRIEF_DEADLINE_MS).toBe(12_000 + 2 * (62_000 + 2 * 27_000) + 9_000 + 5_000);
+    // retrieval 12s (two sequential Wikipedia fetches) + orientation grace 2s
+    // + 2 attempts × (writer 62s + 2 verifier calls × 27s) + geocoding 9s + 5s
+    expect(BRIEF_DEADLINE_MS).toBe(12_000 + 2_000 + 2 * (62_000 + 2 * 27_000) + 9_000 + 5_000);
   });
 
   it("aborts work in flight and fails with TIMED_OUT when the deadline passes", async () => {

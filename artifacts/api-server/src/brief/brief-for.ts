@@ -28,6 +28,16 @@ type Options = {
 };
 
 /**
+ * A decline saved before Vantage briefed news beyond conflicts, or one the
+ * conflict writer gave without knowing the topic's type. Either may be news
+ * that can now be briefed, so it is written again rather than served.
+ */
+const isUntypedDecline = (brief: StoredBrief) => {
+  const b = brief as StoredBrief & { inScope?: boolean; topicType?: string };
+  return b.inScope === false && b.topicType === undefined;
+};
+
+/**
  * Serve a brief from this process's cache or the store; otherwise generate it
  * once, however many requests are waiting, and save it so its link keeps working.
  */
@@ -35,7 +45,7 @@ export function briefFor(state: BriefState, { key, input }: Resolved, options: O
   const { cache, cacheTtlMs, gate, store, progress } = state;
   return cache.getOrCreate(key, async () => {
     const saved = await store.latest(key, cacheTtlMs);
-    if (saved) return upgradeStoredBrief(saved);
+    if (saved && !isUntypedDecline(saved)) return upgradeStoredBrief(saved);
     const generate = async () => {
       progress.open(key);
       try {

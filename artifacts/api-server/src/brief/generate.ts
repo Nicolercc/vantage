@@ -26,6 +26,9 @@ const ABORT_GRACE_MS = 2_000;
 /** Each attempt calls the verifier at most twice: the claims, then any rewrites. */
 const VERIFIER_CALLS_PER_ATTEMPT = 2;
 
+/** Longest the writer waits for the orientation after retrieval has finished. */
+const ORIENTATION_GRACE_MS = 2_000;
+
 /**
  * Longest one brief may take: every step's own limit, one after the other,
  * plus a margin. Each step already stops itself; this bounds the chain, so a
@@ -33,6 +36,7 @@ const VERIFIER_CALLS_PER_ATTEMPT = 2;
  */
 export const BRIEF_DEADLINE_MS =
   RETRIEVAL_MAX_MS +
+  ORIENTATION_GRACE_MS +
   MAX_GENERATION_ATTEMPTS *
     (MODEL_TIMEOUT_MS + ABORT_GRACE_MS + VERIFIER_CALLS_PER_ATTEMPT * (VERIFIER_TIMEOUT_MS + ABORT_GRACE_MS)) +
   GEOCODER_BUDGET_MS +
@@ -49,6 +53,42 @@ export const ConflictBrief = ExploreConflictResponse.required({
   affectedPopulation: true,
   casualtyData: true,
 });
+
+/** A not-news search with at least this many news sources is still given to the writer. */
+const MIN_NEWS_TO_WRITE = 2;
+
+const delay = <T>(ms: number, value: T) =>
+  new Promise<T>((resolve) => {
+    const t = setTimeout(() => resolve(value), ms);
+    t.unref?.();
+  });
+
+/**
+ * The brief for a search that is not a news story. Nothing is written by the
+ * writer; it records what was searched and says so plainly.
+ */
+function declineBrief(briefId: string, coverage: Coverage, orientation: Orientation | null) {
+  return ExploreConflictResponse.parse({
+    id: briefId,
+    generatedAt: new Date().toISOString(),
+    inScope: false,
+    topicType: "not_news",
+    orientation,
+    headline: "Not a news story",
+    location: { city: "", country: "", region: "", lat: null, lng: null },
+    glossary: null,
+    summary: "This search does not look like a news story, so no brief was written.",
+    actors: [],
+    relatedEvents: [],
+    historicalContext: "",
+    keyQuestion: "",
+    keyFacts: [],
+    coverage: { agreements: [], differences: [] },
+    verification: { status: "skipped", checked: 0, removed: 0, corrected: 0 },
+    sources: coverage.sources.map(toPublicSource),
+    retrieval: coverage.retrieval,
+  });
+}
 
 const timedOut = () => new AppError(504, "TIMED_OUT", "This brief took too long to prepare. Please try again.");
 
@@ -279,15 +319,33 @@ export async function buildBrief(input: BriefInput, onProgress: OnProgress = () 
   let orientation: Orientation | null = null;
   const work = (async () => {
     onProgress({ type: "stage", stage: "retrieving" });
-    void getOrientation(input.article?.text.slice(0, 2000) ?? input.topic, briefId, orientationSignal).then((result) => {
-      if (!result || orientationSignal.aborted) return;
+    const oriented = getOrientation(input.article?.text.slice(0, 2000) ?? input.topic, briefId, orientationSignal).then((result) => {
+      if (!result || orientationSignal.aborted) return null;
       orientation = result;
       onProgress({ type: "orientation", orientation: result });
+      return result;
     });
     const coverage = await searchCoverage(input.topic, supplied, stop.signal);
     onProgress({ type: "sources", sources: coverage.sources.map(toPublicSource), retrieval: coverage.retrieval });
+    // The route is decided once, here. Orientation usually finished during
+    // retrieval; if not, it gets a short grace period and is then ignored.
+    const waitStarted = Date.now();
+    const classified = await Promise.race([oriented, delay(ORIENTATION_GRACE_MS, null)]);
+    const waitedMs = Date.now() - waitStarted;
+    if (waitedMs > 50) logger.info({ briefId, waitedMs, classified: Boolean(classified) }, "waited for orientation");
+    const topicType = classified?.topicType;
+    const newsSources = coverage.sources.filter((src) => src.kind === "news").length;
+    // A typed search that is plainly not news (a recipe, homework) and that no
+    // outlet reports on is declined without writing. Anything less clear, and
+    // any article a reader supplied, goes to the writer, which can decline too.
+    if (topicType === "not_news" && !supplied && newsSources < MIN_NEWS_TO_WRITE) {
+      return declineBrief(briefId, coverage, classified);
+    }
     const { brief } = await generateFromCoverage(coverage, { topic: input.topic, hasArticle: Boolean(supplied) }, onProgress, stop.signal, briefId);
-    return { ...brief, orientation };
+    // Only a brief the conflict writer accepted is known to be about a conflict.
+    // Its declines carry no type, so they are written again, not served, once
+    // other news is briefed.
+    return { ...brief, orientation, ...(brief.inScope ? { topicType: "conflict" as const } : {}) };
   })();
   try {
     return await Promise.race([work, expired]);
